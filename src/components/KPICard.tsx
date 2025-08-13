@@ -25,52 +25,38 @@ export function KPICard({
   const getVariantStyles = () => {
     switch (variant) {
       case "primary":
-        return "bg-gradient-to-br from-primary-blue/80 to-primary-blue/60 border-primary-blue/50 shadow-xl text-white";
+        return "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25";
       case "success":
-        return "bg-gradient-to-br from-primary-green/80 to-primary-green/60 border-primary-green/50 shadow-xl text-white";
+        return "bg-gradient-to-br from-green-500 to-green-600 border-green-400 shadow-xl shadow-green-500/25";
       case "warning":
-        return "bg-gradient-to-br from-primary-orange/80 to-primary-orange/60 border-primary-orange/50 shadow-xl text-white";
+        return "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25";
       default:
-        return "bg-gradient-to-br from-muted/80 to-muted/60 backdrop-blur-sm border-border/50 shadow-lg";
+        return "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25";
     }
   };
 
   return (
     <Card className={cn(
-      "transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-2",
+      "transition-all duration-300 hover:shadow-2xl hover:scale-[1.05] border-2 text-white",
       getVariantStyles(),
       className
     )}>
       <CardHeader className="pb-3">
-        <CardTitle className={cn(
-          "text-sm font-semibold uppercase tracking-wide",
-          variant === "default" ? "text-muted-foreground" : "text-white/90"
-        )}>
+        <CardTitle className="text-sm font-bold text-white/90 uppercase tracking-wide">
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
-        <div className={cn(
-          "text-3xl font-bold tracking-tight",
-          variant === "default" ? "text-foreground" : "text-white"
-        )}>
+      <CardContent className="space-y-3">
+        <div className="text-4xl font-black tracking-tight text-white">
           {value}
         </div>
         {subtitle && (
-          <p className={cn(
-            "text-sm font-medium",
-            variant === "default" ? "text-muted-foreground" : "text-white/80"
-          )}>
+          <p className="text-sm font-medium text-white/80">
             {subtitle}
           </p>
         )}
         {change && (
-          <div className={cn(
-            "flex items-center text-sm font-semibold",
-            variant === "default" 
-              ? (change.type === "positive" ? "text-success" : "text-error")
-              : "text-white"
-          )}>
+          <div className="flex items-center text-sm font-bold text-white">
             {change.type === "positive" ? (
               <TrendingUp className="mr-1 h-4 w-4" />
             ) : (

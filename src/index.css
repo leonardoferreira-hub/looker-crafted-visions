@@ -38,13 +38,14 @@ All colors MUST be HSL.
 
     /* Custom fintech colors */
     --primary-blue: 217 91% 59%;
-    --primary-green: 142 76% 36%;
+    --primary-green: 142 76% 50%;
     --primary-orange: 25 95% 53%;
     --primary-purple: 262 83% 58%;
     --primary-red: 0 84% 60%;
+    --primary-teal: 173 58% 45%;
     
     /* Success/Error states */
-    --success: 142 76% 36%;
+    --success: 142 76% 50%;
     --warning: 25 95% 53%;
     --error: 0 84% 60%;
     
