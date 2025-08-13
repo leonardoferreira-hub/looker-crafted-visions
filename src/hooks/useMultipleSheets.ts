@@ -66,15 +66,39 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       return result;
     };
 
-    const headers = parseCSVLine(lines[0]);
+    // Find the header row (the one with actual column names like "Categoria", "Operação", etc.)
+    let headerRowIndex = -1;
+    for (let i = 0; i < Math.min(10, lines.length); i++) {
+      const line = lines[i];
+      if (line.includes('Categoria') && line.includes('Operação') && line.includes('Volume')) {
+        headerRowIndex = i;
+        break;
+      }
+    }
+
+    if (headerRowIndex === -1) {
+      console.log('Header row not found, using first line');
+      headerRowIndex = 0;
+    }
+
+    console.log('Header row found at index:', headerRowIndex);
+    console.log('Header line:', lines[headerRowIndex]);
+    
+    const headers = parseCSVLine(lines[headerRowIndex]);
     console.log('Headers:', headers);
     
     const rows: SheetData[] = [];
 
-    for (let i = 1; i < lines.length; i++) {
-      if (!lines[i].trim()) continue; // Pula linhas vazias
+    // Parse data rows starting from header + 1
+    for (let i = headerRowIndex + 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
       
-      const values = parseCSVLine(lines[i]);
+      const values = parseCSVLine(line);
+      
+      // Skip empty rows or rows with only empty values
+      if (values.every(val => !val || val.trim() === '')) continue;
+      
       const row: SheetData = {};
       
       // Usa índices em vez de nomes de headers para mais confiabilidade
@@ -87,7 +111,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
         row[`col_${index}`] = !isNaN(numValue) && cleanValue.match(/[\d,.]/) ? numValue : cleanValue;
       });
       
-      if (Object.keys(row).length > 0) {
+      if (Object.keys(row).length > 0 && !values.every(val => !val || val.trim() === '')) {
         rows.push(row);
       }
     }
