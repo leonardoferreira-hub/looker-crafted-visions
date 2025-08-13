@@ -26,9 +26,9 @@ export function OperationsCard({
       "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25",
       className
     )}>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 text-center">
         <CardTitle className="text-sm font-bold text-white/90 uppercase tracking-wide">
-          Operações
+          Total de Operações
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

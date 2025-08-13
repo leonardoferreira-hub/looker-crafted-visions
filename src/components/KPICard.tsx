@@ -41,28 +41,33 @@ export function KPICard({
       getVariantStyles(),
       className
     )}>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 text-center">
         <CardTitle className="text-sm font-bold text-white/90 uppercase tracking-wide">
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="text-4xl font-black tracking-tight text-white">
-          {value}
+      <CardContent className="space-y-4">
+        {/* Número principal centralizado */}
+        <div className="text-center">
+          <div className="text-5xl font-black tracking-tight text-white">
+            {value}
+          </div>
         </div>
         {subtitle && (
-          <p className="text-sm font-medium text-white/80">
-            {subtitle}
-          </p>
+          <div className="text-center">
+            <p className="text-sm font-medium text-white/80">
+              {subtitle}
+            </p>
+          </div>
         )}
         {change && (
-          <div className="flex items-center text-sm font-bold text-white">
+          <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
             {change.type === "positive" ? (
               <TrendingUp className="mr-1 h-4 w-4" />
             ) : (
               <TrendingDown className="mr-1 h-4 w-4" />
             )}
-            {change.value}
+            <span>{change.value}</span>
           </div>
         )}
       </CardContent>
