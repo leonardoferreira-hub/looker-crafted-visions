@@ -53,13 +53,14 @@ export function KPICard({
             {value}
           </div>
         </div>
+        
         {subtitle && (
-          <div className="text-center">
-            <p className="text-sm font-medium text-white/80">
-              {subtitle}
-            </p>
+          <div className="text-center text-white/90">
+            <div className="text-sm uppercase tracking-wide opacity-80">{subtitle}</div>
           </div>
         )}
+        
+        {/* Comparativo com ano anterior */}
         {change && (
           <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
             {change.type === "positive" ? (
@@ -67,7 +68,7 @@ export function KPICard({
             ) : (
               <TrendingDown className="mr-1 h-4 w-4" />
             )}
-            <span>{change.value}</span>
+            <span>{change.value} vs mesmo período 2024</span>
           </div>
         )}
       </CardContent>
