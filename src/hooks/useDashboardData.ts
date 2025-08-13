@@ -134,6 +134,9 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   if (defaultStartDate || defaultEndDate) {
     filteredHistorico = historicoData.filter(row => {
       // Usar a coluna DATA_LIQUIDACAO (coluna 26) para filtrar por data
+      console.log(row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`]);
+      console.log("-----");
+      console.log(Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO]);
       const liquidationDate = row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO];
       if (!liquidationDate) return true; // Se não tem data, inclui na consulta
       
