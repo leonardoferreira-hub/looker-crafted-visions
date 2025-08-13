@@ -105,10 +105,17 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       values.forEach((value, index) => {
         const cleanValue = value.replace(/^"|"$/g, '').trim(); // Remove aspas do início e fim
         
-        // Tenta converter para número se parecer um número
-        const numValue = parseFloat(cleanValue.replace(/[R$\s,]/g, '').replace(/\./g, '').replace(/,/g, '.'));
+        // Verifica se é uma data (contém / ou -) para não converter para número
+        const isDate = cleanValue.includes('/') || cleanValue.includes('-');
         
-        row[`col_${index}`] = !isNaN(numValue) && cleanValue.match(/[\d,.]/) ? numValue : cleanValue;
+        if (isDate) {
+          // Se for data, mantém como string
+          row[`col_${index}`] = cleanValue;
+        } else {
+          // Tenta converter para número se parecer um número E não for data
+          const numValue = parseFloat(cleanValue.replace(/[R$\s,]/g, '').replace(/\./g, '').replace(/,/g, '.'));
+          row[`col_${index}`] = !isNaN(numValue) && cleanValue.match(/^[\d,.\s$R]*$/) ? numValue : cleanValue;
+        }
       });
       
       if (Object.keys(row).length > 0 && !values.every(val => !val || val.trim() === '')) {

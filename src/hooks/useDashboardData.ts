@@ -39,6 +39,7 @@ const SHEETS_COLUMNS = {
     ANALISTA_GESTAO: 24,       // Coluna Y (índice 24)
     INVESTIDORES: 25,          // Coluna Z (índice 25)
     DATA_LIQUIDACAO: 26,       // Coluna AA (índice 26) - CHAVE PARA GRÁFICO
+    // Nota: A=0, B=1, C=2... Z=25, AA=26. Mas pode ser que API use 1-based indexing
     PRIMEIRA_DATA_PAGAMENTO: 27, // Coluna AB (índice 27)
     MAPA_LIQUIDACAO: 28,       // Coluna AC (índice 28)
     MAPA_REGISTROS: 29,        // Coluna AD (índice 29)
@@ -186,6 +187,11 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 // Função auxiliar para obter valor de célula de forma consistente
 function getCellValue(row: SheetData, columnIndex: number): any {
   if (!row) return null;
+  
+  // Debug mais limpo para verificar se está pegando a data corretamente
+  if (columnIndex === 26 && row[`col_${columnIndex}`]) {
+    console.log(`DATA_LIQUIDACAO encontrada:`, row[`col_${columnIndex}`]);
+  }
   
   // Tenta diferentes métodos para acessar o valor da célula
   let value = row[`col_${columnIndex}`] || 
