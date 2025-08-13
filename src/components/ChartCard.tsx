@@ -20,7 +20,7 @@ export function ChartCard({
 }: ChartCardProps) {
   return (
     <Card className={cn(
-      "bg-card/50 backdrop-blur-sm border-border/50 transition-all duration-300 hover:shadow-lg",
+      "bg-card/90 backdrop-blur-sm border-border/60 shadow-lg hover:shadow-xl transition-all duration-300",
       className
     )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
