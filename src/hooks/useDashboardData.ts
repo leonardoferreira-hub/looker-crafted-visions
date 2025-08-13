@@ -39,6 +39,10 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     ]
   });
 
+  // Verifica se temos dados válidos de pelo menos uma aba
+  const hasValidData = (data.historico?.length || 0) > 0 || (data.pipe?.length || 0) > 0;
+  const isConnected = hasValidData && !error;
+
   const processedData = useMemo(() => {
     const historicoData = data.historico || [];
     const pipeData = data.pipe || [];
@@ -86,7 +90,7 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     loading,
     error,
     refetch,
-    isConnected: (data.historico?.length || 0) + (data.pipe?.length || 0) > 0,
+    isConnected,
     defaultStartDate,
     defaultEndDate
   };
@@ -97,16 +101,18 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('Historico rows:', historicoData.length);
   console.log('Pipe rows:', pipeData.length);
   
-  // Operações liquidadas vêm do histórico - Coluna D
+  // Operações liquidadas vêm do histórico - Coluna D (Operação)
   const liquidadas = historicoData.filter(row => {
-    const colunaD = Object.values(row)[3]; // Coluna D (índice 3)
-    return colunaD && String(colunaD).trim() !== '';
+    const valores = Object.values(row);
+    const operacao = valores[3]; // Coluna D - Operação
+    return operacao && String(operacao).trim() !== '' && String(operacao).trim() !== 'Operação';
   });
   
-  // Operações em estruturação vêm do pipe - Coluna D
+  // Operações em estruturação vêm do pipe - Coluna D (Operação)  
   const estruturacao = pipeData.filter(row => {
-    const colunaD = Object.values(row)[3]; // Coluna D (índice 3)
-    return colunaD && String(colunaD).trim() !== '';
+    const valores = Object.values(row);
+    const operacao = valores[3]; // Coluna D - Operação
+    return operacao && String(operacao).trim() !== '' && String(operacao).trim() !== 'Operação';
   });
 
   console.log('Filtered liquidadas:', liquidadas.length);
@@ -114,16 +120,17 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
 
   // Calcula mudanças em relação ao ano anterior
   const lastYearLiquidadas = lastYearData.filter(row => {
-    const colunaD = Object.values(row)[3];
-    return colunaD && String(colunaD).trim() !== '';
+    const valores = Object.values(row);
+    const operacao = valores[3]; // Coluna D - Operação
+    return operacao && String(operacao).trim() !== '' && String(operacao).trim() !== 'Operação';
   }).length;
   
-  const lastYearVolume = calculateSumByColumnIndex(lastYearData, 11); // Coluna L (índice 11)
-  const lastYearFee = calculateSumByColumnIndex(lastYearData, 8); // Coluna I (índice 8)
+  const lastYearVolume = calculateSumByColumnIndex(lastYearData, 11); // Coluna L - Volume
+  const lastYearFee = calculateSumByColumnIndex(lastYearData, 8); // Coluna I - Estruturação
 
   const currentLiquidadas = liquidadas.length;
-  const currentVolume = calculateSumByColumnIndex(liquidadas, 11); // Coluna L
-  const currentFee = calculateSumByColumnIndex(liquidadas, 8); // Coluna I
+  const currentVolume = calculateSumByColumnIndex(liquidadas, 11); // Coluna L - Volume
+  const currentFee = calculateSumByColumnIndex(liquidadas, 8); // Coluna I - Estruturação
 
   // Calcula percentuais de mudança
   const getPercentChange = (current: number, previous: number) => {
@@ -139,13 +146,13 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   const kpis: DashboardKPIs = {
     operacoesLiquidadas: currentLiquidadas,
     operacoesEstruturacao: estruturacao.length,
-    volumeLiquidado: (currentVolume / 1000000000).toFixed(1), // Converte para bilhões
-    volumeEstruturacao: (calculateSumByColumnIndex(estruturacao, 11) / 1000000000).toFixed(1), // Coluna L em bilhões
-    feeLiquidado: (currentFee / 1000000).toFixed(1), // Converte para milhões
-    feeEstruturacao: (calculateSumByColumnIndex(estruturacao, 8) / 1000000).toFixed(1), // Coluna I em milhões
-    feeGestaoLiquidado: (calculateSumByColumnIndex(liquidadas, 9) / 1000).toFixed(1), // Coluna J em milhares
-    feeGestaoEstruturacao: (calculateSumByColumnIndex(estruturacao, 9) / 1000).toFixed(1), // Coluna J em milhares
-    feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], 8), // Coluna I
+    volumeLiquidado: (currentVolume / 1000000000).toFixed(1), // Coluna L - Volume em bilhões
+    volumeEstruturacao: (calculateSumByColumnIndex(estruturacao, 11) / 1000000000).toFixed(1), // Coluna L - Volume em bilhões
+    feeLiquidado: (currentFee / 1000000).toFixed(1), // Coluna I - Estruturação em milhões
+    feeEstruturacao: (calculateSumByColumnIndex(estruturacao, 8) / 1000000).toFixed(1), // Coluna I - Estruturação em milhões
+    feeGestaoLiquidado: (calculateSumByColumnIndex(liquidadas, 9) / 1000).toFixed(1), // Coluna J - Gestão em milhares
+    feeGestaoEstruturacao: (calculateSumByColumnIndex(estruturacao, 9) / 1000).toFixed(1), // Coluna J - Gestão em milhares
+    feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], 8), // Coluna I - Estruturação
     // Comparações com ano anterior
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
     volumeLiquidadoChange: getPercentChange(currentVolume, lastYearVolume),
