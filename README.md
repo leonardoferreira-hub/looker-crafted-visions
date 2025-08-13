@@ -71,3 +71,24 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Streamlit dashboard
+
+A simple [Streamlit](https://streamlit.io/) app is included to visualize the data from the "Histórico" tab of the provided Google Sheet.
+
+### Run locally
+
+1. Create a virtual environment:
+   ```bash
+   python -m venv .venv && source .venv/bin/activate
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Start the dashboard:
+   ```bash
+   streamlit run streamlit_app.py
+   ```
+
+The app loads the latest data directly from the spreadsheet and displays basic metrics and charts.
