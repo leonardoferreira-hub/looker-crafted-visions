@@ -69,7 +69,7 @@ export function CustomLineChart({ data, xKey, yKey, title }: {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
         <XAxis 
           dataKey={xKey} 
           stroke="hsl(var(--muted-foreground))" 
@@ -105,7 +105,7 @@ export function CustomBarChart({ data, xKey, yKey }: {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
         <XAxis 
           dataKey={xKey} 
           stroke="hsl(var(--muted-foreground))" 
