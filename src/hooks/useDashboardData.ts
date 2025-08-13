@@ -106,8 +106,8 @@ export interface DashboardKPIs {
 }
 
 export function useDashboardData(startDate?: Date | null, endDate?: Date | null) {
-  // Define período padrão: 1º de janeiro do ano atual até hoje
-  const defaultStartDate = startDate || new Date(new Date().getFullYear(), 0, 1);
+  // Define período padrão: 1º de janeiro de 2025 até hoje
+  const defaultStartDate = startDate || new Date(2025, 0, 1);
   const defaultEndDate = endDate || new Date();
   
   const { data, loading, error, refetch } = useMultipleSheets({
@@ -147,9 +147,9 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     });
   }
 
-    // Calcula dados do ano anterior para comparação
-    const lastYearStart = new Date(defaultStartDate.getFullYear() - 1, 0, 1);
-    const lastYearEnd = new Date(defaultEndDate.getFullYear() - 1, defaultEndDate.getMonth(), defaultEndDate.getDate());
+    // Calcula dados de 2024 para comparação (mesmo período)
+    const lastYearStart = new Date(2024, defaultStartDate.getMonth(), defaultStartDate.getDate());
+    const lastYearEnd = new Date(2024, defaultEndDate.getMonth(), defaultEndDate.getDate());
     
     const lastYearData = historicoData.filter(row => {
       const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);

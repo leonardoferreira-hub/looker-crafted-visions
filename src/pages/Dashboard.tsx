@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { KPICard } from "@/components/KPICard";
+import { OperationsCard } from "@/components/OperationsCard";
 import { ChartCard } from "@/components/ChartCard";
 import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
@@ -129,11 +130,11 @@ export default function Dashboard() {
           <TabsContent value="resumo" className="space-y-6">
             {/* Main KPIs */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <KPICard
-                title="Operações"
-                value={`${kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}`}
-                subtitle={`${kpis.operacoesLiquidadas} liquidadas • ${kpis.operacoesEstruturacao} em estruturação`}
-                variant="primary"
+              <OperationsCard
+                totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
+                liquidadas={kpis.operacoesLiquidadas}
+                estruturacao={kpis.operacoesEstruturacao}
+                change={kpis.operacoesLiquidadasChange}
               />
               <KPICard
                 title="Volume Total"
