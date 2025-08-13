@@ -26,7 +26,9 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("resumo");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected } = useDashboardData(startDate, endDate);
+  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate } = useDashboardData(startDate, endDate);
+
+  // Mostra o período sendo usado
 
   const proximasColumns = [
     { key: "categoria", label: "Categoria" },
@@ -53,7 +55,7 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold text-foreground">Travessia</h1>
             </div>
             <div className="text-sm text-muted-foreground">
-              1 de jan. de 2025 - 12 de ago.
+              {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -149,7 +151,7 @@ export default function Dashboard() {
                 title="Fee de Gestão"
                 value={`${(parseFloat(kpis.feeGestaoLiquidado) + parseFloat(kpis.feeGestaoEstruturacao)).toFixed(1)} mil`}
                 subtitle={`Fee médio 2025: R$ ${kpis.feeMedio2025}`}
-                change={{ value: "+0.4%", type: "positive" }}
+                change={kpis.feeLiquidadoChange}
               />
             </div>
 
@@ -242,7 +244,7 @@ export default function Dashboard() {
                 value={kpis.operacoesLiquidadas.toString()}
                 subtitle="operações concluídas"
                 variant="success"
-                change={{ value: "-10.3%", type: "negative" }}
+                change={kpis.operacoesLiquidadasChange}
               />
               <KPICard
                 title="Volume Liquidado"
@@ -255,7 +257,7 @@ export default function Dashboard() {
                 value={`${kpis.feeLiquidado} mi`}
                 subtitle="estruturação liquidada"
                 variant="warning"
-                change={{ value: "-17.5%", type: "negative" }}
+                change={kpis.feeLiquidadoChange}
               />
               <KPICard
                 title="Fee de Gestão"
