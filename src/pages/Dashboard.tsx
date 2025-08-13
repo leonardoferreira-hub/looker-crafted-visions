@@ -5,10 +5,12 @@ import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { ConfigPanel } from "@/components/ConfigPanel";
+import { DateFilter } from "@/components/DateFilter";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { 
   BarChart3, 
   TrendingUp, 
@@ -22,7 +24,9 @@ import {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("resumo");
-  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected } = useDashboardData();
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected } = useDashboardData(startDate, endDate);
 
   const proximasColumns = [
     { key: "categoria", label: "Categoria" },
@@ -61,10 +65,29 @@ export default function Dashboard() {
             />
             
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
-                <Filter className="mr-2 h-4 w-4" />
-                Filtros
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Filtros
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-4" align="start">
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Filtrar por Data de Liquidação</h4>
+                    <DateFilter
+                      startDate={startDate}
+                      endDate={endDate}
+                      onStartDateChange={setStartDate}
+                      onEndDateChange={setEndDate}
+                      onClear={() => {
+                        setStartDate(null);
+                        setEndDate(null);
+                      }}
+                    />
+                  </div>
+                </PopoverContent>
+              </Popover>
               <Button variant="outline" size="sm">
                 <Download className="mr-2 h-4 w-4" />
                 Exportar

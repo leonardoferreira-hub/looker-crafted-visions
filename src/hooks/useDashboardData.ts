@@ -19,7 +19,7 @@ export interface DashboardKPIs {
   feeMedio2025: string;
 }
 
-export function useDashboardData() {
+export function useDashboardData(startDate?: Date | null, endDate?: Date | null) {
   const { data, loading, error, refetch } = useGoogleSheets({
     sheetId: SHEETS_CONFIG.SHEET_ID,
     gid: SHEETS_CONFIG.GID
@@ -27,13 +27,28 @@ export function useDashboardData() {
 
   const processedData = useMemo(() => {
     if (!data || data.length === 0) {
-      // Retorna dados mock se não conseguir carregar do Sheets
       return getMockData();
     }
 
-    // Processa os dados do Google Sheets
-    return processSheetData(data);
-  }, [data]);
+    // Filtra dados por data se fornecidas
+    let filteredData = data;
+    if (startDate || endDate) {
+      filteredData = data.filter(row => {
+        const liquidationDate = row['Data Liquidação'] || row['Data de Liquidação'];
+        if (!liquidationDate) return false;
+        
+        const date = parseDate(liquidationDate);
+        if (!date) return false;
+        
+        if (startDate && date < startDate) return false;
+        if (endDate && date > endDate) return false;
+        
+        return true;
+      });
+    }
+
+    return processSheetData(filteredData);
+  }, [data, startDate, endDate]);
 
   return {
     ...processedData,
@@ -154,62 +169,62 @@ function processCategoryData(data: SheetData[]) {
   }));
 }
 
+function parseDate(dateStr: any): Date | null {
+  if (!dateStr) return null;
+  
+  const str = String(dateStr).trim();
+  if (!str) return null;
+  
+  // Tenta diferentes formatos de data
+  const formats = [
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // DD/MM/YYYY
+    /^(\d{4})-(\d{1,2})-(\d{1,2})$/, // YYYY-MM-DD
+    /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // DD-MM-YYYY
+  ];
+  
+  for (const format of formats) {
+    const match = str.match(format);
+    if (match) {
+      let day, month, year;
+      if (format === formats[1]) { // YYYY-MM-DD
+        [, year, month, day] = match;
+      } else { // DD/MM/YYYY ou DD-MM-YYYY
+        [, day, month, year] = match;
+      }
+      
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+  }
+  
+  return null;
+}
+
 function getMockData() {
-  // Dados mock originais como fallback
+  // Dados vazios se não conseguir carregar do Sheets
   const kpis: DashboardKPIs = {
-    operacoesLiquidadas: 26,
-    operacoesEstruturacao: 33,
-    volumeLiquidado: "5.3",
-    volumeEstruturacao: "8.0",
-    feeLiquidado: "1.4",
-    feeEstruturacao: "1.7",
-    feeGestaoLiquidado: "152.9",
-    feeGestaoEstruturacao: "196.5",
-    feeMedio2025: "61.565,22"
+    operacoesLiquidadas: 0,
+    operacoesEstruturacao: 0,
+    volumeLiquidado: "0.0",
+    volumeEstruturacao: "0.0",
+    feeLiquidado: "0.0",
+    feeEstruturacao: "0.0",
+    feeGestaoLiquidado: "0.0",
+    feeGestaoEstruturacao: "0.0",
+    feeMedio2025: "0,00"
   };
 
   const chartData = {
-    operacoesPorMes: [
-      { mes: "Jan", liquidadas: 10, estruturacoes: 15 },
-      { mes: "Fev", liquidadas: 15, estruturacoes: 17 },
-      { mes: "Mar", liquidadas: 20, estruturacoes: 25 },
-      { mes: "Abr", liquidadas: 25, estruturacoes: 30 },
-      { mes: "Mai", liquidadas: 30, estruturacoes: 31 },
-      { mes: "Jun", liquidadas: 31, estruturacoes: 34 },
-      { mes: "Jul", liquidadas: 30, estruturacoes: 38 },
-      { mes: "Ago", liquidadas: 25, estruturacoes: 40 },
-      { mes: "Set", liquidadas: 38, estruturacoes: 45 },
-      { mes: "Out", liquidadas: 40, estruturacoes: 49 },
-      { mes: "Nov", liquidadas: 45, estruturacoes: 50 }
-    ],
-    categorias: [
-      { name: "CRI", value: 50, count: 15 },
-      { name: "Debênture", value: 27, count: 8 },
-      { name: "CRA", value: 15, count: 4 },
-      { name: "CR", value: 8, count: 2 }
-    ]
+    operacoesPorMes: [],
+    categorias: []
   };
-
-  const proximasLiquidacoes = [
-    { categoria: "Debênture", operacao: "Projeto Seed", previsaoLiquidacao: null, estruturacao: null },
-    { categoria: "NC", operacao: "Acreditar", previsaoLiquidacao: null, estruturacao: "15.000,00" },
-    { categoria: "CRA", operacao: "BRA Agroquímica", previsaoLiquidacao: "2025-08-12", estruturacao: "80.000,00" },
-    { categoria: "Debênture", operacao: "Galicia", previsaoLiquidacao: "2025-08-13", estruturacao: "60.000,00" },
-    { categoria: "CRI", operacao: "Vetter", previsaoLiquidacao: "2025-08-14", estruturacao: "45.000,00" }
-  ];
-
-  const ultimasLiquidacoes = [
-    { categoria: "CRI", operacao: "Supera - Ciano", estruturacao: "60000", dataLiquidacao: "2025-07-22" },
-    { categoria: "CRI", operacao: "Salto - Mariana Maria", estruturacao: "80000", dataLiquidacao: "2025-07-01" },
-    { categoria: "DEB", operacao: "NPL EMSO II - nova série", estruturacao: "70000", dataLiquidacao: "2025-06-30" },
-    { categoria: "DEB", operacao: "PINE", estruturacao: "80000", dataLiquidacao: "2025-06-27" },
-    { categoria: "CRA", operacao: "Atlas Agro II", estruturacao: "45000", dataLiquidacao: "2025-06-26" }
-  ];
 
   return {
     kpis,
     chartData,
-    proximasLiquidacoes,
-    ultimasLiquidacoes
+    proximasLiquidacoes: [],
+    ultimasLiquidacoes: []
   };
 }
