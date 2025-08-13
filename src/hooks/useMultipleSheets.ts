@@ -3,7 +3,7 @@ import { SheetData } from './useGoogleSheets';
 
 interface UseMultipleSheetsProps {
   sheetId: string;
-  sheets: { name: string; gid: string }[];
+  sheets: { name: string; gid: string; headerRowIndex?: number }[];
 }
 
 export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
@@ -11,7 +11,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSheetData = async (gid: string): Promise<SheetData[]> => {
+  const fetchSheetData = async (gid: string, headerRowIndex?: number): Promise<SheetData[]> => {
     try {
       const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
       const response = await fetch(csvUrl, {
@@ -26,14 +26,14 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       }
       
       const csvText = await response.text();
-      return parseCSV(csvText);
+      return parseCSV(csvText, headerRowIndex);
     } catch (err) {
       console.error(`Erro ao buscar dados da aba ${gid}:`, err);
       throw err;
     }
   };
 
-  const parseCSV = (csvText: string): SheetData[] => {
+  const parseCSV = (csvText: string, predefinedHeaderRowIndex?: number): SheetData[] => {
     console.log('CSV Text length:', csvText.length);
     console.log('First 500 chars:', csvText.substring(0, 500));
     
@@ -66,19 +66,27 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       return result;
     };
 
-    // Find the header row (the one with actual column names like "Categoria", "Operação", etc.)
+    // Use predefined header row index if provided, otherwise find it automatically
     let headerRowIndex = -1;
-    for (let i = 0; i < Math.min(10, lines.length); i++) {
-      const line = lines[i];
-      if (line.includes('Categoria') && line.includes('Operação') && line.includes('Volume')) {
-        headerRowIndex = i;
-        break;
+    
+    if (predefinedHeaderRowIndex !== undefined) {
+      // Use the predefined header row index (0-based)
+      headerRowIndex = predefinedHeaderRowIndex;
+      console.log('Using predefined header row index:', headerRowIndex);
+    } else {
+      // Find the header row (the one with actual column names like "Categoria", "Operação", etc.)
+      for (let i = 0; i < Math.min(10, lines.length); i++) {
+        const line = lines[i];
+        if (line.includes('Categoria') && line.includes('Operação') && line.includes('Volume')) {
+          headerRowIndex = i;
+          break;
+        }
       }
-    }
 
-    if (headerRowIndex === -1) {
-      console.log('Header row not found, using first line');
-      headerRowIndex = 0;
+      if (headerRowIndex === -1) {
+        console.log('Header row not found, using first line');
+        headerRowIndex = 0;
+      }
     }
 
     console.log('Header row found at index:', headerRowIndex);
@@ -137,7 +145,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
         const results = await Promise.allSettled(
           sheets.map(async (sheet) => {
             console.log(`Buscando dados da aba ${sheet.name} (gid: ${sheet.gid})`);
-            const sheetData = await fetchSheetData(sheet.gid);
+            const sheetData = await fetchSheetData(sheet.gid, sheet.headerRowIndex);
             console.log(`Dados carregados da aba ${sheet.name}:`, sheetData.length, 'linhas');
             return { name: sheet.name, data: sheetData };
           })
@@ -187,7 +195,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       try {
         const results = await Promise.allSettled(
           sheets.map(async (sheet) => {
-            const sheetData = await fetchSheetData(sheet.gid);
+            const sheetData = await fetchSheetData(sheet.gid, sheet.headerRowIndex);
             return { name: sheet.name, data: sheetData };
           })
         );
