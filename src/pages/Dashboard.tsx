@@ -152,7 +152,6 @@ export default function Dashboard() {
                 value={`${(parseFloat(kpis.feeGestaoLiquidado) + parseFloat(kpis.feeGestaoEstruturacao)).toFixed(0)} mil`}
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
                 change={kpis.feeLiquidadoChange}
-                variant="primary"
               />
             </div>
 
