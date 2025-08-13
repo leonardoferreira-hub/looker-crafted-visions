@@ -6,6 +6,10 @@ interface KPICardProps {
   title: string;
   value: string;
   subtitle?: string;
+  leftValue?: string;
+  leftLabel?: string;
+  rightValue?: string;
+  rightLabel?: string;
   change?: {
     value: string;
     type: "positive" | "negative";
@@ -17,7 +21,11 @@ interface KPICardProps {
 export function KPICard({ 
   title, 
   value, 
-  subtitle, 
+  subtitle,
+  leftValue,
+  leftLabel,
+  rightValue,
+  rightLabel,
   change, 
   variant = "default",
   className 
@@ -54,7 +62,20 @@ export function KPICard({
           </div>
         </div>
         
-        {subtitle && (
+        {/* Breakdown ou subtitle */}
+        {(leftValue && rightValue && leftLabel && rightLabel) ? (
+          <div className="flex justify-between items-center text-white/90">
+            <div className="text-center flex-1">
+              <div className="text-2xl font-bold">{leftValue}</div>
+              <div className="text-xs uppercase tracking-wide opacity-80">{leftLabel}</div>
+            </div>
+            <div className="w-px h-8 bg-white/30 mx-3"></div>
+            <div className="text-center flex-1">
+              <div className="text-2xl font-bold">{rightValue}</div>
+              <div className="text-xs uppercase tracking-wide opacity-80">{rightLabel}</div>
+            </div>
+          </div>
+        ) : subtitle && (
           <div className="text-center text-white/90">
             <div className="text-sm uppercase tracking-wide opacity-80">{subtitle}</div>
           </div>

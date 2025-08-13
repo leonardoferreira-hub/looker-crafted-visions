@@ -139,13 +139,19 @@ export default function Dashboard() {
               <KPICard
                 title="Volume Total"
                 value={`${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bi`}
-                subtitle={`${kpis.volumeLiquidado} bi liquidado • ${kpis.volumeEstruturacao} bi em estruturação`}
+                leftValue={`${kpis.volumeLiquidado} bi`}
+                leftLabel="Liquidado"
+                rightValue={`${kpis.volumeEstruturacao} bi`}
+                rightLabel="Estruturação"
                 variant="success"
               />
               <KPICard
                 title="Fee de Estruturação"
                 value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
-                subtitle={`${kpis.feeLiquidado} mi liquidado • ${kpis.feeEstruturacao} mi em estruturação`}
+                leftValue={`${kpis.feeLiquidado} mi`}
+                leftLabel="Liquidado"
+                rightValue={`${kpis.feeEstruturacao} mi`}
+                rightLabel="Estruturação"
                 variant="warning"
               />
               <KPICard
