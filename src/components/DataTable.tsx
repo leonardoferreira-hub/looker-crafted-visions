@@ -56,7 +56,7 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
   };
 
   return (
-    <Card className={cn("bg-card/90 backdrop-blur-sm border-border/60 shadow-lg", className)}>
+    <Card className={cn("bg-card border-border/50 shadow-lg", className)}>
       {title && (
         <CardHeader>
           <CardTitle className="text-base font-semibold">{title}</CardTitle>
