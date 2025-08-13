@@ -34,26 +34,66 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
   };
 
   const parseCSV = (csvText: string): SheetData[] => {
+    console.log('CSV Text length:', csvText.length);
+    console.log('First 500 chars:', csvText.substring(0, 500));
+    
     const lines = csvText.split('\n').filter(line => line.trim());
     if (lines.length === 0) return [];
 
-    const headers = lines[0].split(',').map(header => header.replace(/"/g, '').trim());
+    console.log('Total lines:', lines.length);
+    console.log('First line (headers):', lines[0]);
+
+    // Melhor parsing de CSV que lida com vírgulas dentro de aspas
+    const parseCSVLine = (line: string): string[] => {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      result.push(current.trim());
+      return result;
+    };
+
+    const headers = parseCSVLine(lines[0]);
+    console.log('Headers:', headers);
+    
     const rows: SheetData[] = [];
 
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(value => value.replace(/"/g, '').trim());
+      if (!lines[i].trim()) continue; // Pula linhas vazias
+      
+      const values = parseCSVLine(lines[i]);
       const row: SheetData = {};
       
-      headers.forEach((header, index) => {
-        const value = values[index] || '';
-        // Try to convert to number if possible
-        const numValue = parseFloat(value.replace(/[^\d.-]/g, ''));
-        row[header] = !isNaN(numValue) && value !== '' ? numValue : value;
+      // Usa índices em vez de nomes de headers para mais confiabilidade
+      values.forEach((value, index) => {
+        const cleanValue = value.replace(/^"|"$/g, '').trim(); // Remove aspas do início e fim
+        
+        // Tenta converter para número se parecer um número
+        const numValue = parseFloat(cleanValue.replace(/[R$\s,]/g, '').replace(/\./g, '').replace(/,/g, '.'));
+        
+        row[`col_${index}`] = !isNaN(numValue) && cleanValue.match(/[\d,.]/) ? numValue : cleanValue;
       });
       
-      rows.push(row);
+      if (Object.keys(row).length > 0) {
+        rows.push(row);
+      }
     }
 
+    console.log('Parsed rows:', rows.length);
+    console.log('Sample row:', rows[0]);
     return rows;
   };
 

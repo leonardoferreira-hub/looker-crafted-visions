@@ -54,8 +54,8 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     let filteredHistorico = historicoData;
     if (defaultStartDate || defaultEndDate) {
       filteredHistorico = historicoData.filter(row => {
-        // Assume que a data está na coluna A (primeira coluna)
-        const liquidationDate = Object.values(row)[0]; // Coluna A
+        // Tenta primeiro com a chave col_X (Data de Liquidação na coluna Z - índice 25)
+        const liquidationDate = row.col_25 || Object.values(row)[25] || Object.values(row)[0];
         if (!liquidationDate) return false;
         
         const date = parseDate(liquidationDate);
@@ -103,16 +103,18 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   
   // Operações liquidadas vêm do histórico - Coluna D (Operação)
   const liquidadas = historicoData.filter(row => {
-    const valores = Object.values(row);
-    const operacao = valores[3]; // Coluna D - Operação
-    return operacao && String(operacao).trim() !== '' && String(operacao).trim() !== 'Operação';
+    const operacao = row.col_3 || Object.values(row)[3]; // Coluna D (índice 3)
+    return operacao && String(operacao).trim() !== '' && 
+           String(operacao).trim() !== 'Operação' &&
+           String(operacao).trim().toLowerCase() !== 'operação';
   });
   
   // Operações em estruturação vêm do pipe - Coluna D (Operação)  
   const estruturacao = pipeData.filter(row => {
-    const valores = Object.values(row);
-    const operacao = valores[3]; // Coluna D - Operação
-    return operacao && String(operacao).trim() !== '' && String(operacao).trim() !== 'Operação';
+    const operacao = row.col_3 || Object.values(row)[3]; // Coluna D (índice 3)
+    return operacao && String(operacao).trim() !== '' && 
+           String(operacao).trim() !== 'Operação' &&
+           String(operacao).trim().toLowerCase() !== 'operação';
   });
 
   console.log('Filtered liquidadas:', liquidadas.length);
@@ -198,13 +200,13 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
 
 function calculateSumByColumnIndex(data: SheetData[], columnIndex: number): number {
   return data.reduce((sum, row) => {
-    const valores = Object.values(row);
-    const value = valores[columnIndex];
+    // Tenta primeiro com a chave col_X, depois com Object.values
+    const value = row[`col_${columnIndex}`] || Object.values(row)[columnIndex];
     
     if (!value) return sum;
     
     const numValue = typeof value === 'number' ? value : 
-                    parseFloat(String(value).replace(/[^\d.-]/g, '')) || 0;
+                    parseFloat(String(value).replace(/[R$\s,]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
     
     return sum + numValue;
   }, 0);
