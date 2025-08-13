@@ -170,7 +170,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
     if (sheetId && sheets.length > 0) {
       fetchAllSheets();
     }
-  }, [sheetId, sheets]);
+  }, [sheetId, JSON.stringify(sheets)]);
 
   const refetch = async () => {
     if (sheetId && sheets.length > 0) {
