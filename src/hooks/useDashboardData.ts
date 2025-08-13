@@ -223,12 +223,24 @@ function isValidRow(row: SheetData, operacaoColumnIndex: number): boolean {
     'Operação', 
     'operação',
     'PMO',
-    'OPERAÇÃO'
+    'OPERAÇÃO',
+    'Categoria',
+    'categoria',
+    'CATEGORIA',
+    'Volume',
+    'volume',
+    'VOLUME',
+    'Data',
+    'data',
+    'DATA'
   ];
   
   return !invalidPatterns.some(pattern => 
     operacaoStr.toLowerCase() === pattern.toLowerCase() ||
-    operacaoStr.includes('PMO')
+    operacaoStr.toLowerCase().includes('pmo') ||
+    operacaoStr.toLowerCase().includes('categoria') ||
+    operacaoStr.toLowerCase().includes('volume') ||
+    operacaoStr.toLowerCase().includes('data')
   );
 }
 
@@ -237,24 +249,14 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('Historico rows:', historicoData.length);
   console.log('Pipe rows:', pipeData.length);
   
-  // Operações liquidadas vêm do histórico - usar mapeamento de colunas
+  // Operações liquidadas vêm do histórico - usar função de validação
   const liquidadas = historicoData.filter(row => {
-    const operacao = row[`col_${SHEETS_COLUMNS.HISTORICO.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.OPERACAO];
-    return operacao && 
-           String(operacao).trim() !== '' && 
-           String(operacao).trim() !== 'Operação' &&
-           String(operacao).trim().toLowerCase() !== 'operação' &&
-           !String(operacao).includes('PMO');
+    return isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
   });
   
-  // Operações em estruturação vêm do pipe - usar mapeamento de colunas
+  // Operações em estruturação vêm do pipe - usar função de validação
   const estruturacao = pipeData.filter(row => {
-    const operacao = row[`col_${SHEETS_COLUMNS.PIPE.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.OPERACAO];
-    return operacao && 
-           String(operacao).trim() !== '' && 
-           String(operacao).trim() !== 'Operação' &&
-           String(operacao).trim().toLowerCase() !== 'operação' &&
-           !String(operacao).includes('PMO');
+    return isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO);
   });
 
   console.log('Filtered liquidadas:', liquidadas.length);
@@ -262,8 +264,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
 
   // Calcula mudanças em relação ao ano anterior
   const lastYearLiquidadas = lastYearData.filter(row => {
-    const operacao = row[`col_${SHEETS_COLUMNS.HISTORICO.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.OPERACAO];
-    return operacao && String(operacao).trim() !== '' && String(operacao).trim() !== 'Operação';
+    return isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
   }).length;
   
   const lastYearVolume = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.VOLUME);
