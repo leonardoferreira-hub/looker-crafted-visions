@@ -134,14 +134,19 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   if (defaultStartDate || defaultEndDate) {
     filteredHistorico = historicoData.filter(row => {
       // Usar a coluna DATA_LIQUIDACAO (coluna 26) para filtrar por data
-      console.log(row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`]);
-      console.log("-----");
-      console.log(Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO]);
-      const liquidationDate = row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO];
-      if (!liquidationDate) return true; // Se não tem data, inclui na consulta
+      const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      
+      // Debug apenas se o valor estiver vazio ou inválido
+      if (!liquidationDate || liquidationDate === '') {
+        console.log('DATA_LIQUIDACAO vazia para linha:', row);
+        return true; // Se não tem data, inclui na consulta
+      }
       
       const date = parseDate(liquidationDate);
-      if (!date) return true;
+      if (!date) {
+        console.log('Data inválida após parseDate:', liquidationDate);
+        return true;
+      }
       
       if (defaultStartDate && date < defaultStartDate) return false;
       if (defaultEndDate && date > defaultEndDate) return false;
@@ -180,8 +185,23 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 
 // Função auxiliar para obter valor de célula de forma consistente
 function getCellValue(row: SheetData, columnIndex: number): any {
-  // Tenta primeiro com a chave col_X, depois com Object.values, depois com índice direto
-  return row[`col_${columnIndex}`] || Object.values(row)[columnIndex] || row[columnIndex];
+  if (!row) return null;
+  
+  // Tenta diferentes métodos para acessar o valor da célula
+  let value = row[`col_${columnIndex}`] || 
+              Object.values(row)[columnIndex] || 
+              row[columnIndex];
+  
+  // Limpa valores vazios ou apenas espaços
+  if (value !== null && value !== undefined) {
+    const strValue = String(value).trim();
+    if (strValue === '' || strValue === 'null' || strValue === 'undefined') {
+      return null;
+    }
+    return strValue;
+  }
+  
+  return null;
 }
 
 // Função auxiliar para verificar se uma linha é válida (não é cabeçalho)
@@ -293,11 +313,12 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   });
 
   const ultimasLiquidacoes = liquidadas.slice(-5).map(row => {
+    const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
     return {
-      categoria: String(row[`col_${SHEETS_COLUMNS.HISTORICO.CATEGORIA}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.CATEGORIA] || ''),
-      operacao: String(row[`col_${SHEETS_COLUMNS.HISTORICO.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.OPERACAO] || ''),
-      estruturacao: formatCurrency(row[`col_${SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO] || 0),
-      dataLiquidacao: String(row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO] || '')
+      categoria: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || ''),
+      operacao: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO) || ''),
+      estruturacao: formatCurrency(getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO) || 0),
+      dataLiquidacao: formatDate(dataLiquidacao)
     };
   });
 
@@ -338,20 +359,51 @@ function formatCurrency(value: any): string {
   return new Intl.NumberFormat('pt-BR').format(num);
 }
 
+function formatDate(value: any): string {
+  if (!value) return '';
+  
+  const date = parseDate(value);
+  if (!date) return String(value); // Retorna o valor original se não conseguir fazer parse
+  
+  // Formata a data no padrão brasileiro DD/MM/YYYY
+  return date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+}
+
 function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[]) {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  const monthNumbers = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
   
-  return months.map(mes => {
-    // CORREÇÃO: Para operações liquidadas, usar a coluna DATA_LIQUIDACAO (coluna 26)
+  return months.map((mes, index) => {
+    // Para operações liquidadas, usar a coluna DATA_LIQUIDACAO (coluna 26)
     const liquidadasCount = liquidadas.filter(row => {
-      const dataLiquidacao = row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO];
-      return dataLiquidacao && String(dataLiquidacao).includes(mes);
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) {
+        // Fallback: procura por padrões de mês no texto
+        return String(dataLiquidacao).includes(mes) || String(dataLiquidacao).includes(monthNumbers[index]);
+      }
+      
+      return date.getMonth() === index;
     }).length;
     
     // Para operações em estruturação, usar a coluna DATA_ENTRADA_PIPE (coluna 19)
     const estruturacoesCount = estruturacoes.filter(row => {
-      const dataEntrada = row[`col_${SHEETS_COLUMNS.PIPE.DATA_ENTRADA_PIPE}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.DATA_ENTRADA_PIPE];
-      return dataEntrada && String(dataEntrada).includes(mes);
+      const dataEntrada = getCellValue(row, SHEETS_COLUMNS.PIPE.DATA_ENTRADA_PIPE);
+      if (!dataEntrada) return false;
+      
+      const date = parseDate(dataEntrada);
+      if (!date) {
+        // Fallback: procura por padrões de mês no texto
+        return String(dataEntrada).includes(mes) || String(dataEntrada).includes(monthNumbers[index]);
+      }
+      
+      return date.getMonth() === index;
     }).length;
     
     return { mes, liquidadas: liquidadasCount, estruturacoes: estruturacoesCount };
@@ -378,39 +430,63 @@ function parseDate(dateStr: any): Date | null {
   if (!dateStr) return null;
   
   const str = String(dateStr).trim();
-  if (!str) return null;
+  if (!str || str === '') return null;
   
-  // Tenta diferentes formatos de data
+  // Primeiro, tenta converter diretamente se for um timestamp ou já uma data válida
+  const directDate = new Date(str);
+  if (!isNaN(directDate.getTime()) && str.includes('-') && str.length >= 8) {
+    return directDate;
+  }
+  
+  // Tenta diferentes formatos de data brasileiros e internacionais
   const formats = [
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, // DD/MM/YYYY
-    /^(\d{4})-(\d{1,2})-(\d{1,2})$/, // YYYY-MM-DD
-    /^(\d{1,2})-(\d{1,2})-(\d{4})$/, // DD-MM-YYYY
-    /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/, // DD/MM/YY
+    { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, order: 'dmy' }, // DD/MM/YYYY
+    { pattern: /^(\d{1,2})-(\d{1,2})-(\d{4})$/, order: 'dmy' }, // DD-MM-YYYY
+    { pattern: /^(\d{4})-(\d{1,2})-(\d{1,2})$/, order: 'ymd' }, // YYYY-MM-DD
+    { pattern: /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/, order: 'dmy' }, // DD/MM/YY
+    { pattern: /^(\d{1,2})-(\d{1,2})-(\d{2})$/, order: 'dmy' }, // DD-MM-YY
+    { pattern: /^(\d{4})(\d{2})(\d{2})$/, order: 'ymd' }, // YYYYMMDD
   ];
   
-  for (const format of formats) {
-    const match = str.match(format);
+  for (const { pattern, order } of formats) {
+    const match = str.match(pattern);
     if (match) {
-      let day, month, year;
+      let day: string, month: string, year: string;
       
-      if (format === formats[1]) { // YYYY-MM-DD
+      if (order === 'ymd') {
         [, year, month, day] = match;
-      } else { // DD/MM/YYYY, DD-MM-YYYY ou DD/MM/YY
+      } else { // 'dmy'
         [, day, month, year] = match;
-        // Ajusta anos de 2 dígitos
-        if (year.length === 2) {
-          const currentYear = new Date().getFullYear();
-          const currentCentury = Math.floor(currentYear / 100) * 100;
-          year = String(currentCentury + parseInt(year));
-        }
       }
       
-      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-      if (!isNaN(date.getTime())) {
+      // Ajusta anos de 2 dígitos para assumir século 21
+      if (year.length === 2) {
+        const yearNum = parseInt(year);
+        // Anos 00-30 assumimos 2000-2030, 31-99 assumimos 1931-1999
+        year = yearNum <= 30 ? `20${year}` : `19${year}`;
+      }
+      
+      // Valida se dia e mês são válidos
+      const dayNum = parseInt(day);
+      const monthNum = parseInt(month);
+      const yearNum = parseInt(year);
+      
+      if (dayNum < 1 || dayNum > 31 || monthNum < 1 || monthNum > 12 || yearNum < 1900 || yearNum > 2100) {
+        continue;
+      }
+      
+      const date = new Date(yearNum, monthNum - 1, dayNum);
+      
+      // Verifica se a data é válida (não houve overflow, ex: 31/02)
+      if (date.getFullYear() === yearNum && 
+          date.getMonth() === monthNum - 1 && 
+          date.getDate() === dayNum) {
         return date;
       }
     }
   }
   
+  // Log para debug quando não conseguir fazer parse
+  console.warn('Não foi possível fazer parse da data:', str);
   return null;
 }
