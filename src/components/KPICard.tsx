@@ -25,45 +25,45 @@ export function KPICard({
   const getVariantStyles = () => {
     switch (variant) {
       case "primary":
-        return "bg-gradient-to-br from-primary-blue/10 to-primary-green/10 border-primary-blue/20";
+        return "bg-gradient-to-br from-primary-blue/20 to-primary-green/20 border-primary-blue/30 shadow-lg";
       case "success":
-        return "bg-gradient-to-br from-success/10 to-success/5 border-success/20";
+        return "bg-gradient-to-br from-success/20 to-success/10 border-success/30 shadow-lg";
       case "warning":
-        return "bg-gradient-to-br from-warning/10 to-warning/5 border-warning/20";
+        return "bg-gradient-to-br from-warning/20 to-warning/10 border-warning/30 shadow-lg";
       default:
-        return "bg-card/50 backdrop-blur-sm border-border/50";
+        return "bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm border-border/50 shadow-md";
     }
   };
 
   return (
     <Card className={cn(
-      "transition-all duration-300 hover:shadow-lg hover:scale-[1.02]",
+      "transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-2",
       getVariantStyles(),
       className
     )}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-1">
-        <div className="text-2xl font-bold tracking-tight text-foreground">
+      <CardContent className="space-y-2">
+        <div className="text-3xl font-bold tracking-tight text-foreground">
           {value}
         </div>
         {subtitle && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground font-medium">
             {subtitle}
           </p>
         )}
         {change && (
           <div className={cn(
-            "flex items-center text-xs font-medium",
+            "flex items-center text-sm font-semibold",
             change.type === "positive" ? "text-success" : "text-error"
           )}>
             {change.type === "positive" ? (
-              <TrendingUp className="mr-1 h-3 w-3" />
+              <TrendingUp className="mr-1 h-4 w-4" />
             ) : (
-              <TrendingDown className="mr-1 h-3 w-3" />
+              <TrendingDown className="mr-1 h-4 w-4" />
             )}
             {change.value}
           </div>
