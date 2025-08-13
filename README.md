@@ -78,17 +78,24 @@ A simple [Streamlit](https://streamlit.io/) app is included to visualize the dat
 
 ### Run locally
 
-1. Create a virtual environment:
+1. **Obtenha credenciais**
+   - Crie uma conta de serviço no Google Cloud com acesso ao Google Sheets.
+   - Baixe o arquivo JSON das credenciais e compartilhe a planilha com o e‑mail dessa conta.
+2. **Defina a variável de ambiente** apontando para o arquivo JSON:
+   ```bash
+   export GOOGLE_APPLICATION_CREDENTIALS="credentials.json"
+   ```
+3. **Crie e ative um ambiente virtual:**
    ```bash
    python -m venv .venv && source .venv/bin/activate
    ```
-2. Install dependencies:
+4. **Instale as dependências:**
    ```bash
    pip install -r requirements.txt
    ```
-3. Start the dashboard:
+5. **Inicie o dashboard:**
    ```bash
    streamlit run streamlit_app.py
    ```
 
-The app loads the latest data directly from the spreadsheet and displays basic metrics and charts.
+O app carregará os dados da planilha autenticado pela conta de serviço e exibirá métricas e gráficos básicos.

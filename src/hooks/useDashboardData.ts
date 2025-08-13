@@ -7,7 +7,7 @@ import { useMultipleSheets } from './useMultipleSheets';
 const SHEETS_CONFIG = {
   SHEET_ID: '1QlDrtv5oPXYH9LsS7GhvvGsSUlSwWDykzVurp7rUAms', // ID do seu Google Sheets
   HISTORICO_GID: '41860490', // GID da aba Histórico (operações liquidadas)
-  PIPE_GID: '0' // GID da aba Pipe (operações em estruturação)
+  PIPE_GID: '1585681933' // GID da aba Pipe (operações em estruturação)
 };
 
 export interface DashboardKPIs {

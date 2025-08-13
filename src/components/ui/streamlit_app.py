@@ -1,13 +1,23 @@
+import os
+
+import gspread
 import pandas as pd
 import streamlit as st
 
 SHEET_ID = "1QlDrtv5oPXYH9LsS7GhvvGsSUlSwWDykzVurp7rUAms"
 SHEET_GID = "41860490"
-CSV_URL = f"https://docs.google.com/spreadsheets/d/1QlDrtv5oPXYH9LsS7GhvvGsSUlSwWDykzVurp7rUAms/export?format=csv&gid=41860490"
+SHEET_NAME = "Histórico"
+CSV_URL = f"https://docs.google.com/spreadsheets/d/1QlDrtv5oPXYH9LsS7GhvvGsSUlSwWDykzVurp7rUAms/export?format=csv&gid=1585681933"
 
 @st.cache_data
 def load_data() -> pd.DataFrame:
-    """Load data from the Google Sheets CSV export."""
+    """Load data from Google Sheets, using credentials if available."""
+    creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    if creds_path:
+        client = gspread.service_account(filename=creds_path)
+        sheet = client.open_by_key(SHEET_ID)
+        worksheet = sheet.worksheet(SHEET_NAME)
+        return pd.DataFrame(worksheet.get_all_records())
     return pd.read_csv(CSV_URL)
 
 def main() -> None:
