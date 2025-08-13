@@ -10,6 +10,86 @@ const SHEETS_CONFIG = {
   PIPE_GID: '1585681933' // GID da aba Pipe (operações em estruturação)
 };
 
+// Mapeamento das colunas do Google Sheets
+const SHEETS_COLUMNS = {
+  // Colunas da aba Histórico (operações liquidadas)
+  HISTORICO: {
+    PMO: 1,                    // Coluna B (índice 1)
+    CATEGORIA: 2,              // Coluna C (índice 2)
+    OPERACAO: 3,               // Coluna D (índice 3)
+    PREVISAO_LIQUIDACAO: 4,    // Coluna E (índice 4)
+    VEICULO: 5,                // Coluna F (índice 5)
+    EMISSAO: 6,                // Coluna G (índice 6)
+    SERIES: 7,                 // Coluna H (índice 7)
+    ESTRUTURACAO: 8,           // Coluna I (índice 8)
+    GESTAO: 9,                 // Coluna J (índice 9)
+    ORIGINACAO: 10,            // Coluna K (índice 10)
+    VOLUME: 11,                // Coluna L (índice 11)
+    REMUNERACAO: 12,           // Coluna M (índice 12)
+    LASTRO: 13,                // Coluna N (índice 13)
+    BOLETAGEM: 14,             // Coluna O (índice 14)
+    BANCO: 15,                 // Coluna P (índice 15)
+    AGENCIA: 16,               // Coluna Q (índice 16)
+    CONTA_BANCARIA: 17,        // Coluna R (índice 17)
+    MAJORACAO: 18,             // Coluna S (índice 18)
+    DATA_ENTRADA_PIPE: 19,     // Coluna T (índice 19)
+    PROXIMOS_PASSOS: 20,       // Coluna U (índice 20)
+    ALERTAS: 21,               // Coluna V (índice 21)
+    STATUS: 22,                // Coluna W (índice 22)
+    RESUMO: 23,                // Coluna X (índice 23)
+    ANALISTA_GESTAO: 24,       // Coluna Y (índice 24)
+    INVESTIDORES: 25,          // Coluna Z (índice 25)
+    DATA_LIQUIDACAO: 26,       // Coluna AA (índice 26) - CHAVE PARA GRÁFICO
+    PRIMEIRA_DATA_PAGAMENTO: 27, // Coluna AB (índice 27)
+    MAPA_LIQUIDACAO: 28,       // Coluna AC (índice 28)
+    MAPA_REGISTROS: 29,        // Coluna AD (índice 29)
+    LO: 30,                    // Coluna AE (índice 30)
+    DD: 31,                    // Coluna AF (índice 31)
+    EMAIL_PRESTADORES: 32,     // Coluna AG (índice 32)
+    PASSAGEM_BASTAO: 33,       // Coluna AH (índice 33)
+    KICK_OFF: 34,              // Coluna AI (índice 34)
+    HISTORICO: 35              // Coluna AJ (índice 35)
+  },
+  // Colunas da aba Pipe (operações em estruturação)
+  PIPE: {
+    PMO: 1,                    // Coluna B (índice 1)
+    CATEGORIA: 2,              // Coluna C (índice 2)
+    OPERACAO: 3,               // Coluna D (índice 3)
+    PREVISAO_LIQUIDACAO: 4,    // Coluna E (índice 4)
+    VEICULO: 5,                // Coluna F (índice 5)
+    EMISSAO: 6,                // Coluna G (índice 6)
+    SERIES: 7,                 // Coluna H (índice 7)
+    ESTRUTURACAO: 8,           // Coluna I (índice 8)
+    GESTAO: 9,                 // Coluna J (índice 9)
+    ORIGINACAO: 10,            // Coluna K (índice 10)
+    VOLUME: 11,                // Coluna L (índice 11)
+    REMUNERACAO: 12,           // Coluna M (índice 12)
+    LASTRO: 13,                // Coluna N (índice 13)
+    BOLETAGEM: 14,             // Coluna O (índice 14)
+    BANCO: 15,                 // Coluna P (índice 15)
+    AGENCIA: 16,               // Coluna Q (índice 16)
+    CONTA_BANCARIA: 17,        // Coluna R (índice 17)
+    MAJORACAO: 18,             // Coluna S (índice 18)
+    DATA_ENTRADA_PIPE: 19,     // Coluna T (índice 19)
+    PROXIMOS_PASSOS: 20,       // Coluna U (índice 20)
+    ALERTAS: 21,               // Coluna V (índice 21)
+    STATUS: 22,                // Coluna W (índice 22)
+    RESUMO: 23,                // Coluna X (índice 23)
+    ANALISTA_GESTAO: 24,       // Coluna Y (índice 24)
+    INVESTIDORES: 25,          // Coluna Z (índice 25)
+    DATA_LIQUIDACAO: 26,       // Coluna AA (índice 26)
+    PRIMEIRA_DATA_PAGAMENTO: 27, // Coluna AB (índice 27)
+    MAPA_LIQUIDACAO: 28,       // Coluna AC (índice 28)
+    MAPA_REGISTROS: 29,        // Coluna AD (índice 29)
+    LO: 30,                    // Coluna AE (índice 30)
+    DD: 31,                    // Coluna AF (índice 31)
+    EMAIL_PRESTADORES: 32,     // Coluna AG (índice 32)
+    PASSAGEM_BASTAO: 33,       // Coluna AH (índice 33)
+    KICK_OFF: 34,              // Coluna AI (índice 34)
+    DIAS: 35                   // Coluna AJ (índice 35)
+  }
+};
+
 export interface DashboardKPIs {
   operacoesLiquidadas: number;
   operacoesEstruturacao: number;
@@ -50,12 +130,12 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     console.log('Historico Data:', historicoData);
     console.log('Pipe Data:', pipeData);
 
-  // Filtra operações liquidadas (histórico) por data
+  // Filtra operações liquidadas (histórico) por data usando a coluna correta
   let filteredHistorico = historicoData;
   if (defaultStartDate || defaultEndDate) {
     filteredHistorico = historicoData.filter(row => {
-      // Procura pela data nas colunas de liquidação (coluna 26 = Data de Liquidação)
-      const liquidationDate = row.col_26 || row.col_25 || Object.values(row)[26] || Object.values(row)[25];
+      // Usar a coluna DATA_LIQUIDACAO (coluna 26) para filtrar por data
+      const liquidationDate = row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO];
       if (!liquidationDate) return true; // Se não tem data, inclui na consulta
       
       const date = parseDate(liquidationDate);
@@ -101,9 +181,9 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('Historico rows:', historicoData.length);
   console.log('Pipe rows:', pipeData.length);
   
-  // Operações liquidadas vêm do histórico - Coluna Operação (índice 3)
+  // Operações liquidadas vêm do histórico - usar mapeamento de colunas
   const liquidadas = historicoData.filter(row => {
-    const operacao = row.col_3 || Object.values(row)[3]; // Coluna Operação
+    const operacao = row[`col_${SHEETS_COLUMNS.HISTORICO.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.OPERACAO];
     return operacao && 
            String(operacao).trim() !== '' && 
            String(operacao).trim() !== 'Operação' &&
@@ -111,9 +191,9 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
            !String(operacao).includes('PMO');
   });
   
-  // Operações em estruturação vêm do pipe - Coluna Operação (índice 3)
+  // Operações em estruturação vêm do pipe - usar mapeamento de colunas
   const estruturacao = pipeData.filter(row => {
-    const operacao = row.col_3 || Object.values(row)[3]; // Coluna Operação
+    const operacao = row[`col_${SHEETS_COLUMNS.PIPE.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.OPERACAO];
     return operacao && 
            String(operacao).trim() !== '' && 
            String(operacao).trim() !== 'Operação' &&
@@ -126,17 +206,16 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
 
   // Calcula mudanças em relação ao ano anterior
   const lastYearLiquidadas = lastYearData.filter(row => {
-    const valores = Object.values(row);
-    const operacao = valores[3]; // Coluna D - Operação
+    const operacao = row[`col_${SHEETS_COLUMNS.HISTORICO.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.OPERACAO];
     return operacao && String(operacao).trim() !== '' && String(operacao).trim() !== 'Operação';
   }).length;
   
-  const lastYearVolume = calculateSumByColumnIndex(lastYearData, 11); // Coluna L - Volume
-  const lastYearFee = calculateSumByColumnIndex(lastYearData, 8); // Coluna I - Estruturação
+  const lastYearVolume = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.VOLUME);
+  const lastYearFee = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
 
   const currentLiquidadas = liquidadas.length;
-  const currentVolume = calculateSumByColumnIndex(liquidadas, 11); // Coluna L - Volume
-  const currentFee = calculateSumByColumnIndex(liquidadas, 8); // Coluna I - Estruturação
+  const currentVolume = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.VOLUME);
+  const currentFee = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
 
   // Calcula percentuais de mudança
   const getPercentChange = (current: number, previous: number) => {
@@ -148,17 +227,17 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     };
   };
 
-  // Calcula KPIs
+  // Calcula KPIs usando mapeamento de colunas
   const kpis: DashboardKPIs = {
     operacoesLiquidadas: currentLiquidadas,
     operacoesEstruturacao: estruturacao.length,
-    volumeLiquidado: (currentVolume / 1000000000).toFixed(1), // Coluna Volume em bilhões
-    volumeEstruturacao: (calculateSumByColumnIndex(estruturacao, 11) / 1000000000).toFixed(1), // Coluna Volume em bilhões
-    feeLiquidado: (currentFee / 1000000).toFixed(1), // Coluna Estruturação em milhões
-    feeEstruturacao: (calculateSumByColumnIndex(estruturacao, 8) / 1000000).toFixed(1), // Coluna Estruturação em milhões
-    feeGestaoLiquidado: (calculateSumByColumnIndex(liquidadas, 9) / 1000).toFixed(0), // Coluna Gestão em milhares
-    feeGestaoEstruturacao: (calculateSumByColumnIndex(estruturacao, 9) / 1000).toFixed(0), // Coluna Gestão em milhares
-    feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], 8), // Coluna I - Estruturação
+    volumeLiquidado: (currentVolume / 1000000000).toFixed(1), // Volume em bilhões
+    volumeEstruturacao: (calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.VOLUME) / 1000000000).toFixed(1), // Volume em bilhões
+    feeLiquidado: (currentFee / 1000000).toFixed(1), // Estruturação em milhões
+    feeEstruturacao: (calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.ESTRUTURACAO) / 1000000).toFixed(1), // Estruturação em milhões
+    feeGestaoLiquidado: (calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO) / 1000).toFixed(0), // Gestão em milhares
+    feeGestaoEstruturacao: (calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.GESTAO) / 1000).toFixed(0), // Gestão em milhares
+    feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
     // Comparações com ano anterior
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
     volumeLiquidadoChange: getPercentChange(currentVolume, lastYearVolume),
@@ -173,24 +252,22 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     categorias: processCategoryData([...liquidadas, ...estruturacao])
   };
 
-  // Processa dados para tabelas (usando primeiras colunas disponíveis)
+  // Processa dados para tabelas usando mapeamento de colunas
   const proximasLiquidacoes = estruturacao.slice(0, 5).map(row => {
-    const valores = Object.values(row);
     return {
-      categoria: String(valores[1] || ''), // Coluna B
-      operacao: String(valores[3] || ''), // Coluna D
-      previsaoLiquidacao: String(valores[5] || ''), // Coluna F
-      estruturacao: formatCurrency(valores[8] || 0) // Coluna I
+      categoria: String(row[`col_${SHEETS_COLUMNS.PIPE.CATEGORIA}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.CATEGORIA] || ''),
+      operacao: String(row[`col_${SHEETS_COLUMNS.PIPE.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.OPERACAO] || ''),
+      previsaoLiquidacao: String(row[`col_${SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO] || ''),
+      estruturacao: formatCurrency(row[`col_${SHEETS_COLUMNS.PIPE.ESTRUTURACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.ESTRUTURACAO] || 0)
     };
   });
 
   const ultimasLiquidacoes = liquidadas.slice(-5).map(row => {
-    const valores = Object.values(row);
     return {
-      categoria: String(valores[1] || ''), // Coluna B
-      operacao: String(valores[3] || ''), // Coluna D
-      estruturacao: formatCurrency(valores[8] || 0), // Coluna I
-      dataLiquidacao: String(valores[0] || '') // Coluna A
+      categoria: String(row[`col_${SHEETS_COLUMNS.HISTORICO.CATEGORIA}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.CATEGORIA] || ''),
+      operacao: String(row[`col_${SHEETS_COLUMNS.HISTORICO.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.OPERACAO] || ''),
+      estruturacao: formatCurrency(row[`col_${SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO] || 0),
+      dataLiquidacao: String(row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO] || '')
     };
   });
 
@@ -235,14 +312,16 @@ function formatCurrency(value: any): string {
 function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[]) {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   return months.map(mes => {
+    // CORREÇÃO: Para operações liquidadas, usar a coluna DATA_LIQUIDACAO (coluna 26)
     const liquidadasCount = liquidadas.filter(row => {
-      const date = Object.values(row)[0]; // Coluna A
-      return date && String(date).includes(mes);
+      const dataLiquidacao = row[`col_${SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO];
+      return dataLiquidacao && String(dataLiquidacao).includes(mes);
     }).length;
     
+    // Para operações em estruturação, usar a coluna DATA_ENTRADA_PIPE (coluna 19)
     const estruturacoesCount = estruturacoes.filter(row => {
-      const date = Object.values(row)[0]; // Coluna A
-      return date && String(date).includes(mes);
+      const dataEntrada = row[`col_${SHEETS_COLUMNS.PIPE.DATA_ENTRADA_PIPE}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.DATA_ENTRADA_PIPE];
+      return dataEntrada && String(dataEntrada).includes(mes);
     }).length;
     
     return { mes, liquidadas: liquidadasCount, estruturacoes: estruturacoesCount };
@@ -253,8 +332,8 @@ function processCategoryData(data: SheetData[]) {
   const categories: { [key: string]: number } = {};
   
   data.forEach(row => {
-    const valores = Object.values(row);
-    const categoria = String(valores[1] || 'Outros'); // Coluna B
+    // Usar mapeamento de colunas para categoria
+    const categoria = String(row[`col_${SHEETS_COLUMNS.HISTORICO.CATEGORIA}`] || Object.values(row)[SHEETS_COLUMNS.HISTORICO.CATEGORIA] || 'Outros');
     categories[categoria] = (categories[categoria] || 0) + 1;
   });
   
