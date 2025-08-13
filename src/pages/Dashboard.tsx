@@ -143,6 +143,7 @@ export default function Dashboard() {
                 leftLabel="Liquidado"
                 rightValue={`${kpis.volumeEstruturacao} bi`}
                 rightLabel="Estruturação"
+                change={kpis.volumeLiquidadoChange}
                 variant="success"
               />
               <KPICard
@@ -152,6 +153,7 @@ export default function Dashboard() {
                 leftLabel="Liquidado"
                 rightValue={`${kpis.feeEstruturacao} mi`}
                 rightLabel="Estruturação"
+                change={kpis.feeLiquidadoChange}
                 variant="warning"
               />
               <KPICard
