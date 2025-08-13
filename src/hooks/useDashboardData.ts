@@ -130,37 +130,60 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     console.log('Historico Data:', historicoData);
     console.log('Pipe Data:', pipeData);
 
-  // Filtra operações liquidadas (histórico) por data usando a coluna correta
-  let filteredHistorico = historicoData;
-  if (defaultStartDate || defaultEndDate) {
-    filteredHistorico = historicoData.filter(row => {
-      // Usar a coluna DATA_LIQUIDACAO (coluna 26) para filtrar por data
-      const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      
-      // Debug apenas se o valor estiver vazio ou inválido
-      if (!liquidationDate || liquidationDate === '') {
-        console.log('DATA_LIQUIDACAO vazia para linha:', row);
-        return true; // Se não tem data, inclui na consulta
-      }
-      
-      const date = parseDate(liquidationDate);
-      if (!date) {
-        console.log('Data inválida após parseDate:', liquidationDate);
-        return true;
-      }
-      
-      if (defaultStartDate && date < defaultStartDate) return false;
-      if (defaultEndDate && date > defaultEndDate) return false;
-      
+  // Filtra operações liquidadas (histórico) - primeiro valida linha, depois por data
+  let filteredHistorico = historicoData.filter(row => {
+    // Primeiro verifica se é uma linha válida (não é cabeçalho)
+    if (!isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)) {
+      return false;
+    }
+    
+    // Se não há filtro de data, inclui todas as linhas válidas
+    if (!defaultStartDate && !defaultEndDate) {
       return true;
-    });
-  }
+    }
+    
+    // Filtra por data usando a coluna DATA_LIQUIDACAO
+    const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    
+    // Se não tem data, inclui na consulta (operações sem data de liquidação)
+    if (!liquidationDate || liquidationDate === '') {
+      return true;
+    }
+    
+    const date = parseDate(liquidationDate);
+    if (!date) {
+      return true; // Se não consegue fazer parse da data, inclui
+    }
+    
+    // Aplica filtro de data
+    if (defaultStartDate && date < defaultStartDate) return false;
+    if (defaultEndDate && date > defaultEndDate) return false;
+    
+    return true;
+  });
+
+  // Filtra operações em estruturação (pipe) - primeiro valida linha, depois por data se aplicável
+  let filteredPipe = pipeData.filter(row => {
+    // Primeiro verifica se é uma linha válida (não é cabeçalho)
+    if (!isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO)) {
+      return false;
+    }
+    
+    // Para operações em estruturação, podemos filtrar pela data de entrada no pipe
+    // ou incluir todas as operações válidas independente da data
+    return true; // Por enquanto inclui todas as operações em estruturação válidas
+  });
 
     // Calcula dados de 2024 para comparação (mesmo período)
     const lastYearStart = new Date(2024, defaultStartDate.getMonth(), defaultStartDate.getDate());
     const lastYearEnd = new Date(2024, defaultEndDate.getMonth(), defaultEndDate.getDate());
     
     const lastYearData = historicoData.filter(row => {
+      // Primeiro verifica se é uma linha válida
+      if (!isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)) {
+        return false;
+      }
+      
       const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
       if (!liquidationDate) return false;
       
@@ -170,7 +193,7 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       return date >= lastYearStart && date <= lastYearEnd;
     });
 
-    return processSheetData(filteredHistorico, pipeData, lastYearData);
+    return processSheetData(filteredHistorico, filteredPipe, lastYearData);
   }, [data, defaultStartDate, defaultEndDate]);
 
   return {
@@ -249,23 +272,15 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('Historico rows:', historicoData.length);
   console.log('Pipe rows:', pipeData.length);
   
-  // Operações liquidadas vêm do histórico - usar função de validação
-  const liquidadas = historicoData.filter(row => {
-    return isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
-  });
-  
-  // Operações em estruturação vêm do pipe - usar função de validação
-  const estruturacao = pipeData.filter(row => {
-    return isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO);
-  });
+  // Os dados já vêm filtrados e validados, então apenas usamos diretamente
+  const liquidadas = historicoData; // Já filtrados por data e validação
+  const estruturacao = pipeData; // Já filtrados por validação
 
   console.log('Filtered liquidadas:', liquidadas.length);
   console.log('Filtered estruturacao:', estruturacao.length);
 
   // Calcula mudanças em relação ao ano anterior
-  const lastYearLiquidadas = lastYearData.filter(row => {
-    return isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
-  }).length;
+  const lastYearLiquidadas = lastYearData.length; // Já filtrados e validados
   
   const lastYearVolume = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.VOLUME);
   const lastYearFee = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
