@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { SheetData } from './useGoogleSheets';
 import { useMultipleSheets } from './useMultipleSheets';
@@ -42,15 +43,15 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const historicoData = data.historico || [];
     const pipeData = data.pipe || [];
     
-    if (historicoData.length === 0 && pipeData.length === 0) {
-      return getMockData();
-    }
+    console.log('Historico Data:', historicoData);
+    console.log('Pipe Data:', pipeData);
 
     // Filtra operações liquidadas (histórico) por data
     let filteredHistorico = historicoData;
     if (defaultStartDate || defaultEndDate) {
       filteredHistorico = historicoData.filter(row => {
-        const liquidationDate = row['Data Liquidação'] || row['Data de Liquidação'] || row['Data'];
+        // Assume que a data está na coluna A (primeira coluna)
+        const liquidationDate = Object.values(row)[0]; // Coluna A
         if (!liquidationDate) return false;
         
         const date = parseDate(liquidationDate);
@@ -68,7 +69,7 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const lastYearEnd = new Date(defaultEndDate.getFullYear() - 1, defaultEndDate.getMonth(), defaultEndDate.getDate());
     
     const lastYearData = historicoData.filter(row => {
-      const liquidationDate = row['Data Liquidação'] || row['Data de Liquidação'] || row['Data'];
+      const liquidationDate = Object.values(row)[0]; // Coluna A
       if (!liquidationDate) return false;
       
       const date = parseDate(liquidationDate);
@@ -92,20 +93,37 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 }
 
 function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = []) {
-  // Operações liquidadas vêm do histórico
-  const liquidadas = historicoData;
+  console.log('Processing sheet data...');
+  console.log('Historico rows:', historicoData.length);
+  console.log('Pipe rows:', pipeData.length);
   
-  // Operações em estruturação vêm do pipe
-  const estruturacao = pipeData;
+  // Operações liquidadas vêm do histórico - Coluna D
+  const liquidadas = historicoData.filter(row => {
+    const colunaD = Object.values(row)[3]; // Coluna D (índice 3)
+    return colunaD && String(colunaD).trim() !== '';
+  });
+  
+  // Operações em estruturação vêm do pipe - Coluna D
+  const estruturacao = pipeData.filter(row => {
+    const colunaD = Object.values(row)[3]; // Coluna D (índice 3)
+    return colunaD && String(colunaD).trim() !== '';
+  });
+
+  console.log('Filtered liquidadas:', liquidadas.length);
+  console.log('Filtered estruturacao:', estruturacao.length);
 
   // Calcula mudanças em relação ao ano anterior
-  const lastYearLiquidadas = lastYearData.length;
-  const lastYearVolume = calculateSum(lastYearData, 'Volume') || calculateSum(lastYearData, 'Valor') || 0;
-  const lastYearFee = calculateSum(lastYearData, 'Fee Estruturação') || calculateSum(lastYearData, 'Fee') || 0;
+  const lastYearLiquidadas = lastYearData.filter(row => {
+    const colunaD = Object.values(row)[3];
+    return colunaD && String(colunaD).trim() !== '';
+  }).length;
+  
+  const lastYearVolume = calculateSumByColumnIndex(lastYearData, 11); // Coluna L (índice 11)
+  const lastYearFee = calculateSumByColumnIndex(lastYearData, 8); // Coluna I (índice 8)
 
   const currentLiquidadas = liquidadas.length;
-  const currentVolume = calculateSum(liquidadas, 'Volume') || calculateSum(liquidadas, 'Valor') || 0;
-  const currentFee = calculateSum(liquidadas, 'Fee Estruturação') || calculateSum(liquidadas, 'Fee') || 0;
+  const currentVolume = calculateSumByColumnIndex(liquidadas, 11); // Coluna L
+  const currentFee = calculateSumByColumnIndex(liquidadas, 8); // Coluna I
 
   // Calcula percentuais de mudança
   const getPercentChange = (current: number, previous: number) => {
@@ -121,18 +139,20 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   const kpis: DashboardKPIs = {
     operacoesLiquidadas: currentLiquidadas,
     operacoesEstruturacao: estruturacao.length,
-    volumeLiquidado: currentVolume.toFixed(1),
-    volumeEstruturacao: (calculateSum(estruturacao, 'Volume') || calculateSum(estruturacao, 'Valor') || 0).toFixed(1),
-    feeLiquidado: currentFee.toFixed(1),
-    feeEstruturacao: (calculateSum(estruturacao, 'Fee Estruturação') || calculateSum(estruturacao, 'Fee') || 0).toFixed(1),
-    feeGestaoLiquidado: (calculateSum(liquidadas, 'Fee Gestão') || calculateSum(liquidadas, 'Fee de Gestão') || 0).toFixed(1),
-    feeGestaoEstruturacao: (calculateSum(estruturacao, 'Fee Gestão') || calculateSum(estruturacao, 'Fee de Gestão') || 0).toFixed(1),
-    feeMedio2025: calculateAverageFormat([...liquidadas, ...estruturacao], 'Fee Estruturação') || calculateAverageFormat([...liquidadas, ...estruturacao], 'Fee'),
+    volumeLiquidado: (currentVolume / 1000000000).toFixed(1), // Converte para bilhões
+    volumeEstruturacao: (calculateSumByColumnIndex(estruturacao, 11) / 1000000000).toFixed(1), // Coluna L em bilhões
+    feeLiquidado: (currentFee / 1000000).toFixed(1), // Converte para milhões
+    feeEstruturacao: (calculateSumByColumnIndex(estruturacao, 8) / 1000000).toFixed(1), // Coluna I em milhões
+    feeGestaoLiquidado: (calculateSumByColumnIndex(liquidadas, 9) / 1000).toFixed(1), // Coluna J em milhares
+    feeGestaoEstruturacao: (calculateSumByColumnIndex(estruturacao, 9) / 1000).toFixed(1), // Coluna J em milhares
+    feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], 8), // Coluna I
     // Comparações com ano anterior
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
     volumeLiquidadoChange: getPercentChange(currentVolume, lastYearVolume),
     feeLiquidadoChange: getPercentChange(currentFee, lastYearFee)
   };
+
+  console.log('Calculated KPIs:', kpis);
 
   // Processa dados para gráficos
   const chartData = {
@@ -140,20 +160,26 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     categorias: processCategoryData([...liquidadas, ...estruturacao])
   };
 
-  // Processa dados para tabelas
-  const proximasLiquidacoes = estruturacao.slice(0, 5).map(row => ({
-    categoria: row['Categoria'] || row['Tipo'] || '',
-    operacao: row['Operação'] || row['Nome'] || row['Projeto'] || '',
-    previsaoLiquidacao: row['Previsão Liquidação'] || row['Data Previsão'] || row['Previsão'] || null,
-    estruturacao: formatCurrency(row['Estruturação'] || row['Fee Estruturação'] || row['Fee'])
-  }));
+  // Processa dados para tabelas (usando primeiras colunas disponíveis)
+  const proximasLiquidacoes = estruturacao.slice(0, 5).map(row => {
+    const valores = Object.values(row);
+    return {
+      categoria: String(valores[1] || ''), // Coluna B
+      operacao: String(valores[3] || ''), // Coluna D
+      previsaoLiquidacao: String(valores[5] || ''), // Coluna F
+      estruturacao: formatCurrency(valores[8] || 0) // Coluna I
+    };
+  });
 
-  const ultimasLiquidacoes = liquidadas.slice(-5).map(row => ({
-    categoria: row['Categoria'] || row['Tipo'] || '',
-    operacao: row['Operação'] || row['Nome'] || row['Projeto'] || '',
-    estruturacao: formatCurrency(row['Estruturação'] || row['Fee Estruturação'] || row['Fee']),
-    dataLiquidacao: row['Data Liquidação'] || row['Data de Liquidação'] || row['Data'] || ''
-  }));
+  const ultimasLiquidacoes = liquidadas.slice(-5).map(row => {
+    const valores = Object.values(row);
+    return {
+      categoria: String(valores[1] || ''), // Coluna B
+      operacao: String(valores[3] || ''), // Coluna D
+      estruturacao: formatCurrency(valores[8] || 0), // Coluna I
+      dataLiquidacao: String(valores[0] || '') // Coluna A
+    };
+  });
 
   return {
     kpis,
@@ -163,29 +189,24 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   };
 }
 
-function calculateSum(data: SheetData[], field: string): number {
-  const possibleFields = [field, field.toLowerCase(), field.toUpperCase()];
-  
+function calculateSumByColumnIndex(data: SheetData[], columnIndex: number): number {
   return data.reduce((sum, row) => {
-    let value = 0;
+    const valores = Object.values(row);
+    const value = valores[columnIndex];
     
-    // Tenta encontrar o campo com diferentes variações de nome
-    for (const fieldName of possibleFields) {
-      if (row[fieldName] !== undefined) {
-        value = typeof row[fieldName] === 'number' ? row[fieldName] : 
-               parseFloat(String(row[fieldName]).replace(/[^\d.-]/g, '')) || 0;
-        break;
-      }
-    }
+    if (!value) return sum;
     
-    return sum + value;
+    const numValue = typeof value === 'number' ? value : 
+                    parseFloat(String(value).replace(/[^\d.-]/g, '')) || 0;
+    
+    return sum + numValue;
   }, 0);
 }
 
-function calculateAverageFormat(data: SheetData[], field: string): string {
+function calculateAverageByColumnIndex(data: SheetData[], columnIndex: number): string {
   if (data.length === 0) return "R$ 0,00";
   
-  const sum = calculateSum(data, field);
+  const sum = calculateSumByColumnIndex(data, columnIndex);
   const avg = sum / data.length;
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -202,12 +223,12 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   return months.map(mes => {
     const liquidadasCount = liquidadas.filter(row => {
-      const date = row['Data Liquidação'] || row['Data de Liquidação'] || row['Data'];
+      const date = Object.values(row)[0]; // Coluna A
       return date && String(date).includes(mes);
     }).length;
     
     const estruturacoesCount = estruturacoes.filter(row => {
-      const date = row['Data Início'] || row['Data'] || row['Data de Criação'];
+      const date = Object.values(row)[0]; // Coluna A
       return date && String(date).includes(mes);
     }).length;
     
@@ -219,7 +240,8 @@ function processCategoryData(data: SheetData[]) {
   const categories: { [key: string]: number } = {};
   
   data.forEach(row => {
-    const categoria = String(row['Categoria'] || 'Outros');
+    const valores = Object.values(row);
+    const categoria = String(valores[1] || 'Outros'); // Coluna B
     categories[categoria] = (categories[categoria] || 0) + 1;
   });
   
@@ -261,31 +283,4 @@ function parseDate(dateStr: any): Date | null {
   }
   
   return null;
-}
-
-function getMockData() {
-  // Dados vazios se não conseguir carregar do Sheets
-  const kpis: DashboardKPIs = {
-    operacoesLiquidadas: 0,
-    operacoesEstruturacao: 0,
-    volumeLiquidado: "0.0",
-    volumeEstruturacao: "0.0",
-    feeLiquidado: "0.0",
-    feeEstruturacao: "0.0",
-    feeGestaoLiquidado: "0.0",
-    feeGestaoEstruturacao: "0.0",
-    feeMedio2025: "0,00"
-  };
-
-  const chartData = {
-    operacoesPorMes: [],
-    categorias: []
-  };
-
-  return {
-    kpis,
-    chartData,
-    proximasLiquidacoes: [],
-    ultimasLiquidacoes: []
-  };
 }
