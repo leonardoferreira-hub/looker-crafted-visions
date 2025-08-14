@@ -175,7 +175,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       }
       
       if (Object.keys(row).length > 0 && !values.every(val => !val || val.trim() === '')) {
-        // Debug específico para linha que contém "Squarelife"
+        // Debug específico para linhas importantes
         if (values.some(val => String(val).includes('Squarelife'))) {
           console.log('🔍 PARSING CSV - LINHA SQUARELIFE (APÓS CORREÇÃO):');
           console.log('Número de colunas encontradas:', values.length);
@@ -183,6 +183,14 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
           console.log('Row criado com', Object.keys(row).length, 'colunas');
           console.log('Valor na col_26:', row['col_26']);
           console.log('Últimas 5 colunas:', values.slice(-5));
+        }
+        
+        // Debug para primeira linha do Pipe (verificar estrutura)
+        if (values.some(val => String(val).includes('BRA Agroquimica') || String(val).includes('Travessia'))) {
+          console.log('🔍 PARSING CSV - PRIMEIRA LINHA PIPE:');
+          console.log('Número de colunas:', values.length);
+          console.log('Col_4 (PREVISAO_LIQUIDACAO):', values[4]);
+          console.log('Primeiras 10 colunas:', values.slice(0, 10));
         }
         
         rows.push(row);
