@@ -192,6 +192,7 @@ export default function Dashboard() {
               </ChartCard>
               
               <ChartCard title="Distribuição por categoria">
+                {console.log('🔍 Dashboard: Renderizando CustomPieChart com dados:', chartData.categorias)}
                 <CustomPieChart 
                   data={chartData.categorias}
                   dataKey="value"

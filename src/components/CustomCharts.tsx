@@ -28,6 +28,10 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   dataKey: string;
   nameKey: string;
 }) {
+  // LOG DEBUG: Verificando renderização do CustomPieChart
+  console.log('🎨 CustomPieChart renderizado:', { data, dataKey, nameKey });
+  console.log('📊 Configuração atual - cx: 45%, outerRadius: 100, marginLeft: -20px');
+  
   // Cores mais distintas para evitar confusão entre DEB e CR
   const COLORS = [
     'hsl(217, 91%, 59%)',  // Azul vibrante (DEB)
@@ -40,8 +44,18 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
 
   const CustomLegend = (props: any) => {
     const { payload } = props;
+    console.log('📍 CustomLegend renderizado:', payload);
+    console.log('📏 Estilo aplicado: minWidth: 120px, marginLeft deveria ser -20px');
+    
     return (
-      <div className="flex flex-col space-y-2 text-sm font-medium" style={{ minWidth: '120px' }}>
+      <div 
+        className="flex flex-col space-y-2 text-sm font-medium" 
+        style={{ 
+          minWidth: '120px',
+          backgroundColor: 'rgba(255, 0, 0, 0.1)', // DEBUG: fundo vermelho temporário
+          border: '2px solid red' // DEBUG: borda vermelha temporária
+        }}
+      >
         {payload?.map((entry: any, index: number) => (
           <div key={index} className="flex items-center space-x-2">
             <div 
@@ -84,7 +98,9 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
             paddingLeft: '10px',  // Reduzido drasticamente para aproximar
             paddingRight: '20px',  // Reduzido mais ainda
             fontSize: '14px',     // Reduzido tamanho da fonte
-            marginLeft: '-20px'   // Margem negativa para aproximar mais
+            marginLeft: '-20px',   // Margem negativa para aproximar mais
+            backgroundColor: 'rgba(0, 255, 0, 0.1)', // DEBUG: fundo verde temporário
+            border: '3px solid green' // DEBUG: borda verde temporária
           }}
           layout="vertical"
           align="right"
