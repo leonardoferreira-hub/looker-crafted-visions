@@ -127,13 +127,22 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const historicoData = data.historico || [];
     const pipeData = data.pipe || [];
     
-    console.log('Historico Data:', historicoData);
-    console.log('Pipe Data:', pipeData);
+    console.log('=== DADOS BRUTOS ===');
+    console.log('Historico Data (raw):', historicoData.length);
+    console.log('Pipe Data (raw):', pipeData.length);
+    
+    // Debug das primeiras linhas
+    console.log('Primeiras 3 linhas HISTORICO:', historicoData.slice(0, 3));
+    console.log('Primeiras 3 linhas PIPE:', pipeData.slice(0, 3));
 
   // Filtra operações liquidadas (histórico) - primeiro valida linha, depois por data
   let filteredHistorico = historicoData.filter(row => {
     // Primeiro verifica se é uma linha válida (não é cabeçalho)
-    if (!isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)) {
+    const isValid = isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    
+    if (!isValid) {
+      console.log('Linha HISTORICO rejeitada - Operação:', operacao, 'Row:', row);
       return false;
     }
     
@@ -165,7 +174,11 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   // Filtra operações em estruturação (pipe) - primeiro valida linha, depois por data se aplicável
   let filteredPipe = pipeData.filter(row => {
     // Primeiro verifica se é uma linha válida (não é cabeçalho)
-    if (!isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO)) {
+    const isValid = isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+    const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+    
+    if (!isValid) {
+      console.log('Linha PIPE rejeitada - Operação:', operacao, 'Row:', row);
       return false;
     }
     
@@ -173,6 +186,10 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     // ou incluir todas as operações válidas independente da data
     return true; // Por enquanto inclui todas as operações em estruturação válidas
   });
+
+  console.log('=== DADOS FILTRADOS ===');
+  console.log('Filtered Historico:', filteredHistorico.length);
+  console.log('Filtered Pipe:', filteredPipe.length);
 
     // Calcula dados de 2024 para comparação (mesmo período)
     const lastYearStart = new Date(2024, defaultStartDate.getMonth(), defaultStartDate.getDate());
@@ -236,9 +253,13 @@ function getCellValue(row: SheetData, columnIndex: number): any {
 // Função auxiliar para verificar se uma linha é válida (não é cabeçalho)
 function isValidRow(row: SheetData, operacaoColumnIndex: number): boolean {
   const operacao = getCellValue(row, operacaoColumnIndex);
-  if (!operacao) return false;
+  if (!operacao) {
+    console.log('isValidRow: operação vazia ou null');
+    return false;
+  }
   
   const operacaoStr = String(operacao).trim();
+  console.log('isValidRow: verificando operação:', operacaoStr);
   
   // Filtros para identificar linhas de cabeçalho ou inválidas
   const invalidPatterns = [
@@ -258,13 +279,16 @@ function isValidRow(row: SheetData, operacaoColumnIndex: number): boolean {
     'DATA'
   ];
   
-  return !invalidPatterns.some(pattern => 
+  const isInvalid = invalidPatterns.some(pattern => 
     operacaoStr.toLowerCase() === pattern.toLowerCase() ||
     operacaoStr.toLowerCase().includes('pmo') ||
     operacaoStr.toLowerCase().includes('categoria') ||
     operacaoStr.toLowerCase().includes('volume') ||
     operacaoStr.toLowerCase().includes('data')
   );
+  
+  console.log('isValidRow: operação válida?', !isInvalid, 'para:', operacaoStr);
+  return !isInvalid;
 }
 
 function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = []) {
