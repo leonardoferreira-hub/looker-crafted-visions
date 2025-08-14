@@ -38,15 +38,20 @@ export default function Dashboard() {
     { key: "categoria", label: "Categoria" },
     { key: "operacao", label: "Operação" },
     { key: "previsaoLiquidacao", label: "Previsão de Liquidação" },
+    { key: "analistaGestao", label: "Analista Gestão" },
     { key: "estruturacao", label: "Estruturação" }
   ];
 
   const ultimasColumns = [
     { key: "categoria", label: "Categoria" },
     { key: "operacao", label: "Operação" },
-    { key: "estruturacao", label: "Estruturação" },
-    { key: "dataLiquidacao", label: "Data de Liquidação" }
+    { key: "dataLiquidacao", label: "Data de Liquidação" },
+    { key: "analistaGestao", label: "Analista Gestão" },
+    { key: "estruturacao", label: "Estruturação" }
   ];
+
+  // Limitar próximas liquidações às 5 mais próximas
+  const proximasLiquidacoesLimitadas = proximasLiquidacoes.slice(0, 5);
 
   return (
     <div className="min-h-screen bg-background">
@@ -199,7 +204,7 @@ export default function Dashboard() {
             <div className="grid gap-6 lg:grid-cols-2">
               <DataTable
                 title="Próximas liquidações"
-                data={proximasLiquidacoes}
+                data={proximasLiquidacoesLimitadas}
                 columns={proximasColumns}
               />
               
@@ -251,7 +256,7 @@ export default function Dashboard() {
               
               <DataTable
                 title="Próximas liquidações"
-                data={proximasLiquidacoes}
+                data={proximasLiquidacoesLimitadas}
                 columns={proximasColumns}
               />
             </div>
