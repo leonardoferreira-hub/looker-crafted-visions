@@ -1,13 +1,12 @@
 import { 
-  ComposedChart, 
-  Bar, 
+  LineChart,
   Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  ReferenceLine
+  Legend
 } from 'recharts';
 
 interface CustomTooltipProps {
@@ -23,9 +22,8 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
         {label && <p className="text-sm font-medium text-foreground mb-2">{label}</p>}
         {payload.map((entry, index) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.dataKey === 'liquidadas' && `Operações do mês: ${entry.value}`}
-            {entry.dataKey === 'liquidadasAcumuladas' && `Acumulado ${new Date().getFullYear()}: ${entry.value}`}
-            {entry.dataKey === 'liquidadasAcumuladas2024' && `Acumulado 2024: ${entry.value}`}
+            {entry.dataKey === 'acumulado2024' && `Acumulado 2024: ${entry.value} operações`}
+            {entry.dataKey === 'acumulado2025' && `Acumulado 2025: ${entry.value} operações`}
           </p>
         ))}
       </div>
@@ -37,7 +35,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 export function CombinedBarLineChart({ data }: { data: any[] }) {
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <ComposedChart
+      <LineChart
         data={data}
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
@@ -56,36 +54,31 @@ export function CombinedBarLineChart({ data }: { data: any[] }) {
           tickLine={false}
         />
         <Tooltip content={<CustomTooltip />} />
-        
-        {/* Barras para operações mensais */}
-        <Bar 
-          dataKey="liquidadas" 
-          fill="hsl(var(--primary-blue))"
-          radius={[4, 4, 0, 0]}
-          opacity={0.8}
-        />
-        
-        {/* Linha para acumulado atual */}
-        <Line 
-          type="monotone" 
-          dataKey="liquidadasAcumuladas" 
-          stroke="hsl(var(--primary-green))" 
-          strokeWidth={3}
-          dot={{ fill: 'hsl(var(--primary-green))', strokeWidth: 2, r: 5 }}
-          activeDot={{ r: 7, stroke: 'hsl(var(--primary-green))', strokeWidth: 2 }}
-        />
+        <Legend />
         
         {/* Linha para acumulado 2024 */}
         <Line 
           type="monotone" 
-          dataKey="liquidadasAcumuladas2024" 
+          dataKey="acumulado2024" 
           stroke="hsl(var(--muted-foreground))" 
-          strokeWidth={2}
-          strokeDasharray="5 5"
-          dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
-          activeDot={{ r: 6, stroke: 'hsl(var(--muted-foreground))', strokeWidth: 2 }}
+          strokeWidth={3}
+          strokeDasharray="8 4"
+          dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 5 }}
+          activeDot={{ r: 7, stroke: 'hsl(var(--muted-foreground))', strokeWidth: 2 }}
+          name="2024"
         />
-      </ComposedChart>
+        
+        {/* Linha para acumulado 2025 */}
+        <Line 
+          type="monotone" 
+          dataKey="acumulado2025" 
+          stroke="hsl(var(--primary-blue))" 
+          strokeWidth={3}
+          dot={{ fill: 'hsl(var(--primary-blue))', strokeWidth: 2, r: 5 }}
+          activeDot={{ r: 7, stroke: 'hsl(var(--primary-blue))', strokeWidth: 2 }}
+          name="2025"
+        />
+      </LineChart>
     </ResponsiveContainer>
   );
 }
