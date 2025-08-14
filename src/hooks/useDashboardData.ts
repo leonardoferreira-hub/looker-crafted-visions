@@ -342,9 +342,9 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   console.log(`Total Operações em Estruturação: ${filteredPipe.length}`);
   console.log(`TOTAL GERAL: ${filteredHistorico.length + filteredPipe.length}`);
 
-    // Calcula dados de 2024 para comparação (mesmo período)
-    const lastYearStart = new Date(2024, defaultStartDate.getMonth(), defaultStartDate.getDate());
-    const lastYearEnd = new Date(2024, defaultEndDate.getMonth(), defaultEndDate.getDate());
+    // Calcula dados de 2024 para comparação (ano completo)
+    const lastYearStart = new Date(2024, 0, 1); // 01/01/2024
+    const lastYearEnd = new Date(2024, 11, 31); // 31/12/2024
     
     const lastYearData = historicoData.filter(row => {
       // Primeiro verifica se é uma linha válida do histórico
@@ -544,7 +544,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
 
   // Processa dados para gráficos
   const chartData = {
-    operacoesPorMes: processMonthlyData(liquidadas, estruturacao),
+    operacoesPorMes: processMonthlyData(historicoData, estruturacao), // Usa dados históricos completos para comparar 2024 vs 2025
     categorias: processCategoryData([...liquidadas, ...estruturacao])
   };
 
@@ -637,6 +637,9 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
   // Calcula dados de 2024 e 2025 para comparação
   const monthlyData2024 = months.map((mes, index) => {
     return liquidadas.filter(row => {
+      // Verifica se é uma linha válida do histórico
+      if (!isValidHistoricoRow(row)) return false;
+      
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
       if (!dataLiquidacao) return false;
       
@@ -649,6 +652,9 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
 
   const monthlyData2025 = months.map((mes, index) => {
     return liquidadas.filter(row => {
+      // Verifica se é uma linha válida do histórico
+      if (!isValidHistoricoRow(row)) return false;
+      
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
       if (!dataLiquidacao) return false;
       
