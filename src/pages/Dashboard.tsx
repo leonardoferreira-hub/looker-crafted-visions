@@ -54,13 +54,12 @@ export default function Dashboard() {
       <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm">
         <div className="flex h-16 items-center justify-between px-6">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center">
               <img 
                 src="/lovable-uploads/b46458cc-55a4-4a1a-a98e-f6f80b5c6a30.png" 
                 alt="Travessia Logo" 
                 className="h-8 w-auto"
               />
-              <h1 className="text-xl font-bold text-foreground">Travessia</h1>
             </div>
             <div className="text-sm text-muted-foreground">
               {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
