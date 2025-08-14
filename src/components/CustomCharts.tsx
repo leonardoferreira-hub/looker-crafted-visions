@@ -43,17 +43,12 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   ];
 
   const CustomLegend = (props: any) => {
-    const { payload } = props;
-    console.log('📍 CustomLegend renderizado:', payload);
-    console.log('📏 Estilo aplicado: minWidth: 120px, marginLeft deveria ser -20px');
-    
+    const { payload } = props;    
     return (
       <div 
         className="flex flex-col space-y-2 text-sm font-medium" 
         style={{ 
-          minWidth: '120px',
-          backgroundColor: 'rgba(255, 0, 0, 0.1)', // DEBUG: fundo vermelho temporário
-          border: '2px solid red' // DEBUG: borda vermelha temporária
+          minWidth: '120px'
         }}
       >
         {payload?.map((entry: any, index: number) => (
@@ -77,10 +72,10 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
       <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <Pie
           data={data}
-          cx="45%"  // Movido mais para a direita para aproximar da legenda
+          cx="50%"  // Movido ainda mais para a direita
           cy="50%"
-          innerRadius={50}  // Reduzido para tornar o gráfico mais compacto
-          outerRadius={100}  // Reduzido ainda mais para dar espaço à legenda
+          innerRadius={45}  // Reduzido ainda mais
+          outerRadius={90}   // Reduzido para dar mais espaço à legenda
           paddingAngle={2}
           dataKey={dataKey}
           nameKey={nameKey}
@@ -95,12 +90,11 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
         <Legend 
           content={<CustomLegend />}
           wrapperStyle={{
-            paddingLeft: '10px',  // Reduzido drasticamente para aproximar
-            paddingRight: '20px',  // Reduzido mais ainda
+            paddingLeft: '0px',   // Removido padding para aproximar ao máximo
+            paddingRight: '10px', // Reduzido ainda mais
             fontSize: '14px',     // Reduzido tamanho da fonte
-            marginLeft: '-20px',   // Margem negativa para aproximar mais
-            backgroundColor: 'rgba(0, 255, 0, 0.1)', // DEBUG: fundo verde temporário
-            border: '3px solid green' // DEBUG: borda verde temporária
+            marginLeft: '-30px',  // Margem negativa ainda maior
+            transform: 'translateX(-10px)' // Transformação adicional para mover para esquerda
           }}
           layout="vertical"
           align="right"
