@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { KPICard } from "@/components/KPICard";
 import { OperationsCard } from "@/components/OperationsCard";
+import { VolumeCard } from "@/components/VolumeCard";
 import { ChartCard } from "@/components/ChartCard";
 import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
@@ -136,15 +137,11 @@ export default function Dashboard() {
                 estruturacao={kpis.operacoesEstruturacao}
                 change={kpis.operacoesLiquidadasChange}
               />
-              <KPICard
-                title="Volume Total"
-                value={`${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bi`}
-                leftValue={`${kpis.volumeLiquidado} bi`}
-                leftLabel="Liquidado"
-                rightValue={`${kpis.volumeEstruturacao} bi`}
-                rightLabel="Estruturação"
+              <VolumeCard
+                totalVolume={kpis.volumeTotal}
+                liquidadas={kpis.volumeLiquidado}
+                estruturacao={kpis.volumeEstruturacao}
                 change={kpis.volumeLiquidadoChange}
-                variant="success"
               />
               <KPICard
                 title="Fee de Estruturação"
