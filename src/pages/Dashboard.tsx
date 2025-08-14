@@ -30,7 +30,7 @@ export default function Dashboard() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [comparisonStartDate, setComparisonStartDate] = useState<Date | null>(null);
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
-  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate } = useDashboardData(startDate, endDate);
+  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
 
   // Mostra o período sendo usado
 
@@ -182,6 +182,7 @@ export default function Dashboard() {
                 <CombinedBarLineChart 
                   data={chartData.operacoesPorMes}
                   endDate={defaultEndDate}
+                  comparisonEndDate={defaultComparisonEndDate}
                 />
               </ChartCard>
               

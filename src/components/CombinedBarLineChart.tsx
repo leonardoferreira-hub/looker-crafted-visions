@@ -32,18 +32,30 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   return null;
 };
 
-export function CombinedBarLineChart({ data, endDate }: { data: any[]; endDate?: Date }) {
+export function CombinedBarLineChart({ data, endDate, comparisonEndDate }: { data: any[]; endDate?: Date; comparisonEndDate?: Date }) {
   // Filter data to show 2025 only until the end date from filter period
-  const endMonth = endDate ? endDate.getMonth() + 1 : new Date().getMonth() + 1; // getMonth() returns 0-based index
+  const endMonth2025 = endDate ? endDate.getMonth() + 1 : new Date().getMonth() + 1;
+  
+  // Filter data to show 2024 only until the comparison end date
+  const endMonth2024 = comparisonEndDate ? comparisonEndDate.getMonth() + 1 : 12; // Default to December if no comparison filter
   
   const filteredData = data.map((item, index) => {
     // Use month index (0-based) instead of parsing month name
     const monthIndex = index + 1; // Janeiro = 1, Fevereiro = 2, etc.
     
-    if (monthIndex > endMonth) {
-      return { ...item, acumulado2025: undefined }; // Remove future months for 2025
+    let filteredItem = { ...item };
+    
+    // Filter 2025 data based on period filter
+    if (monthIndex > endMonth2025) {
+      filteredItem.acumulado2025 = undefined;
     }
-    return item;
+    
+    // Filter 2024 data based on comparison filter
+    if (monthIndex > endMonth2024) {
+      filteredItem.acumulado2024 = undefined;
+    }
+    
+    return filteredItem;
   });
 
   return (

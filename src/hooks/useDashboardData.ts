@@ -106,10 +106,14 @@ export interface DashboardKPIs {
   feeLiquidadoChange?: { value: string; type: 'positive' | 'negative' };
 }
 
-export function useDashboardData(startDate?: Date | null, endDate?: Date | null) {
+export function useDashboardData(startDate?: Date | null, endDate?: Date | null, comparisonStartDate?: Date | null, comparisonEndDate?: Date | null) {
   // Define período padrão: 1º de janeiro de 2025 até hoje
   const defaultStartDate = startDate || new Date(2025, 0, 1);
   const defaultEndDate = endDate || new Date();
+  
+  // Define período de comparação padrão: 1º de janeiro de 2024 até 31 de dezembro de 2024
+  const defaultComparisonStartDate = comparisonStartDate || new Date(2024, 0, 1);
+  const defaultComparisonEndDate = comparisonEndDate || new Date(2024, 11, 31);
   
   const { data, loading, error, refetch } = useMultipleSheets({
     sheetId: SHEETS_CONFIG.SHEET_ID,
@@ -342,9 +346,17 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   console.log(`Total Operações em Estruturação: ${filteredPipe.length}`);
   console.log(`TOTAL GERAL: ${filteredHistorico.length + filteredPipe.length}`);
 
-    // Calcula dados de 2024 para comparação (ano completo)
-    const lastYearStart = new Date(2024, 0, 1); // 01/01/2024
-    const lastYearEnd = new Date(2024, 11, 31); // 31/12/2024
+    // Calcula dados de 2024 para comparação (baseado no filtro de comparação)
+    const lastYearStart = defaultComparisonStartDate;
+    const lastYearEnd = defaultComparisonEndDate;
+    
+    // Para comparação dos cards, usa o mesmo período relativo em 2024
+    const cardComparisonStart = new Date(2024, defaultStartDate.getMonth(), defaultStartDate.getDate());
+    const cardComparisonEnd = new Date(2024, defaultEndDate.getMonth(), defaultEndDate.getDate());
+    
+    console.log('=== DEBUG COMPARAÇÃO DOS CARDS ===');
+    console.log('Período 2025:', defaultStartDate.toISOString().split('T')[0], 'até', defaultEndDate.toISOString().split('T')[0]);
+    console.log('Período 2024 equivalente:', cardComparisonStart.toISOString().split('T')[0], 'até', cardComparisonEnd.toISOString().split('T')[0]);
     
     const lastYearData = historicoData.filter(row => {
       // Primeiro verifica se é uma linha válida do histórico
@@ -357,8 +369,10 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       
       if (!date) return false;
       
-      return date >= lastYearStart && date <= lastYearEnd;
+      return date >= cardComparisonStart && date <= cardComparisonEnd;
     });
+    
+    console.log('Operações 2024 para comparação dos cards:', lastYearData.length);
 
     // Para o gráfico, filtra dados de 2025 (período atual) e 2024 (período de comparação)
     const filtered2025 = historicoData.filter(row => {
@@ -386,11 +400,11 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       
       if (!date) return false;
       
-      // Filtra pelo período de comparação em 2024 (ano completo)
+      // Filtra pelo período de comparação em 2024
       if (date.getFullYear() !== 2024) return false;
       
-      if (lastYearStart && date < lastYearStart) return false;
-      if (lastYearEnd && date > lastYearEnd) return false;
+      if (defaultComparisonStartDate && date < defaultComparisonStartDate) return false;
+      if (defaultComparisonEndDate && date > defaultComparisonEndDate) return false;
       
       return true;
     });
@@ -402,7 +416,7 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     console.log('Dados KPIs (2025):', filteredHistorico.length);
 
     return processSheetData(filteredHistorico, filteredPipe, lastYearData, { filtered2024, filtered2025 });
-  }, [data, defaultStartDate, defaultEndDate]);
+  }, [data, defaultStartDate, defaultEndDate, defaultComparisonStartDate, defaultComparisonEndDate]);
 
   return {
     ...processedData,
@@ -411,7 +425,9 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     refetch,
     isConnected,
     defaultStartDate,
-    defaultEndDate
+    defaultEndDate,
+    defaultComparisonStartDate,
+    defaultComparisonEndDate
   };
 }
 
