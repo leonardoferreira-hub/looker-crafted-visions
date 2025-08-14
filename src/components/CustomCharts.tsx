@@ -41,15 +41,15 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   const CustomLegend = (props: any) => {
     const { payload } = props;
     return (
-      <div className="flex flex-col space-y-2 text-sm">
+      <div className="flex flex-col space-y-3 text-base font-medium">
         {payload?.map((entry: any, index: number) => (
-          <div key={index} className="flex items-center space-x-2">
+          <div key={index} className="flex items-center space-x-3">
             <div 
-              className="w-3 h-3 rounded-sm" 
+              className="w-4 h-4 rounded-sm" 
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-foreground">{entry.value}</span>
-            <span className="text-muted-foreground ml-auto">
+            <span className="text-foreground text-sm">{entry.value}</span>
+            <span className="text-muted-foreground ml-auto font-semibold">
               {data.find(item => item[nameKey] === entry.value)?.[dataKey]}%
             </span>
           </div>
