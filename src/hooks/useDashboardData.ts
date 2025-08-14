@@ -187,12 +187,29 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
     
-    // Debug específico para a linha 270 (Atlas Agro II) - APÓS CORREÇÃO
-    if (index === 269 && operacao && operacao.includes('Atlas Agro')) {
-      console.log('🎯 TESTE LINHA 270 (Atlas Agro II) - APÓS CORREÇÃO:');
-      console.log('Operação:', operacao);
-      console.log('Data encontrada:', dataLiquidacao);
-      console.log('Será considerada válida?', isValidHistoricoRow(row));
+    // Debug específico para Squarelife
+    if (operacao && operacao.toLowerCase().includes('squarelife')) {
+      console.log('🔍 OPERAÇÃO SQUARELIFE ENCONTRADA:');
+      console.log('Linha:', index + 1);
+      console.log('Operação completa:', operacao);
+      console.log('Estrutura da linha:', row);
+      console.log('SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO:', SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      console.log('Tentando acessar col_' + SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO + ':');
+      console.log('row["col_26"]:', row['col_26']);
+      console.log('Tipo:', typeof row['col_26']);
+      console.log('getCellValue retorna:', dataLiquidacao);
+      
+      // Mostra TODAS as colunas que têm datas para comparar
+      console.log('TODAS AS DATAS NESTA LINHA:');
+      Object.entries(row).forEach(([key, value]) => {
+        const strValue = String(value);
+        if (strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) || strValue.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+          console.log(`${key}: "${value}"`);
+        }
+      });
+      
+      console.log('isValidHistoricoRow retorna:', isValidHistoricoRow(row));
+      console.log('=====================================');
     }
     
     // Debug da estrutura da linha para encontrar onde estão as datas
@@ -337,10 +354,7 @@ function getCellValue(row: SheetData, columnIndex: number): any {
   // Vai DIRETO na coluna especificada, sem parar em outras
   const value = row[`col_${columnIndex}`];
   
-  // Debug específico para DATA_LIQUIDACAO (col_26)
-  if (columnIndex === 26) {
-    console.log(`DEBUG col_26: valor bruto = "${value}", tipo = ${typeof value}`);
-  }
+  // Debug será feito apenas para operações específicas
   
   // Limpa e valida o valor encontrado
   if (value !== null && value !== undefined) {
