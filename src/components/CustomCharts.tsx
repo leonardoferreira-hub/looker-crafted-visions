@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -28,25 +28,48 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   dataKey: string;
   nameKey: string;
 }) {
+  // Cores mais distintas para evitar confusão entre DEB e CR
   const COLORS = [
-    'hsl(var(--chart-1))',
-    'hsl(var(--chart-2))',
-    'hsl(var(--chart-3))',
-    'hsl(var(--chart-4))',
-    'hsl(var(--chart-5))'
+    'hsl(217, 91%, 59%)',  // Azul vibrante (DEB)
+    'hsl(142, 76%, 36%)',  // Verde (CCI) 
+    'hsl(25, 95%, 53%)',   // Laranja (CRA)
+    'hsl(262, 83%, 58%)',  // Roxo (CR) - mudou de azul para roxo
+    'hsl(173, 58%, 39%)',  // Teal/Verde-azulado
+    'hsl(0, 84%, 60%)',    // Vermelho
   ];
+
+  const CustomLegend = (props: any) => {
+    const { payload } = props;
+    return (
+      <div className="flex flex-col space-y-2 text-sm">
+        {payload?.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center space-x-2">
+            <div 
+              className="w-3 h-3 rounded-sm" 
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-foreground">{entry.value}</span>
+            <span className="text-muted-foreground ml-auto">
+              {data.find(item => item[nameKey] === entry.value)?.[dataKey]}%
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
         <Pie
           data={data}
-          cx="50%"
+          cx="35%"  // Moveu para a esquerda (era 50%)
           cy="50%"
-          innerRadius={60}
-          outerRadius={120}
+          innerRadius={50}
+          outerRadius={100}
           paddingAngle={2}
           dataKey={dataKey}
+          nameKey={nameKey}
         >
           {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -54,6 +77,16 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
         </Pie>
         <Tooltip 
           content={<CustomTooltip formatter={(value) => `${value}%`} />}
+        />
+        <Legend 
+          content={<CustomLegend />}
+          wrapperStyle={{
+            paddingLeft: '20px',
+            fontSize: '14px'
+          }}
+          layout="vertical"
+          align="right"
+          verticalAlign="middle"
         />
       </PieChart>
     </ResponsiveContainer>
