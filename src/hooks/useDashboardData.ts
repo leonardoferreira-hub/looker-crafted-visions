@@ -192,14 +192,20 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   filteredHistorico.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-    console.log(`${index + 1}. Operação: "${operacao}" | Data Liquidação: "${dataLiquidacao}"`);
+    
+    // Debug: mostra toda a linha para verificar se está pegando da coluna certa
+    console.log(`${index + 1}. Linha completa:`, row);
+    console.log(`${index + 1}. Coluna 3 (OPERACAO): "${operacao}" | Data Liquidação: "${dataLiquidacao}"`);
   });
 
   console.log('=== OPERAÇÕES EM ESTRUTURAÇÃO (PIPE) ===');
   filteredPipe.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
     const previsaoLiquidacao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
-    console.log(`${index + 1}. Operação: "${operacao}" | Previsão Liquidação: "${previsaoLiquidacao}"`);
+    
+    // Debug: mostra toda a linha para verificar se está pegando da coluna certa
+    console.log(`${index + 1}. Linha completa:`, row);
+    console.log(`${index + 1}. Coluna 3 (OPERACAO): "${operacao}" | Previsão Liquidação: "${previsaoLiquidacao}"`);
   });
 
   console.log('=== RESUMO PARA KPI ===');
@@ -249,10 +255,13 @@ function getCellValue(row: SheetData, columnIndex: number): any {
     console.log(`DATA_LIQUIDACAO encontrada:`, row[`col_${columnIndex}`]);
   }
   
-  // Tenta diferentes métodos para acessar o valor da célula
-  let value = row[`col_${columnIndex}`] || 
-              Object.values(row)[columnIndex] || 
-              row[columnIndex];
+  // PRIORIZA o acesso por col_${columnIndex} que é mais confiável
+  let value = row[`col_${columnIndex}`];
+  
+  // Se não encontrar por col_, tenta por índice direto
+  if (value === undefined || value === null) {
+    value = row[columnIndex];
+  }
   
   // Limpa valores vazios ou apenas espaços
   if (value !== null && value !== undefined) {
@@ -270,13 +279,8 @@ function getCellValue(row: SheetData, columnIndex: number): any {
 function isValidRow(row: SheetData, operacaoColumnIndex: number): boolean {
   const operacao = getCellValue(row, operacaoColumnIndex);
   
-  // Verifica se a coluna Operação tem algum valor preenchido
-  const hasValue = operacao && 
-                   String(operacao).trim() !== '' && 
-                   String(operacao).trim() !== 'null' && 
-                   String(operacao).trim() !== 'undefined';
-  
-  return hasValue;
+  // Simplesmente verifica se existe algum valor na coluna OPERACAO
+  return operacao && String(operacao).trim() !== '';
 }
 
 function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = []) {
