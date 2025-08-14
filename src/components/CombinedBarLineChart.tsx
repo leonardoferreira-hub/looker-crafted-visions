@@ -38,7 +38,7 @@ export function CombinedBarLineChart({ data }: { data: any[] }) {
   const filteredData = data.map(item => {
     const monthNumber = parseInt(item.mes.split('/')[0]); // Extract month from "MM/YYYY" format
     if (monthNumber > currentMonth) {
-      return { ...item, acumulado2025: null }; // Remove future months for 2025
+      return { ...item, acumulado2025: undefined }; // Remove future months for 2025
     }
     return item;
   });
