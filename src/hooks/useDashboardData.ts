@@ -647,12 +647,38 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const estruturacao = getCellValue(row, SHEETS_COLUMNS.PIPE.ESTRUTURACAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
     
+    // Debug detalhado para próximas liquidações
+    console.log(`🔍 DEBUG PRÓXIMAS LIQUIDAÇÕES - Item ${index + 1}`);
+    console.log('Operação:', operacao);
+    console.log('PREVISAO_LIQUIDACAO (índice', SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO, '):', previsao);
+    console.log('PREVISAO_LIQUIDACAO tipo:', typeof previsao);
+    console.log('ESTRUTURACAO (índice', SHEETS_COLUMNS.PIPE.ESTRUTURACAO, '):', estruturacao);
+    console.log('ESTRUTURACAO tipo:', typeof estruturacao);
+    
+    // Debug da linha completa
+    console.log('Linha completa:', row);
+    console.log('Chaves disponíveis:', Object.keys(row));
+    
+    // Testa parseDate diretamente
+    if (previsao) {
+      const dateParsed = parseDate(previsao);
+      console.log('parseDate resultado:', dateParsed);
+      console.log('parseDate isValid:', dateParsed && !isNaN(dateParsed.getTime()));
+    }
+    
+    const previsaoFormatada = formatDate(previsao);
+    const estruturacaoFormatada = formatCurrency(estruturacao || 0);
+    
+    console.log('Previsão formatada final:', previsaoFormatada);
+    console.log('Estruturação formatada final:', estruturacaoFormatada);
+    console.log('─'.repeat(50));
+    
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.PIPE.CATEGORIA) || ''),
       operacao: String(operacao || ''),
-      previsaoLiquidacao: formatDate(previsao),
+      previsaoLiquidacao: previsaoFormatada,
       analistaGestao: String(getCellValue(row, SHEETS_COLUMNS.PIPE.ANALISTA_GESTAO) || ''),
-      estruturacao: formatCurrency(estruturacao || 0)
+      estruturacao: estruturacaoFormatada
     };
   });
 
@@ -661,12 +687,38 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const estruturacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     
+    // Debug detalhado para últimas liquidações
+    console.log(`🔍 DEBUG ÚLTIMAS LIQUIDAÇÕES - Item ${index + 1}`);
+    console.log('Operação:', operacao);
+    console.log('DATA_LIQUIDACAO (índice', SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO, '):', dataLiquidacao);
+    console.log('DATA_LIQUIDACAO tipo:', typeof dataLiquidacao);
+    console.log('ESTRUTURACAO (índice', SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO, '):', estruturacao);
+    console.log('ESTRUTURACAO tipo:', typeof estruturacao);
+    
+    // Debug da linha completa
+    console.log('Linha completa:', row);
+    console.log('Chaves disponíveis:', Object.keys(row));
+    
+    // Testa parseDate diretamente
+    if (dataLiquidacao) {
+      const dateParsed = parseDate(dataLiquidacao);
+      console.log('parseDate resultado:', dateParsed);
+      console.log('parseDate isValid:', dateParsed && !isNaN(dateParsed.getTime()));
+    }
+    
+    const dataFormatada = formatDate(dataLiquidacao);
+    const estruturacaoFormatada = formatCurrency(estruturacao || 0);
+    
+    console.log('Data formatada final:', dataFormatada);
+    console.log('Estruturação formatada final:', estruturacaoFormatada);
+    console.log('─'.repeat(50));
+    
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || ''),
       operacao: String(operacao || ''),
-      dataLiquidacao: formatDate(dataLiquidacao),
+      dataLiquidacao: dataFormatada,
       analistaGestao: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.ANALISTA_GESTAO) || ''),
-      estruturacao: formatCurrency(estruturacao || 0)
+      estruturacao: estruturacaoFormatada
     };
   });
 
@@ -709,16 +761,24 @@ function calculateAverageByColumnIndex(data: SheetData[], columnIndex: number): 
 }
 
 function formatCurrency(value: any): string {
-  if (!value || value === 0 || value === '0' || value === '') return 'R$ 0,00';
+  console.log('💰 formatCurrency chamada com:', value, 'tipo:', typeof value);
+  
+  if (!value || value === 0 || value === '0' || value === '') {
+    console.log('💰 formatCurrency: valor vazio/zero, retornando R$ 0,00');
+    return 'R$ 0,00';
+  }
   
   let num: number;
   if (typeof value === 'number') {
+    console.log('💰 formatCurrency: valor é número:', value);
     num = value;
   } else {
     const valueStr = String(value).trim();
+    console.log('💰 formatCurrency: valor como string:', `"${valueStr}"`);
     
     // Se está vazio ou é nulo, retorna R$ 0,00
     if (valueStr === '' || valueStr === 'null' || valueStr === 'undefined') {
+      console.log('💰 formatCurrency: string vazia/nula, retornando R$ 0,00');
       return 'R$ 0,00';
     }
     
@@ -729,19 +789,28 @@ function formatCurrency(value: any): string {
       .replace(/\./g, '')             // Remove pontos (separadores de milhares)
       .replace(/,/g, '.');            // Converte vírgula para ponto decimal
     
+    console.log('💰 formatCurrency: string limpa:', `"${cleanStr}"`);
+    
     num = parseFloat(cleanStr) || 0;
+    console.log('💰 formatCurrency: número convertido:', num);
   }
   
   // Se o número é 0, retorna R$ 0,00
-  if (num === 0) return 'R$ 0,00';
+  if (num === 0) {
+    console.log('💰 formatCurrency: número é zero, retornando R$ 0,00');
+    return 'R$ 0,00';
+  }
   
   // Formata no padrão brasileiro com símbolo de moeda e 2 casas decimais
-  return new Intl.NumberFormat('pt-BR', {
+  const formatted = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(num);
+  
+  console.log('💰 formatCurrency: resultado formatado:', formatted);
+  return formatted;
 }
 
 function formatDate(value: any): string {
