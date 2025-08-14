@@ -114,8 +114,8 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   const { data, loading, error, refetch } = useMultipleSheets({
     sheetId: SHEETS_CONFIG.SHEET_ID,
     sheets: [
-      { name: 'historico', gid: SHEETS_CONFIG.HISTORICO_GID, headerRowIndex: 2 }, // Header starts at row 3 (0-based index 2)
-      { name: 'pipe', gid: SHEETS_CONFIG.PIPE_GID, headerRowIndex: 7 } // Header starts at row 8 (0-based index 7)
+      { name: 'historico', gid: SHEETS_CONFIG.HISTORICO_GID, headerRowIndex: 1 }, // Header at row 2 (0-based index 1), data starts row 3
+      { name: 'pipe', gid: SHEETS_CONFIG.PIPE_GID, headerRowIndex: 6 } // Header at row 7 (0-based index 6), data starts row 8
     ]
   });
 
