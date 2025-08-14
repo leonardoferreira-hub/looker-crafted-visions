@@ -63,7 +63,7 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
       <PieChart>
         <Pie
           data={data}
-          cx="42%"  // Centralizado para melhor distribuição
+          cx="35%"  // Movido mais para a esquerda
           cy="50%"
           innerRadius={60}
           outerRadius={130}
@@ -81,7 +81,8 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
         <Legend 
           content={<CustomLegend />}
           wrapperStyle={{
-            paddingLeft: '10px',
+            paddingLeft: '0px',
+            paddingRight: '40px',
             fontSize: '16px'
           }}
           layout="vertical"
