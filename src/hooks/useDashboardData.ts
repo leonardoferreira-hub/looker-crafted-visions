@@ -132,10 +132,15 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     console.log('Pipe Data (raw):', pipeData.length);
     
     // Debug dos índices das colunas
-    console.log('SHEETS_COLUMNS.HISTORICO.OPERACAO (índice):', SHEETS_COLUMNS.HISTORICO.OPERACAO);
-    console.log('SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO (índice):', SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-    console.log('SHEETS_COLUMNS.PIPE.OPERACAO (índice):', SHEETS_COLUMNS.PIPE.OPERACAO);
-    console.log('SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO (índice):', SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+    console.log('📍 ÍNDICES DAS COLUNAS:');
+    console.log('OPERACAO (Histórico):', SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    console.log('DATA_LIQUIDACAO (Histórico):', SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    console.log('OPERACAO (Pipe):', SHEETS_COLUMNS.PIPE.OPERACAO);
+    console.log('PREVISAO_LIQUIDACAO (Pipe):', SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+    
+    // Verifica se DATA_LIQUIDACAO realmente é 26
+    console.log('🎯 Verificação: DATA_LIQUIDACAO deveria ser coluna AA (índice 26)');
+    console.log('Contagem: A=0, B=1, C=2... Z=25, AA=26 ✓');
     
     // Debug das primeiras linhas para verificar estrutura
     if (historicoData.length > 0) {
@@ -160,6 +165,19 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
     
+    // Debug específico para a linha 270 (Atlas Agro II)
+    if (index === 269) { // índice 269 = linha 270
+      console.log('🎯 LINHA 270 (Atlas Agro II) - DEBUG COMPLETO:');
+      console.log('Linha completa:', row);
+      console.log('Operação encontrada:', operacao);
+      console.log('Data no índice 26:', dataLiquidacao);
+      
+      // Mostra TODOS os valores da linha
+      Object.entries(row).forEach(([key, value]) => {
+        console.log(`${key}: "${value}"`);
+      });
+    }
+    
     // Debug da estrutura da linha para encontrar onde estão as datas
     if (index < 3) { // Mostra estrutura das primeiras 3 linhas
       console.log(`Estrutura linha ${index + 1}:`, row);
@@ -177,6 +195,22 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const hasOperacao = operacao && String(operacao).trim() !== '';
     const hasData = dataLiquidacao && String(dataLiquidacao).trim() !== '' && String(dataLiquidacao) !== 'null';
     const isValid = isValidHistoricoRow(row);
+    
+    // Debug específico para linhas que têm operação mas não têm data
+    if (hasOperacao && !hasData) {
+      console.log(`🔍 DEBUG LINHA ${index + 1} (${operacao}): Procurando data...`);
+      console.log(`Tentativa col_26:`, row['col_26']);
+      console.log(`Tentativa índice 26:`, row[26]);
+      console.log(`Object.values()[26]:`, Object.values(row)[26]);
+      
+      // Procura TODAS as células que contêm datas
+      Object.entries(row).forEach(([key, value]) => {
+        const strValue = String(value);
+        if (strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) || strValue.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+          console.log(`📅 DATA ENCONTRADA em ${key}: "${value}"`);
+        }
+      });
+    }
     
     console.log(`Linha ${index + 1}: Operação="${operacao}" | Data="${dataLiquidacao}" | HasOp=${hasOperacao} | HasData=${hasData} | Valid=${isValid}`);
   });
