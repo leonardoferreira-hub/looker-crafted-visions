@@ -973,6 +973,19 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
 }
 
 function processCategoryData(data: SheetData[]) {
+  console.log('🎯 processCategoryData chamada com:', data.length, 'itens');
+  
+  // DEBUG: Se não há dados reais, usar dados mock para testar o layout
+  if (data.length === 0) {
+    console.log('⚠️  Dados vazios! Usando dados MOCK para testar layout do gráfico');
+    return [
+      { name: 'DEB', value: 44, count: 5 },
+      { name: 'CRI', value: 33, count: 4 },
+      { name: 'CRA', value: 16, count: 2 },
+      { name: 'NC', value: 7, count: 1 }
+    ];
+  }
+  
   const categories: { [key: string]: number } = {};
   
   data.forEach(row => {
