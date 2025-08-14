@@ -78,7 +78,7 @@ export default function Dashboard() {
                     Filtros
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-4" align="start">
+                <PopoverContent className="w-auto p-4 bg-background border border-border shadow-lg z-50" align="start">
                   <div className="space-y-4">
                     <h4 className="font-medium">Filtros de Data</h4>
                     <DateFilter

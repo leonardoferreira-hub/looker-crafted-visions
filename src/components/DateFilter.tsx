@@ -59,7 +59,7 @@ export function DateFilter({
                 {startDate ? format(startDate, "dd/MM/yy", { locale: ptBR }) : "Início"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
               <Calendar
                 mode="single"
                 selected={startDate || undefined}
@@ -89,7 +89,7 @@ export function DateFilter({
                 {endDate ? format(endDate, "dd/MM/yy", { locale: ptBR }) : "Fim"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
               <Calendar
                 mode="single"
                 selected={endDate || undefined}
@@ -125,7 +125,7 @@ export function DateFilter({
                 {comparisonStartDate ? format(comparisonStartDate, "dd/MM/yy", { locale: ptBR }) : "Início"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
               <Calendar
                 mode="single"
                 selected={comparisonStartDate || undefined}
@@ -155,7 +155,7 @@ export function DateFilter({
                 {comparisonEndDate ? format(comparisonEndDate, "dd/MM/yy", { locale: ptBR }) : "Fim"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
               <Calendar
                 mode="single"
                 selected={comparisonEndDate || undefined}
