@@ -59,14 +59,14 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   };
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={350}>
       <PieChart>
         <Pie
           data={data}
-          cx="35%"  // Moveu para a esquerda (era 50%)
+          cx="42%"  // Centralizado para melhor distribuição
           cy="50%"
-          innerRadius={50}
-          outerRadius={100}
+          innerRadius={60}
+          outerRadius={130}
           paddingAngle={2}
           dataKey={dataKey}
           nameKey={nameKey}
@@ -81,8 +81,8 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
         <Legend 
           content={<CustomLegend />}
           wrapperStyle={{
-            paddingLeft: '20px',
-            fontSize: '14px'
+            paddingLeft: '10px',
+            fontSize: '16px'
           }}
           layout="vertical"
           align="right"
