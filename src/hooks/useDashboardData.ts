@@ -134,11 +134,19 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     // Debug das primeiras linhas
     console.log('Primeiras 3 linhas HISTORICO:', historicoData.slice(0, 3));
     console.log('Primeiras 3 linhas PIPE:', pipeData.slice(0, 3));
+    
+    // Debug dos índices das colunas
+    console.log('SHEETS_COLUMNS.HISTORICO.OPERACAO:', SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    console.log('SHEETS_COLUMNS.PIPE.OPERACAO:', SHEETS_COLUMNS.PIPE.OPERACAO);
 
   // Filtra operações liquidadas (histórico) - primeiro valida linha, depois por data
-  let filteredHistorico = historicoData.filter(row => {
+  console.log('=== FILTRANDO HISTÓRICO ===');
+  let filteredHistorico = historicoData.filter((row, index) => {
+    console.log(`Linha ${index + 1} HISTÓRICO:`, row);
+    
     // Primeiro verifica se é uma linha válida (não é cabeçalho)
     if (!isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)) {
+      console.log(`Linha ${index + 1} HISTÓRICO REJEITADA - sem operação válida`);
       return false;
     }
     
@@ -168,9 +176,13 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   });
 
   // Filtra operações em estruturação (pipe) - primeiro valida linha, depois por data se aplicável
-  let filteredPipe = pipeData.filter(row => {
+  console.log('=== FILTRANDO PIPE ===');
+  let filteredPipe = pipeData.filter((row, index) => {
+    console.log(`Linha ${index + 1} PIPE:`, row);
+    
     // Primeiro verifica se é uma linha válida (não é cabeçalho)
     if (!isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO)) {
+      console.log(`Linha ${index + 1} PIPE REJEITADA - sem operação válida`);
       return false;
     }
     
@@ -251,6 +263,9 @@ function isValidRow(row: SheetData, operacaoColumnIndex: number): boolean {
                    String(operacao).trim() !== '' && 
                    String(operacao).trim() !== 'null' && 
                    String(operacao).trim() !== 'undefined';
+  
+  // Log para debug
+  console.log('DEBUG isValidRow - Operação:', operacao, 'HasValue:', hasValue);
   
   return hasValue;
 }
