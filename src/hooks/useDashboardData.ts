@@ -507,12 +507,20 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   // Calcula mudanças em relação ao ano anterior
   const lastYearLiquidadas = lastYearData.length; // Já filtrados e validados
   
-  const lastYearVolume = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.VOLUME);
-  const lastYearFee = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+  // Para Volume Total e Fee Total, precisa somar histórico + pipe de 2024
+  // Mas como pipe tem datas de previsão, não de liquidação, vamos usar apenas histórico para comparação justa
+  const lastYearVolumeHistorico = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.VOLUME);
+  const lastYearFeeHistorico = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
 
   const currentLiquidadas = liquidadas.length;
-  const currentVolume = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.VOLUME);
-  const currentFee = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+  const currentVolumeHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.VOLUME);
+  const currentFeeHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+  
+  console.log('=== DEBUG COMPARAÇÃO CARDS ===');
+  console.log('Volume 2024 (histórico):', lastYearVolumeHistorico);
+  console.log('Volume 2025 (histórico):', currentVolumeHistorico);
+  console.log('Fee 2024 (histórico):', lastYearFeeHistorico);
+  console.log('Fee 2025 (histórico):', currentFeeHistorico);
 
   // Calcula percentuais de mudança
   const getPercentChange = (current: number, previous: number) => {
@@ -545,6 +553,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   
   const volumeTotal = volumeHistorico + volumePipe;
   console.log('Volume Total:', volumeTotal);
+  console.log('Volume Total 2025 (para comparação):', volumeTotal, '/ Volume Histórico 2024:', lastYearVolumeHistorico);
 
   // Calcula fee de estruturação das duas abas
   console.log('=== DEBUG FEE ESTRUTURACAO ===');
@@ -574,6 +583,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   
   const feeEstruturacaoTotal = feeEstruturacaoHistorico + feeEstruturacaoPipe;
   console.log('Fee Estruturação Total:', feeEstruturacaoTotal);
+  console.log('Fee Total 2025 (para comparação):', feeEstruturacaoTotal, '/ Fee Histórico 2024:', lastYearFeeHistorico);
 
   // Calcula fee de gestão das duas abas
   const feeGestaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO);
@@ -591,10 +601,10 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeGestaoLiquidado: formatFee(feeGestaoHistorico), // Fee gestão apenas liquidadas
     feeGestaoEstruturacao: formatFee(feeGestaoPipe), // Fee gestão apenas estruturação
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
-    // Comparações com ano anterior
+    // Comparações com ano anterior (mesmo período relativo)
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
-    volumeLiquidadoChange: getPercentChange(volumeTotal, lastYearVolume),
-    feeLiquidadoChange: getPercentChange(feeEstruturacaoTotal, lastYearFee)
+    volumeLiquidadoChange: getPercentChange(volumeTotal, lastYearVolumeHistorico), // Compara volume total 2025 vs histórico 2024
+    feeLiquidadoChange: getPercentChange(feeEstruturacaoTotal, lastYearFeeHistorico) // Compara fee total 2025 vs histórico 2024
   };
 
 
