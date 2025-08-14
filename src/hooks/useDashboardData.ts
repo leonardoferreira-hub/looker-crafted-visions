@@ -647,14 +647,6 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const estruturacao = getCellValue(row, SHEETS_COLUMNS.PIPE.ESTRUTURACAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
     
-    // Debug para próximas liquidações
-    console.log(`=== PRÓXIMAS LIQUIDAÇÕES ${index + 1} ===`);
-    console.log('Operação:', operacao);
-    console.log('Previsão raw (col_4):', previsao);
-    console.log('Estruturação raw (col_8):', estruturacao);
-    console.log('Previsão formatada:', formatDate(previsao));
-    console.log('Estruturação formatada:', formatCurrency(estruturacao));
-    
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.PIPE.CATEGORIA) || ''),
       operacao: String(operacao || ''),
@@ -668,14 +660,6 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
     const estruturacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
-    
-    // Debug para últimas liquidações
-    console.log(`=== ÚLTIMAS LIQUIDAÇÕES ${index + 1} ===`);
-    console.log('Operação:', operacao);
-    console.log('Data liquidação raw (col_26):', dataLiquidacao);
-    console.log('Estruturação raw (col_8):', estruturacao);
-    console.log('Data liquidação formatada:', formatDate(dataLiquidacao));
-    console.log('Estruturação formatada:', formatCurrency(estruturacao));
     
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || ''),
@@ -725,7 +709,7 @@ function calculateAverageByColumnIndex(data: SheetData[], columnIndex: number): 
 }
 
 function formatCurrency(value: any): string {
-  if (!value || value === 0 || value === '0' || value === '') return 'R$ 0';
+  if (!value || value === 0 || value === '0' || value === '') return 'R$ 0,00';
   
   let num: number;
   if (typeof value === 'number') {
@@ -733,13 +717,10 @@ function formatCurrency(value: any): string {
   } else {
     const valueStr = String(value).trim();
     
-    // Se está vazio ou é nulo, retorna R$ 0
+    // Se está vazio ou é nulo, retorna R$ 0,00
     if (valueStr === '' || valueStr === 'null' || valueStr === 'undefined') {
-      return 'R$ 0';
+      return 'R$ 0,00';
     }
-    
-    // Debug
-    console.log('formatCurrency: valor original:', valueStr);
     
     // Remove símbolos monetários e converte para número
     // Formato brasileiro: 8.004.592.000,00 -> remove R$, pontos (milhares), vírgula vira ponto
@@ -748,26 +729,19 @@ function formatCurrency(value: any): string {
       .replace(/\./g, '')             // Remove pontos (separadores de milhares)
       .replace(/,/g, '.');            // Converte vírgula para ponto decimal
     
-    console.log('formatCurrency: valor limpo:', cleanStr);
-    
     num = parseFloat(cleanStr) || 0;
-    
-    console.log('formatCurrency: número final:', num);
   }
   
-  // Se o número é 0, retorna R$ 0
-  if (num === 0) return 'R$ 0';
+  // Se o número é 0, retorna R$ 0,00
+  if (num === 0) return 'R$ 0,00';
   
-  // Formata no padrão brasileiro com símbolo de moeda
-  const formatted = new Intl.NumberFormat('pt-BR', {
+  // Formata no padrão brasileiro com símbolo de moeda e 2 casas decimais
+  return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(num);
-  
-  console.log('formatCurrency: resultado formatado:', formatted);
-  return formatted;
 }
 
 function formatDate(value: any): string {
@@ -785,19 +759,24 @@ function formatDate(value: any): string {
     return '';
   }
   
+  // Primeiro, tenta parsing da data
   const date = parseDate(value);
-  if (!date || isNaN(date.getTime())) {
-    // Se não conseguir fazer parse da data, retorna o valor original
-    console.log('formatDate: Não foi possível fazer parse da data:', valueStr);
+  if (date && !isNaN(date.getTime())) {
+    // Se conseguiu fazer parse, formata no padrão brasileiro DD/MM/YYYY
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+  
+  // Se não conseguiu fazer parse mas parece uma data (tem / ou -), retorna como está
+  if (valueStr.includes('/') || valueStr.includes('-')) {
     return valueStr;
   }
   
-  // Formata a data no padrão brasileiro DD/MM/YYYY
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
+  // Para outros valores que não parecem datas, retorna como está
+  return valueStr;
 }
 
 function formatVolume(value: number): string {
