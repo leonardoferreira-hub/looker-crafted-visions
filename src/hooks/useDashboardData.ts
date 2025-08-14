@@ -490,9 +490,33 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('Volume Total:', volumeTotal);
 
   // Calcula fee de estruturação das duas abas
+  console.log('=== DEBUG FEE ESTRUTURACAO ===');
+  console.log('Coluna ESTRUTURACAO Histórico:', SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+  console.log('Coluna ESTRUTURACAO Pipe:', SHEETS_COLUMNS.PIPE.ESTRUTURACAO);
+  
   const feeEstruturacaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
   const feeEstruturacaoPipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.ESTRUTURACAO);
+  
+  console.log('Fee Estruturação Histórico (liquidadas):', feeEstruturacaoHistorico);
+  console.log('Fee Estruturação Pipe (em estruturação):', feeEstruturacaoPipe);
+  
+  // Debug valores individuais da coluna ESTRUTURACAO
+  console.log('=== VALORES ESTRUTURACAO HISTÓRICO ===');
+  liquidadas.slice(0, 3).forEach((row, index) => {
+    const feeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+    const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    console.log(`${index + 1}. ${operacao}: col_${SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO} = "${feeValue}"`);
+  });
+  
+  console.log('=== VALORES ESTRUTURACAO PIPE ===');
+  estruturacao.slice(0, 3).forEach((row, index) => {
+    const feeValue = getCellValue(row, SHEETS_COLUMNS.PIPE.ESTRUTURACAO);
+    const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+    console.log(`${index + 1}. ${operacao}: col_${SHEETS_COLUMNS.PIPE.ESTRUTURACAO} = "${feeValue}"`);
+  });
+  
   const feeEstruturacaoTotal = feeEstruturacaoHistorico + feeEstruturacaoPipe;
+  console.log('Fee Estruturação Total:', feeEstruturacaoTotal);
 
   // Calcula fee de gestão das duas abas
   const feeGestaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO);
