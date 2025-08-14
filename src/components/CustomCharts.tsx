@@ -63,10 +63,10 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
       <PieChart>
         <Pie
           data={data}
-          cx="35%"  // Movido mais para a esquerda
+          cx="40%"  // Movido mais para o centro para reduzir distância da legenda
           cy="50%"
           innerRadius={60}
-          outerRadius={130}
+          outerRadius={120}  // Reduzido para dar mais espaço para a legenda
           paddingAngle={2}
           dataKey={dataKey}
           nameKey={nameKey}
@@ -81,8 +81,8 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
         <Legend 
           content={<CustomLegend />}
           wrapperStyle={{
-            paddingLeft: '0px',
-            paddingRight: '40px',
+            paddingLeft: '20px',  // Reduzido de 0px para aproximar da pizza
+            paddingRight: '30px',  // Reduzido de 40px
             fontSize: '16px'
           }}
           layout="vertical"
