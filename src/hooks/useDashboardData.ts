@@ -467,21 +467,36 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     };
   };
 
-  // Calcula KPIs usando mapeamento de colunas
+  // Calcula volumes das duas abas
+  const volumeHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.VOLUME);
+  const volumePipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.VOLUME);
+  const volumeTotal = volumeHistorico + volumePipe;
+
+  // Calcula fee de estruturação das duas abas
+  const feeEstruturacaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+  const feeEstruturacaoPipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.ESTRUTURACAO);
+  const feeEstruturacaoTotal = feeEstruturacaoHistorico + feeEstruturacaoPipe;
+
+  // Calcula fee de gestão das duas abas
+  const feeGestaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO);
+  const feeGestaoPipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.GESTAO);
+  const feeGestaoTotal = feeGestaoHistorico + feeGestaoPipe;
+
+  // Calcula KPIs usando valores das duas abas
   const kpis: DashboardKPIs = {
     operacoesLiquidadas: currentLiquidadas,
     operacoesEstruturacao: estruturacao.length,
-    volumeLiquidado: (currentVolume / 1000000000).toFixed(1), // Volume em bilhões
-    volumeEstruturacao: (calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.VOLUME) / 1000000000).toFixed(1), // Volume em bilhões
-    feeLiquidado: (currentFee / 1000000).toFixed(1), // Estruturação em milhões
-    feeEstruturacao: (calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.ESTRUTURACAO) / 1000000).toFixed(1), // Estruturação em milhões
-    feeGestaoLiquidado: (calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO) / 1000).toFixed(0), // Gestão em milhares
-    feeGestaoEstruturacao: (calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.GESTAO) / 1000).toFixed(0), // Gestão em milhares
+    volumeLiquidado: (volumeTotal / 1000000000).toFixed(1), // Volume total em bilhões
+    volumeEstruturacao: (volumeTotal / 1000000000).toFixed(1), // Mesmo valor (volume total)
+    feeLiquidado: (feeEstruturacaoTotal / 1000000).toFixed(1), // Fee estruturação total em milhões
+    feeEstruturacao: (feeEstruturacaoTotal / 1000000).toFixed(1), // Mesmo valor (fee total)
+    feeGestaoLiquidado: (feeGestaoTotal / 1000).toFixed(0), // Fee gestão total em milhares
+    feeGestaoEstruturacao: (feeGestaoTotal / 1000).toFixed(0), // Mesmo valor (fee gestão total)
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
     // Comparações com ano anterior
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
-    volumeLiquidadoChange: getPercentChange(currentVolume, lastYearVolume),
-    feeLiquidadoChange: getPercentChange(currentFee, lastYearFee)
+    volumeLiquidadoChange: getPercentChange(volumeTotal, lastYearVolume),
+    feeLiquidadoChange: getPercentChange(feeEstruturacaoTotal, lastYearFee)
   };
 
   console.log('Calculated KPIs:', kpis);
@@ -567,7 +582,8 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   const monthNumbers = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
   
-  return months.map((mes, index) => {
+  // Primeiro calcula as contagens por mês
+  const monthlyData = months.map((mes, index) => {
     // Para operações liquidadas, usar a coluna DATA_LIQUIDACAO (coluna 26)
     const liquidadasCount = liquidadas.filter(row => {
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
@@ -597,6 +613,21 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
     }).length;
     
     return { mes, liquidadas: liquidadasCount, estruturacoes: estruturacoesCount };
+  });
+
+  // Agora converte para soma acumulada (running total)
+  let liquidadasAcumuladas = 0;
+  let estruturacoesAcumuladas = 0;
+  
+  return monthlyData.map(data => {
+    liquidadasAcumuladas += data.liquidadas;
+    estruturacoesAcumuladas += data.estruturacoes;
+    
+    return {
+      mes: data.mes,
+      liquidadas: liquidadasAcumuladas, // Soma acumulada
+      estruturacoes: estruturacoesAcumuladas // Soma acumulada
+    };
   });
 }
 
