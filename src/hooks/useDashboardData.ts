@@ -152,6 +152,18 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       console.log('Teste PIPE - Operação:', operacao, 'Previsão:', previsao);
     }
 
+  // Debug: Analisa TODAS as linhas do histórico antes de filtrar
+  console.log('=== ANÁLISE DETALHADA DO HISTÓRICO ===');
+  historicoData.forEach((row, index) => {
+    const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    const hasOperacao = operacao && String(operacao).trim() !== '';
+    const hasData = dataLiquidacao && String(dataLiquidacao).trim() !== '';
+    const isValid = isValidHistoricoRow(row);
+    
+    console.log(`Linha ${index + 1}: Operação="${operacao}" | Data="${dataLiquidacao}" | HasOp=${hasOperacao} | HasData=${hasData} | Valid=${isValid}`);
+  });
+
   // Filtra operações liquidadas (histórico)
   let filteredHistorico = historicoData.filter((row, index) => {
     // Primeiro verifica se é uma linha válida (tem OPERACAO e DATA_LIQUIDACAO)
@@ -165,8 +177,14 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       const date = parseDate(liquidationDate);
       
       if (date) {
-        if (defaultStartDate && date < defaultStartDate) return false;
-        if (defaultEndDate && date > defaultEndDate) return false;
+        if (defaultStartDate && date < defaultStartDate) {
+          console.log(`REJEITADA por data: "${getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)}" - Data: ${date}, Início: ${defaultStartDate}`);
+          return false;
+        }
+        if (defaultEndDate && date > defaultEndDate) {
+          console.log(`REJEITADA por data: "${getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)}" - Data: ${date}, Fim: ${defaultEndDate}`);
+          return false;
+        }
       }
     }
     
@@ -193,7 +211,7 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   });
 
   console.log('=== OPERAÇÕES EM ESTRUTURAÇÃO (PIPE) ===');
-  console.log('Critério: OPERACAO preenchida E PREVISAO_LIQUIDACAO preenchida');
+  console.log('Critério: OPERACAO preenchida E (PREVISAO_LIQUIDACAO preenchida OU "Liquidada")');
   filteredPipe.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
     const previsaoLiquidacao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
@@ -280,7 +298,7 @@ function isValidHistoricoRow(row: SheetData): boolean {
   return hasOperacao && hasDataLiquidacao;
 }
 
-// Função para validar linha do PIPE (OPERACAO + PREVISAO_LIQUIDACAO)
+// Função para validar linha do PIPE (OPERACAO + PREVISAO_LIQUIDACAO ou "Liquidada")
 function isValidPipeRow(row: SheetData): boolean {
   const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
   const previsaoLiquidacao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
@@ -288,10 +306,14 @@ function isValidPipeRow(row: SheetData): boolean {
   // Verifica se tem operação preenchida
   const hasOperacao = operacao && String(operacao).trim() !== '';
   
-  // Verifica se tem previsão de liquidação válida
-  const hasPrevisaoLiquidacao = previsaoLiquidacao && String(previsaoLiquidacao).trim() !== '';
+  // Verifica se tem previsão de liquidação válida OU se está escrito "Liquidada"
+  const previsaoStr = previsaoLiquidacao ? String(previsaoLiquidacao).trim() : '';
+  const hasValidPrevisao = previsaoStr !== '' && (
+    previsaoStr.toLowerCase() === 'liquidada' || // Aceita "Liquidada"
+    previsaoStr.length > 0 // Ou qualquer outra data/texto preenchido
+  );
   
-  return hasOperacao && hasPrevisaoLiquidacao;
+  return hasOperacao && hasValidPrevisao;
 }
 
 function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = []) {
