@@ -634,6 +634,48 @@ function formatFee(value: number): string {
 function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[]) {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   
+  console.log('=== DEBUG PROCESSMONTHLYDATA ===');
+  console.log('Total dados históricos recebidos:', liquidadas.length);
+  
+  // Debug: contar operações por ano
+  let count2024 = 0;
+  let count2025 = 0;
+  let countOthers = 0;
+  
+  liquidadas.forEach(row => {
+    if (!isValidHistoricoRow(row)) return;
+    
+    const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    if (!dataLiquidacao) return;
+    
+    const date = parseDate(dataLiquidacao);
+    if (!date) return;
+    
+    if (date.getFullYear() === 2024) count2024++;
+    else if (date.getFullYear() === 2025) count2025++;
+    else countOthers++;
+  });
+  
+  console.log('Operações válidas por ano:');
+  console.log('- 2024:', count2024);
+  console.log('- 2025:', count2025);
+  console.log('- Outros anos:', countOthers);
+  
+  // Debug: mostrar algumas datas de exemplo
+  console.log('=== EXEMPLOS DE DATAS ===');
+  let exampleCount = 0;
+  liquidadas.forEach((row, index) => {
+    if (exampleCount >= 5) return;
+    if (!isValidHistoricoRow(row)) return;
+    
+    const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    const date = parseDate(dataLiquidacao);
+    
+    console.log(`${exampleCount + 1}. ${operacao}: "${dataLiquidacao}" -> ${date ? date.toISOString().split('T')[0] : 'null'} (ano: ${date ? date.getFullYear() : 'null'})`);
+    exampleCount++;
+  });
+  
   // Calcula dados de 2024 e 2025 para comparação
   const monthlyData2024 = months.map((mes, index) => {
     return liquidadas.filter(row => {
@@ -665,11 +707,21 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
     }).length;
   });
 
+  console.log('=== DADOS MENSAIS 2024 ===');
+  monthlyData2024.forEach((count, index) => {
+    if (count > 0) console.log(`${months[index]}/2024: ${count} operações`);
+  });
+  
+  console.log('=== DADOS MENSAIS 2025 ===');
+  monthlyData2025.forEach((count, index) => {
+    if (count > 0) console.log(`${months[index]}/2025: ${count} operações`);
+  });
+
   // Converte para soma acumulada (running total)
   let acumulado2024 = 0;
   let acumulado2025 = 0;
   
-  return months.map((mes, index) => {
+  const result = months.map((mes, index) => {
     acumulado2024 += monthlyData2024[index];
     acumulado2025 += monthlyData2025[index];
     
@@ -681,6 +733,13 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
       estruturacoes: 0
     };
   });
+  
+  console.log('=== DADOS ACUMULADOS FINAIS ===');
+  console.log('2024 final:', acumulado2024);
+  console.log('2025 final:', acumulado2025);
+  console.log('Resultado do gráfico:', result);
+  
+  return result;
 }
 
 function processCategoryData(data: SheetData[]) {
