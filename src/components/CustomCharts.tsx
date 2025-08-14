@@ -28,10 +28,6 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   dataKey: string;
   nameKey: string;
 }) {
-  // LOG DEBUG: Verificando renderização do CustomPieChart
-  console.log('🎨 CustomPieChart renderizado:', { data, dataKey, nameKey });
-  console.log('📊 Configuração atual - cx: 45%, outerRadius: 100, marginLeft: -20px');
-  
   // Cores mais distintas para evitar confusão entre DEB e CR
   const COLORS = [
     'hsl(217, 91%, 59%)',  // Azul vibrante (DEB)
