@@ -149,9 +149,9 @@ export default function Dashboard() {
               <KPICard
                 title="Fee de Estruturação"
                 value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
-                leftValue={`${kpis.feeLiquidado} mi`}
+                leftValue={kpis.feeLiquidado}
                 leftLabel="Liquidado"
-                rightValue={`${kpis.feeEstruturacao} mi`}
+                rightValue={kpis.feeEstruturacao}
                 rightLabel="Estruturação"
                 change={kpis.feeLiquidadoChange}
                 variant="warning"
