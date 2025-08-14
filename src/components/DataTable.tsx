@@ -37,17 +37,28 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
   };
 
   const formatCurrency = (value: number | string) => {
+    // Se já está formatado como moeda, retorna como está
+    if (typeof value === 'string' && value.startsWith('R$')) {
+      return value;
+    }
+    
     const num = typeof value === 'string' ? parseFloat(value.replace(/[^\d.-]/g, '')) : value;
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(num);
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString || dateString === 'null') return '-';
+    if (!dateString || dateString === 'null' || dateString === '') return '-';
+    
+    // Se já está no formato DD/MM/YYYY ou é "Liquidada", retorna como está
+    if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/) || dateString.toLowerCase() === 'liquidada') {
+      return dateString;
+    }
+    
     try {
       return new Date(dateString).toLocaleDateString('pt-BR');
     } catch {
