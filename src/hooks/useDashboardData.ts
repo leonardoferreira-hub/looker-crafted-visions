@@ -503,12 +503,12 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   const kpis: DashboardKPIs = {
     operacoesLiquidadas: currentLiquidadas,
     operacoesEstruturacao: estruturacao.length,
-    volumeLiquidado: formatVolume(volumeTotal), // Volume total formatado
-    volumeEstruturacao: formatVolume(volumeTotal), // Mesmo valor (volume total)
-    feeLiquidado: formatFee(feeEstruturacaoTotal), // Fee estruturação total formatado
-    feeEstruturacao: formatFee(feeEstruturacaoTotal), // Mesmo valor (fee total)
-    feeGestaoLiquidado: formatFee(feeGestaoTotal), // Fee gestão total formatado
-    feeGestaoEstruturacao: formatFee(feeGestaoTotal), // Mesmo valor (fee gestão total)
+    volumeLiquidado: formatVolume(volumeHistorico), // Volume apenas liquidadas
+    volumeEstruturacao: formatVolume(volumePipe), // Volume apenas em estruturação
+    feeLiquidado: formatFee(feeEstruturacaoHistorico), // Fee apenas liquidadas
+    feeEstruturacao: formatFee(feeEstruturacaoPipe), // Fee apenas estruturação
+    feeGestaoLiquidado: formatFee(feeGestaoHistorico), // Fee gestão apenas liquidadas
+    feeGestaoEstruturacao: formatFee(feeGestaoPipe), // Fee gestão apenas estruturação
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
     // Comparações com ano anterior
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
@@ -596,25 +596,15 @@ function formatDate(value: any): string {
 }
 
 function formatVolume(value: number): string {
-  // Converte para bilhões e formata em português brasileiro
+  // Converte para bilhões e retorna apenas o número
   const bilhoes = value / 1000000000;
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1
-  }).format(bilhoes) + ' bi';
+  return bilhoes.toFixed(1);
 }
 
 function formatFee(value: number): string {
-  // Formata em milhões em português brasileiro
+  // Converte para milhões e retorna apenas o número
   const milhoes = value / 1000000;
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1
-  }).format(milhoes) + ' mi';
+  return milhoes.toFixed(1);
 }
 
 function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[]) {
