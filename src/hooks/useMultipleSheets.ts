@@ -109,14 +109,20 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       
       const row: SheetData = {};
       
-      // Usa índices em vez de nomes de headers para mais confiabilidade
-      values.forEach((value, index) => {
-        const cleanValue = value.replace(/^"|"$/g, '').trim(); // Remove aspas do início e fim
+      // Garante que todas as colunas até pelo menos 30 sejam criadas
+      const maxColumns = Math.max(30, values.length);
+      
+      for (let index = 0; index < maxColumns; index++) {
+        const value = values[index] || ''; // Se não existir valor, usa string vazia
+        const cleanValue = String(value).replace(/^"|"$/g, '').trim(); // Remove aspas do início e fim
         
         // Verifica se é uma data (contém / ou -) para não converter para número
         const isDate = cleanValue.includes('/') || cleanValue.includes('-');
         
-        if (isDate) {
+        if (cleanValue === '') {
+          // Se vazio, mantém como string vazia
+          row[`col_${index}`] = '';
+        } else if (isDate) {
           // Se for data, mantém como string
           row[`col_${index}`] = cleanValue;
         } else {
@@ -124,7 +130,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
           const numValue = parseFloat(cleanValue.replace(/[R$\s,]/g, '').replace(/\./g, '').replace(/,/g, '.'));
           row[`col_${index}`] = !isNaN(numValue) && cleanValue.match(/^[\d,.\s$R]*$/) ? numValue : cleanValue;
         }
-      });
+      }
       
       if (Object.keys(row).length > 0 && !values.every(val => !val || val.trim() === '')) {
         rows.push(row);

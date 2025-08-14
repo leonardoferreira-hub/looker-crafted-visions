@@ -183,6 +183,23 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   console.log('=== ANÁLISE DETALHADA DO HISTÓRICO ===');
   console.log('Verificando estrutura dos dados...');
   
+  // Analisa quantas linhas têm col_26
+  let linhasComCol26 = 0;
+  let linhasSemCol26 = 0;
+  
+  historicoData.forEach((row, index) => {
+    if ('col_26' in row && row['col_26']) {
+      linhasComCol26++;
+    } else {
+      linhasSemCol26++;
+    }
+  });
+  
+  console.log('📊 ESTATÍSTICAS DAS COLUNAS:');
+  console.log(`Linhas COM col_26: ${linhasComCol26}`);
+  console.log(`Linhas SEM col_26: ${linhasSemCol26}`);
+  console.log(`Total de linhas: ${historicoData.length}`);
+  
   historicoData.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
@@ -192,14 +209,18 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       console.log('🔍 OPERAÇÃO SQUARELIFE ENCONTRADA:');
       console.log('Linha:', index + 1);
       console.log('Operação completa:', operacao);
-      console.log('Estrutura da linha:', row);
-      console.log('SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO:', SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      console.log('Tentando acessar col_' + SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO + ':');
-      console.log('row["col_26"]:', row['col_26']);
-      console.log('Tipo:', typeof row['col_26']);
-      console.log('getCellValue retorna:', dataLiquidacao);
       
-      // Mostra TODAS as colunas que têm datas para comparar
+      // Mostra quantas colunas realmente existem
+      const colunas = Object.keys(row);
+      console.log('Número total de colunas:', colunas.length);
+      console.log('Última coluna:', colunas[colunas.length - 1]);
+      console.log('Colunas existentes:', colunas);
+      
+      // Verifica se col_26 existe
+      console.log('col_26 existe?', 'col_26' in row);
+      console.log('row["col_26"]:', row['col_26']);
+      
+      // Mostra TODAS as colunas que têm datas 
       console.log('TODAS AS DATAS NESTA LINHA:');
       Object.entries(row).forEach(([key, value]) => {
         const strValue = String(value);
@@ -208,7 +229,15 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
         }
       });
       
-      console.log('isValidHistoricoRow retorna:', isValidHistoricoRow(row));
+      // Se não há col_26, onde pode estar a data de liquidação?
+      console.log('POSSÍVEIS DATAS DE LIQUIDAÇÃO:');
+      Object.entries(row).forEach(([key, value]) => {
+        const strValue = String(value);
+        if (strValue.includes('Liquidada') || strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/)) {
+          console.log(`${key}: "${value}" ← CANDIDATO`);
+        }
+      });
+      
       console.log('=====================================');
     }
     
@@ -351,14 +380,13 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 function getCellValue(row: SheetData, columnIndex: number): any {
   if (!row) return null;
   
-  // Vai DIRETO na coluna especificada, sem parar em outras
+  // Vai DIRETO na coluna especificada
   const value = row[`col_${columnIndex}`];
   
-  // Debug será feito apenas para operações específicas
-  
-  // Limpa e valida o valor encontrado
+  // Agora todas as colunas existem, mas podem estar vazias
   if (value !== null && value !== undefined) {
     const strValue = String(value).trim();
+    // Considera vazio se for string vazia, "null" ou "undefined"
     if (strValue === '' || strValue === 'null' || strValue === 'undefined') {
       return null;
     }
