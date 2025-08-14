@@ -360,7 +360,15 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       return date >= lastYearStart && date <= lastYearEnd;
     });
 
-    return processSheetData(filteredHistorico, filteredPipe, lastYearData);
+    // Para o gráfico, usa dados históricos SEM filtro de data (apenas validação de linhas)
+    const allValidHistorico = historicoData.filter(row => isValidHistoricoRow(row));
+    
+    console.log('=== DEBUG DADOS PARA GRÁFICO ===');
+    console.log('Dados históricos brutos:', historicoData.length);
+    console.log('Dados históricos válidos (sem filtro de data):', allValidHistorico.length);
+    console.log('Dados filtrados para KPIs (com filtro 2025):', filteredHistorico.length);
+
+    return processSheetData(filteredHistorico, filteredPipe, lastYearData, allValidHistorico);
   }, [data, defaultStartDate, defaultEndDate]);
 
   return {
@@ -435,7 +443,7 @@ function isValidPipeRow(row: SheetData): boolean {
   return hasOperacao && isValidDate;
 }
 
-function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = []) {
+function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = [], allValidHistorico?: SheetData[]) {
   console.log('Processing sheet data...');
   console.log('Historico rows:', historicoData.length);
   console.log('Pipe rows:', pipeData.length);
@@ -540,21 +548,6 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeLiquidadoChange: getPercentChange(feeEstruturacaoTotal, lastYearFee)
   };
 
-  console.log('Calculated KPIs:', kpis);
-
-  // Para o gráfico, usa dados históricos SEM filtro de data (apenas validação de linhas)
-  const allValidHistorico = historicoData.filter(row => isValidHistoricoRow(row));
-  
-  console.log('=== DEBUG DADOS PARA GRÁFICO ===');
-  console.log('Dados históricos brutos:', historicoData.length);
-  console.log('Dados históricos válidos (sem filtro de data):', allValidHistorico.length);
-  console.log('Dados filtrados para KPIs (com filtro 2025):', filteredHistorico.length);
-  
-  // Processa dados para gráficos
-  const chartData = {
-    operacoesPorMes: processMonthlyData(allValidHistorico, estruturacao), // Usa TODOS os dados históricos válidos para comparar 2024 vs 2025
-    categorias: processCategoryData([...filteredHistorico, ...filteredPipe])
-  };
 
   // Processa dados para tabelas usando mapeamento de colunas
   const proximasLiquidacoes = estruturacao.slice(0, 5).map(row => {
@@ -575,6 +568,13 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
       dataLiquidacao: formatDate(dataLiquidacao)
     };
   });
+
+  // Processa dados para gráficos usando dados históricos completos ou filtrados
+  const historicoParaGrafico = allValidHistorico || liquidadas; // Usa dados históricos completos se disponível
+  const chartData = {
+    operacoesPorMes: processMonthlyData(historicoParaGrafico, estruturacao),
+    categorias: processCategoryData([...liquidadas, ...estruturacao])
+  };
 
   return {
     kpis,
