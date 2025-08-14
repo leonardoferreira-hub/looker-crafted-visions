@@ -438,17 +438,24 @@ function getCellValue(row: SheetData, columnIndex: number): any {
   // Vai DIRETO na coluna especificada
   const value = row[`col_${columnIndex}`];
   
-  // Agora todas as colunas existem, mas podem estar vazias
-  if (value !== null && value !== undefined) {
-    const strValue = String(value).trim();
-    // Considera vazio se for string vazia, "null" ou "undefined"
-    if (strValue === '' || strValue === 'null' || strValue === 'undefined') {
-      return null;
-    }
-    return strValue;
+  // Se o valor não existe ou é nulo/indefinido
+  if (value === null || value === undefined) {
+    return null;
   }
   
-  return null;
+  // Se é um número, retorna o número original
+  if (typeof value === 'number') {
+    return value;
+  }
+  
+  // Se é string, verifica se está vazia
+  const strValue = String(value).trim();
+  if (strValue === '' || strValue === 'null' || strValue === 'undefined') {
+    return null;
+  }
+  
+  // Retorna o valor original (preserva strings e números)
+  return value;
 }
 
 // Função para validar linha do HISTÓRICO (OPERACAO + DATA_LIQUIDACAO)
