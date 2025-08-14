@@ -33,11 +33,53 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
     }
   };
 
+  // Função para dividir CSV em linhas considerando quebras dentro de células
+  const parseCSVLines = (csvText: string): string[] => {
+    const lines = [];
+    let currentLine = '';
+    let insideQuotes = false;
+    
+    for (let i = 0; i < csvText.length; i++) {
+      const char = csvText[i];
+      const nextChar = csvText[i + 1];
+      
+      if (char === '"') {
+        insideQuotes = !insideQuotes;
+        currentLine += char;
+      } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) {
+        // Nova linha fora de aspas = fim da linha CSV
+        if (currentLine.trim()) {
+          lines.push(currentLine.trim());
+          currentLine = '';
+        }
+        // Pula \r\n
+        if (char === '\r' && nextChar === '\n') {
+          i++; // Pula o \n
+        }
+      } else {
+        // Dentro de aspas, substitui quebras de linha por espaço
+        if ((char === '\n' || char === '\r') && insideQuotes) {
+          currentLine += ' ';
+        } else {
+          currentLine += char;
+        }
+      }
+    }
+    
+    // Adiciona a última linha se existir
+    if (currentLine.trim()) {
+      lines.push(currentLine.trim());
+    }
+    
+    return lines;
+  };
+
   const parseCSV = (csvText: string, predefinedHeaderRowIndex?: number): SheetData[] => {
     console.log('CSV Text length:', csvText.length);
     console.log('First 500 chars:', csvText.substring(0, 500));
     
-    const lines = csvText.split('\n').filter(line => line.trim());
+    // Parse CSV considerando quebras de linha dentro de células entre aspas
+    const lines = parseCSVLines(csvText);
     if (lines.length === 0) return [];
 
     console.log('Total lines:', lines.length);
@@ -135,10 +177,12 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       if (Object.keys(row).length > 0 && !values.every(val => !val || val.trim() === '')) {
         // Debug específico para linha que contém "Squarelife"
         if (values.some(val => String(val).includes('Squarelife'))) {
-          console.log('🔍 PARSING CSV - LINHA SQUARELIFE:');
+          console.log('🔍 PARSING CSV - LINHA SQUARELIFE (APÓS CORREÇÃO):');
+          console.log('Número de colunas encontradas:', values.length);
           console.log('Values originais do CSV:', values);
-          console.log('Row criado:', row);
+          console.log('Row criado com', Object.keys(row).length, 'colunas');
           console.log('Valor na col_26:', row['col_26']);
+          console.log('Últimas 5 colunas:', values.slice(-5));
         }
         
         rows.push(row);
