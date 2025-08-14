@@ -3,80 +3,35 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
-    /* Travessia Brand Colors - Verde escuro da marca */
     --primary: 158 78% 20%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 158 50% 85%;
     --accent-foreground: 158 78% 20%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 158 78% 20%;
-
-    /* Custom Travessia colors */
+    --radius: 0.75rem;
     --primary-blue: 200 85% 50%;
     --primary-green: 158 78% 25%;
-    --primary-orange: 25 95% 53%;
-    --primary-purple: 262 83% 58%;
-    --primary-red: 0 84% 60%;
-    --primary-teal: 173 58% 45%;
-    
-    /* Success/Error states */
-    --success: 158 78% 25%;
-    --warning: 25 95% 53%;
-    --error: 0 84% 60%;
-    
-    /* Chart colors with Travessia palette */
     --chart-1: 158 78% 25%;
     --chart-2: 200 85% 50%;
     --chart-3: 158 50% 40%;
     --chart-4: 180 60% 45%;
     --chart-5: 160 55% 35%;
-    
-    /* Travessia Brand Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(158, 78%, 20%), hsl(158, 60%, 30%));
-    --gradient-brand: linear-gradient(135deg, hsl(158, 78%, 15%), hsl(158, 50%, 25%));
-    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(0 0% 98%));
-    --gradient-accent: linear-gradient(135deg, hsl(158, 50%, 85%), hsl(158, 40%, 90%));
-    --gradient-success: linear-gradient(135deg, hsl(158, 78%, 25%), hsl(158, 76%, 32%));
-    --gradient-warning: linear-gradient(135deg, hsl(25, 95%, 53%), hsl(25, 95%, 58%));
-    
-    /* Shadows with Travessia brand color */
-    --shadow-premium: 0 25px 50px -12px hsl(158 78% 20% / 0.25);
-    --shadow-card: 0 8px 25px -8px hsl(158 20% 5% / 0.3);
-    --shadow-glow: 0 0 30px hsl(158 78% 25% / 0.2);
-    
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --radius: 0.75rem;
-
-    /* Sidebar colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -90,51 +45,30 @@ All colors MUST be HSL.
   .dark {
     --background: 158 20% 8%;
     --foreground: 210 40% 98%;
-
     --card: 158 15% 10%;
     --card-foreground: 210 40% 98%;
-
     --popover: 158 15% 10%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 158 78% 35%;
     --primary-foreground: 158 20% 8%;
-
     --secondary: 158 15% 15%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 158 15% 15%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 158 30% 20%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 158 15% 20%;
     --input: 158 15% 20%;
     --ring: 158 78% 35%;
-    
     --primary-blue: 200 85% 60%;
     --primary-green: 158 78% 40%;
-    --primary-orange: 25 95% 58%;
-    --primary-purple: 262 83% 63%;
-    --primary-red: 0 84% 65%;
-    
     --chart-1: 158 78% 40%;
     --chart-2: 200 85% 65%;
     --chart-3: 158 50% 55%;
     --chart-4: 180 60% 60%;
     --chart-5: 160 55% 50%;
-    
-    /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(158, 78%, 25%), hsl(158, 60%, 35%));
-    --gradient-brand: linear-gradient(135deg, hsl(158, 78%, 20%), hsl(158, 50%, 30%));
-    --gradient-card: linear-gradient(135deg, hsl(158, 15%, 10%), hsl(158, 13%, 12%));
-    --shadow-card: 0 4px 12px 0 hsl(158 20% 5% / 0.3);
-    
-    /* Dark sidebar colors */
     --sidebar-background: 158 15% 10%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 158 78% 35%;
@@ -150,7 +84,6 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
