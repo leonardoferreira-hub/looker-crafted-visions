@@ -33,10 +33,20 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 };
 
 export function CombinedBarLineChart({ data }: { data: any[] }) {
+  // Filter data to show 2025 only until current month
+  const currentMonth = new Date().getMonth() + 1; // getMonth() returns 0-based index
+  const filteredData = data.map(item => {
+    const monthNumber = parseInt(item.mes.split('/')[0]); // Extract month from "MM/YYYY" format
+    if (monthNumber > currentMonth) {
+      return { ...item, acumulado2025: null }; // Remove future months for 2025
+    }
+    return item;
+  });
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart
-        data={data}
+        data={filteredData}
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
@@ -60,11 +70,10 @@ export function CombinedBarLineChart({ data }: { data: any[] }) {
         <Line 
           type="monotone" 
           dataKey="acumulado2024" 
-          stroke="hsl(var(--muted-foreground))" 
+          stroke="hsl(var(--accent))" 
           strokeWidth={3}
-          strokeDasharray="8 4"
-          dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 5 }}
-          activeDot={{ r: 7, stroke: 'hsl(var(--muted-foreground))', strokeWidth: 2 }}
+          dot={{ fill: 'hsl(var(--accent))', strokeWidth: 2, r: 5 }}
+          activeDot={{ r: 7, stroke: 'hsl(var(--accent))', strokeWidth: 2 }}
           name="2024"
         />
         
