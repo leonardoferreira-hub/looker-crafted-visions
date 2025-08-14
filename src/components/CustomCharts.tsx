@@ -41,15 +41,15 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   const CustomLegend = (props: any) => {
     const { payload } = props;
     return (
-      <div className="flex flex-col space-y-3 text-base font-medium">
+      <div className="flex flex-col space-y-2 text-sm font-medium" style={{ minWidth: '120px' }}>
         {payload?.map((entry: any, index: number) => (
-          <div key={index} className="flex items-center space-x-3">
+          <div key={index} className="flex items-center space-x-2">
             <div 
-              className="w-4 h-4 rounded-sm" 
+              className="w-3 h-3 rounded-sm flex-shrink-0" 
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-foreground text-sm">{entry.value}</span>
-            <span className="text-muted-foreground ml-auto font-semibold">
+            <span className="text-foreground text-sm flex-1 min-w-0">{entry.value}</span>
+            <span className="text-muted-foreground font-semibold text-sm">
               {data.find(item => item[nameKey] === entry.value)?.[dataKey]}%
             </span>
           </div>
@@ -60,13 +60,13 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <PieChart>
+      <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <Pie
           data={data}
-          cx="40%"  // Movido mais para o centro para reduzir distância da legenda
+          cx="45%"  // Movido mais para a direita para aproximar da legenda
           cy="50%"
-          innerRadius={60}
-          outerRadius={120}  // Reduzido para dar mais espaço para a legenda
+          innerRadius={50}  // Reduzido para tornar o gráfico mais compacto
+          outerRadius={100}  // Reduzido ainda mais para dar espaço à legenda
           paddingAngle={2}
           dataKey={dataKey}
           nameKey={nameKey}
@@ -81,9 +81,10 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
         <Legend 
           content={<CustomLegend />}
           wrapperStyle={{
-            paddingLeft: '20px',  // Reduzido de 0px para aproximar da pizza
-            paddingRight: '30px',  // Reduzido de 40px
-            fontSize: '16px'
+            paddingLeft: '10px',  // Reduzido drasticamente para aproximar
+            paddingRight: '20px',  // Reduzido mais ainda
+            fontSize: '14px',     // Reduzido tamanho da fonte
+            marginLeft: '-20px'   // Margem negativa para aproximar mais
           }}
           layout="vertical"
           align="right"
