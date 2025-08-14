@@ -154,11 +154,28 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 
   // Debug: Analisa TODAS as linhas do histórico antes de filtrar
   console.log('=== ANÁLISE DETALHADA DO HISTÓRICO ===');
+  console.log('Verificando estrutura dos dados...');
+  
   historicoData.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    
+    // Debug da estrutura da linha para encontrar onde estão as datas
+    if (index < 3) { // Mostra estrutura das primeiras 3 linhas
+      console.log(`Estrutura linha ${index + 1}:`, row);
+      console.log(`Todas as chaves da linha ${index + 1}:`, Object.keys(row));
+      
+      // Tenta encontrar valores que parecem datas
+      Object.entries(row).forEach(([key, value]) => {
+        const strValue = String(value);
+        if (strValue.includes('/') || strValue.includes('-') || strValue.match(/\d{2}\/\d{2}\/\d{4}/)) {
+          console.log(`POSSÍVEL DATA encontrada em ${key}: "${value}"`);
+        }
+      });
+    }
+    
     const hasOperacao = operacao && String(operacao).trim() !== '';
-    const hasData = dataLiquidacao && String(dataLiquidacao).trim() !== '';
+    const hasData = dataLiquidacao && String(dataLiquidacao).trim() !== '' && String(dataLiquidacao) !== 'null';
     const isValid = isValidHistoricoRow(row);
     
     console.log(`Linha ${index + 1}: Operação="${operacao}" | Data="${dataLiquidacao}" | HasOp=${hasOperacao} | HasData=${hasData} | Valid=${isValid}`);
@@ -259,20 +276,37 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 function getCellValue(row: SheetData, columnIndex: number): any {
   if (!row) return null;
   
-  // Debug mais limpo para verificar se está pegando a data corretamente
-  if (columnIndex === 26 && row[`col_${columnIndex}`]) {
-    console.log(`DATA_LIQUIDACAO encontrada:`, row[`col_${columnIndex}`]);
+  // Tenta diferentes métodos para acessar o valor da célula
+  let value = null;
+  
+  // Método 1: col_${columnIndex}
+  if (row[`col_${columnIndex}`] !== undefined && row[`col_${columnIndex}`] !== null) {
+    value = row[`col_${columnIndex}`];
   }
   
-  // PRIORIZA o acesso por col_${columnIndex} que é mais confiável
-  let value = row[`col_${columnIndex}`];
-  
-  // Se não encontrar por col_, tenta por índice direto
-  if (value === undefined || value === null) {
+  // Método 2: índice direto
+  else if (row[columnIndex] !== undefined && row[columnIndex] !== null) {
     value = row[columnIndex];
   }
   
-  // Limpa valores vazios ou apenas espaços
+  // Método 3: Object.values() por índice
+  else {
+    const values = Object.values(row);
+    if (values[columnIndex] !== undefined && values[columnIndex] !== null) {
+      value = values[columnIndex];
+    }
+  }
+  
+  // Método 4: procura por chaves que contenham o índice
+  if (!value) {
+    const keys = Object.keys(row);
+    const possibleKey = keys.find(key => key.includes(String(columnIndex)));
+    if (possibleKey) {
+      value = row[possibleKey];
+    }
+  }
+  
+  // Limpa e valida o valor encontrado
   if (value !== null && value !== undefined) {
     const strValue = String(value).trim();
     if (strValue === '' || strValue === 'null' || strValue === 'undefined') {
@@ -292,8 +326,9 @@ function isValidHistoricoRow(row: SheetData): boolean {
   // Verifica se tem operação preenchida
   const hasOperacao = operacao && String(operacao).trim() !== '';
   
-  // Verifica se tem data de liquidação válida
-  const hasDataLiquidacao = dataLiquidacao && String(dataLiquidacao).trim() !== '';
+  // Verifica se tem data de liquidação válida (não vazia, não "null" como string)
+  const dataStr = dataLiquidacao ? String(dataLiquidacao).trim() : '';
+  const hasDataLiquidacao = dataStr !== '' && dataStr !== 'null' && dataStr !== 'undefined';
   
   return hasOperacao && hasDataLiquidacao;
 }
