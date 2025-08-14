@@ -1,5 +1,4 @@
 import { useState } from "react";
-import travessiaLogo from "@/assets/travessia-logo.png";
 import { KPICard } from "@/components/KPICard";
 import { OperationsCard } from "@/components/OperationsCard";
 import { ChartCard } from "@/components/ChartCard";
@@ -51,41 +50,34 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header com identidade Travessia */}
-      <header className="bg-gradient-brand border-b border-border/20 shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <img 
-                src={travessiaLogo} 
-                alt="Travessia Logo" 
-                className="h-12 w-auto object-contain"
-              />
-              <div>
-                <h1 className="text-2xl font-bold text-white">Travessia</h1>
-                <p className="text-white/80 text-sm">Dashboard Executivo</p>
-              </div>
+      {/* Header */}
+      <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm">
+        <div className="flex h-16 items-center justify-between px-6">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="h-6 w-6 text-primary" />
+              <h1 className="text-xl font-bold text-foreground">Travessia</h1>
             </div>
+            <div className="text-sm text-muted-foreground">
+              {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <ConnectionStatus
+              isConnected={isConnected}
+              loading={loading}
+              error={error}
+              onRefresh={refetch}
+            />
             
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-white/60 hidden md:block">
-                {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
-              </div>
-              <ConnectionStatus
-                isConnected={isConnected}
-                loading={loading}
-                error={error}
-                onRefresh={refetch}
-              />
-              
-              <div className="flex items-center space-x-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20 opacity-90 hover:opacity-100">
-                      <Filter className="mr-2 h-4 w-4" />
-                      Filtros
-                    </Button>
-                  </PopoverTrigger>
+            <div className="flex items-center space-x-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="opacity-80 hover:opacity-100">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Filtros
+                  </Button>
+                </PopoverTrigger>
                 <PopoverContent className="w-auto p-4 bg-background border border-border shadow-lg z-50" align="start">
                   <div className="space-y-4">
                     <h4 className="font-medium">Filtros de Data</h4>
@@ -108,17 +100,17 @@ export default function Dashboard() {
                   </div>
                 </PopoverContent>
               </Popover>
-                <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20 opacity-90 hover:opacity-100">
-                  <Download className="mr-2 h-4 w-4" />
-                  Exportar
-                </Button>
-                
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20 opacity-90 hover:opacity-100">
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Exportar
+              </Button>
+              
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
                 <SheetContent className="w-[400px] sm:w-[540px]">
                   <SheetHeader>
                     <SheetTitle>Configurações do Dashboard</SheetTitle>
@@ -129,32 +121,14 @@ export default function Dashboard() {
                   <div className="mt-6">
                     <ConfigPanel />
                   </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-6">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center space-y-2">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="text-muted-foreground">Carregando dados...</p>
-            </div>
-          </div>
-        ) : error ? (
-          <div className="text-center space-y-2">
-            <p className="text-destructive">Erro ao carregar dados: {error}</p>
-            <Button onClick={refetch} variant="outline" size="sm">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Tentar novamente
-            </Button>
-          </div>
-        ) : (
+      <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
             <TabsTrigger value="resumo">Resumo</TabsTrigger>
@@ -325,7 +299,6 @@ export default function Dashboard() {
             </div>
           </TabsContent>
         </Tabs>
-        )}
       </div>
     </div>
   );
