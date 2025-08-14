@@ -55,7 +55,11 @@ export default function Dashboard() {
         <div className="flex h-16 items-center justify-between px-6">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <BarChart3 className="h-6 w-6 text-primary" />
+              <img 
+                src="/lovable-uploads/b46458cc-55a4-4a1a-a98e-f6f80b5c6a30.png" 
+                alt="Travessia Logo" 
+                className="h-8 w-auto"
+              />
               <h1 className="text-xl font-bold text-foreground">Travessia</h1>
             </div>
             <div className="text-sm text-muted-foreground">
