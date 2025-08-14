@@ -131,56 +131,52 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     console.log('Historico Data (raw):', historicoData.length);
     console.log('Pipe Data (raw):', pipeData.length);
     
-    // Debug das primeiras linhas
-    console.log('Primeiras 3 linhas HISTORICO:', historicoData.slice(0, 3));
-    console.log('Primeiras 3 linhas PIPE:', pipeData.slice(0, 3));
-    
     // Debug dos índices das colunas
-    console.log('SHEETS_COLUMNS.HISTORICO.OPERACAO:', SHEETS_COLUMNS.HISTORICO.OPERACAO);
-    console.log('SHEETS_COLUMNS.PIPE.OPERACAO:', SHEETS_COLUMNS.PIPE.OPERACAO);
+    console.log('SHEETS_COLUMNS.HISTORICO.OPERACAO (índice):', SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    console.log('SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO (índice):', SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    console.log('SHEETS_COLUMNS.PIPE.OPERACAO (índice):', SHEETS_COLUMNS.PIPE.OPERACAO);
+    console.log('SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO (índice):', SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+    
+    // Debug das primeiras linhas para verificar estrutura
+    if (historicoData.length > 0) {
+      console.log('Primeira linha HISTORICO:', historicoData[0]);
+      const operacao = getCellValue(historicoData[0], SHEETS_COLUMNS.HISTORICO.OPERACAO);
+      const dataLiq = getCellValue(historicoData[0], SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      console.log('Teste HISTORICO - Operação:', operacao, 'Data:', dataLiq);
+    }
+    
+    if (pipeData.length > 0) {
+      console.log('Primeira linha PIPE:', pipeData[0]);
+      const operacao = getCellValue(pipeData[0], SHEETS_COLUMNS.PIPE.OPERACAO);
+      const previsao = getCellValue(pipeData[0], SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+      console.log('Teste PIPE - Operação:', operacao, 'Previsão:', previsao);
+    }
 
-  // Filtra operações liquidadas (histórico) - primeiro valida linha, depois por data
+  // Filtra operações liquidadas (histórico)
   let filteredHistorico = historicoData.filter((row, index) => {
-    // Primeiro verifica se é uma linha válida (não é cabeçalho)
-    if (!isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)) {
+    // Primeiro verifica se é uma linha válida (tem OPERACAO e DATA_LIQUIDACAO)
+    if (!isValidHistoricoRow(row)) {
       return false;
     }
     
-    // Se não há filtro de data, inclui todas as linhas válidas
-    if (!defaultStartDate && !defaultEndDate) {
-      return true;
+    // Aplica filtro de data se especificado
+    if (defaultStartDate || defaultEndDate) {
+      const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      const date = parseDate(liquidationDate);
+      
+      if (date) {
+        if (defaultStartDate && date < defaultStartDate) return false;
+        if (defaultEndDate && date > defaultEndDate) return false;
+      }
     }
-    
-    // Filtra por data usando a coluna DATA_LIQUIDACAO
-    const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-    
-    // Se não tem data, inclui na consulta (operações sem data de liquidação)
-    if (!liquidationDate || liquidationDate === '') {
-      return true;
-    }
-    
-    const date = parseDate(liquidationDate);
-    if (!date) {
-      return true; // Se não consegue fazer parse da data, inclui
-    }
-    
-    // Aplica filtro de data
-    if (defaultStartDate && date < defaultStartDate) return false;
-    if (defaultEndDate && date > defaultEndDate) return false;
     
     return true;
   });
 
-  // Filtra operações em estruturação (pipe) - primeiro valida linha, depois por data se aplicável
+  // Filtra operações em estruturação (pipe)
   let filteredPipe = pipeData.filter((row, index) => {
-    // Primeiro verifica se é uma linha válida (não é cabeçalho)
-    if (!isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO)) {
-      return false;
-    }
-    
-    // Para operações em estruturação, podemos filtrar pela data de entrada no pipe
-    // ou incluir todas as operações válidas independente da data
-    return true; // Por enquanto inclui todas as operações em estruturação válidas
+    // Verifica se é uma linha válida (tem OPERACAO e PREVISAO_LIQUIDACAO)
+    return isValidPipeRow(row);
   });
 
   console.log('=== DADOS FILTRADOS ===');
@@ -189,23 +185,19 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 
   // Log detalhado das operações que serão consideradas no KPI
   console.log('=== OPERAÇÕES LIQUIDADAS (HISTÓRICO) ===');
+  console.log('Critério: OPERACAO preenchida E DATA_LIQUIDACAO preenchida');
   filteredHistorico.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-    
-    // Debug: mostra toda a linha para verificar se está pegando da coluna certa
-    console.log(`${index + 1}. Linha completa:`, row);
-    console.log(`${index + 1}. Coluna 3 (OPERACAO): "${operacao}" | Data Liquidação: "${dataLiquidacao}"`);
+    console.log(`${index + 1}. "${operacao}" | Data: "${dataLiquidacao}"`);
   });
 
   console.log('=== OPERAÇÕES EM ESTRUTURAÇÃO (PIPE) ===');
+  console.log('Critério: OPERACAO preenchida E PREVISAO_LIQUIDACAO preenchida');
   filteredPipe.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
     const previsaoLiquidacao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
-    
-    // Debug: mostra toda a linha para verificar se está pegando da coluna certa
-    console.log(`${index + 1}. Linha completa:`, row);
-    console.log(`${index + 1}. Coluna 3 (OPERACAO): "${operacao}" | Previsão Liquidação: "${previsaoLiquidacao}"`);
+    console.log(`${index + 1}. "${operacao}" | Previsão: "${previsaoLiquidacao}"`);
   });
 
   console.log('=== RESUMO PARA KPI ===');
@@ -218,15 +210,14 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const lastYearEnd = new Date(2024, defaultEndDate.getMonth(), defaultEndDate.getDate());
     
     const lastYearData = historicoData.filter(row => {
-      // Primeiro verifica se é uma linha válida
-      if (!isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)) {
+      // Primeiro verifica se é uma linha válida do histórico
+      if (!isValidHistoricoRow(row)) {
         return false;
       }
       
       const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      if (!liquidationDate) return false;
-      
       const date = parseDate(liquidationDate);
+      
       if (!date) return false;
       
       return date >= lastYearStart && date <= lastYearEnd;
@@ -275,12 +266,32 @@ function getCellValue(row: SheetData, columnIndex: number): any {
   return null;
 }
 
-// Função auxiliar para verificar se uma linha é válida (tem valor na coluna Operação)
-function isValidRow(row: SheetData, operacaoColumnIndex: number): boolean {
-  const operacao = getCellValue(row, operacaoColumnIndex);
+// Função para validar linha do HISTÓRICO (OPERACAO + DATA_LIQUIDACAO)
+function isValidHistoricoRow(row: SheetData): boolean {
+  const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+  const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
   
-  // Simplesmente verifica se existe algum valor na coluna OPERACAO
-  return operacao && String(operacao).trim() !== '';
+  // Verifica se tem operação preenchida
+  const hasOperacao = operacao && String(operacao).trim() !== '';
+  
+  // Verifica se tem data de liquidação válida
+  const hasDataLiquidacao = dataLiquidacao && String(dataLiquidacao).trim() !== '';
+  
+  return hasOperacao && hasDataLiquidacao;
+}
+
+// Função para validar linha do PIPE (OPERACAO + PREVISAO_LIQUIDACAO)
+function isValidPipeRow(row: SheetData): boolean {
+  const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+  const previsaoLiquidacao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+  
+  // Verifica se tem operação preenchida
+  const hasOperacao = operacao && String(operacao).trim() !== '';
+  
+  // Verifica se tem previsão de liquidação válida
+  const hasPrevisaoLiquidacao = previsaoLiquidacao && String(previsaoLiquidacao).trim() !== '';
+  
+  return hasOperacao && hasPrevisaoLiquidacao;
 }
 
 function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = []) {
