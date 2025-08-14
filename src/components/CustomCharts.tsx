@@ -68,44 +68,41 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   };
 
   return (
-    <div className="relative w-full h-[350px] flex items-center">
-      {/* Gráfico de Pizza - Lado Esquerdo */}
-      <div className="flex-1">
-        <ResponsiveContainer width="100%" height={350}>
-          <PieChart margin={{ top: 20, right: 0, bottom: 20, left: 20 }}>
-            <Pie
-              data={data}
-              cx="70%"  // Movido mais para a direita dentro do container esquerdo
-              cy="50%"
-              innerRadius={45}
-              outerRadius={90}
-              paddingAngle={2}
-              dataKey={dataKey}
-              nameKey={nameKey}
-            >
-              {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip 
-              content={<CustomTooltip formatter={(value) => `${value}%`} />}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      
-      {/* Legenda - Lado Direito - Posicionamento Manual */}
-      <div 
-        className="absolute right-0 top-1/2 transform -translate-y-1/2"
-        style={{ 
-          right: '20px', // Distância da borda direita
-          minWidth: '120px'
-        }}
-      >
-        <CustomLegend payload={data.map((item, index) => ({
-          value: item[nameKey],
-          color: COLORS[index % COLORS.length]
-        }))} />
+    <div className="w-full h-[350px] flex items-center justify-center">
+      {/* Container centralizado para gráfico + legenda */}
+      <div className="flex items-center justify-center gap-4">
+        {/* Gráfico de Pizza */}
+        <div className="w-[220px] h-[220px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%" // Centralizado no seu container
+                cy="50%"
+                innerRadius={45}
+                outerRadius={90}
+                paddingAngle={2}
+                dataKey={dataKey}
+                nameKey={nameKey}
+              >
+                {data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip 
+                content={<CustomTooltip formatter={(value) => `${value}%`} />}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Legenda - Ao lado da pizza */}
+        <div className="flex flex-col justify-center">
+          <CustomLegend payload={data.map((item, index) => ({
+            value: item[nameKey],
+            color: COLORS[index % COLORS.length]
+          }))} />
+        </div>
       </div>
     </div>
   );
