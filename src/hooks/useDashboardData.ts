@@ -140,13 +140,9 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     console.log('SHEETS_COLUMNS.PIPE.OPERACAO:', SHEETS_COLUMNS.PIPE.OPERACAO);
 
   // Filtra operações liquidadas (histórico) - primeiro valida linha, depois por data
-  console.log('=== FILTRANDO HISTÓRICO ===');
   let filteredHistorico = historicoData.filter((row, index) => {
-    console.log(`Linha ${index + 1} HISTÓRICO:`, row);
-    
     // Primeiro verifica se é uma linha válida (não é cabeçalho)
     if (!isValidRow(row, SHEETS_COLUMNS.HISTORICO.OPERACAO)) {
-      console.log(`Linha ${index + 1} HISTÓRICO REJEITADA - sem operação válida`);
       return false;
     }
     
@@ -176,13 +172,9 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   });
 
   // Filtra operações em estruturação (pipe) - primeiro valida linha, depois por data se aplicável
-  console.log('=== FILTRANDO PIPE ===');
   let filteredPipe = pipeData.filter((row, index) => {
-    console.log(`Linha ${index + 1} PIPE:`, row);
-    
     // Primeiro verifica se é uma linha válida (não é cabeçalho)
     if (!isValidRow(row, SHEETS_COLUMNS.PIPE.OPERACAO)) {
-      console.log(`Linha ${index + 1} PIPE REJEITADA - sem operação válida`);
       return false;
     }
     
@@ -194,6 +186,26 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   console.log('=== DADOS FILTRADOS ===');
   console.log('Filtered Historico:', filteredHistorico.length);
   console.log('Filtered Pipe:', filteredPipe.length);
+
+  // Log detalhado das operações que serão consideradas no KPI
+  console.log('=== OPERAÇÕES LIQUIDADAS (HISTÓRICO) ===');
+  filteredHistorico.forEach((row, index) => {
+    const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    console.log(`${index + 1}. Operação: "${operacao}" | Data Liquidação: "${dataLiquidacao}"`);
+  });
+
+  console.log('=== OPERAÇÕES EM ESTRUTURAÇÃO (PIPE) ===');
+  filteredPipe.forEach((row, index) => {
+    const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+    const previsaoLiquidacao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+    console.log(`${index + 1}. Operação: "${operacao}" | Previsão Liquidação: "${previsaoLiquidacao}"`);
+  });
+
+  console.log('=== RESUMO PARA KPI ===');
+  console.log(`Total Operações Liquidadas: ${filteredHistorico.length}`);
+  console.log(`Total Operações em Estruturação: ${filteredPipe.length}`);
+  console.log(`TOTAL GERAL: ${filteredHistorico.length + filteredPipe.length}`);
 
     // Calcula dados de 2024 para comparação (mesmo período)
     const lastYearStart = new Date(2024, defaultStartDate.getMonth(), defaultStartDate.getDate());
@@ -263,9 +275,6 @@ function isValidRow(row: SheetData, operacaoColumnIndex: number): boolean {
                    String(operacao).trim() !== '' && 
                    String(operacao).trim() !== 'null' && 
                    String(operacao).trim() !== 'undefined';
-  
-  // Log para debug
-  console.log('DEBUG isValidRow - Operação:', operacao, 'HasValue:', hasValue);
   
   return hasValue;
 }
