@@ -468,9 +468,26 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   };
 
   // Calcula volumes das duas abas
+  console.log('=== DEBUG VOLUME CALCULATION ===');
+  console.log('Coluna VOLUME Histórico:', SHEETS_COLUMNS.HISTORICO.VOLUME);
+  console.log('Coluna VOLUME Pipe:', SHEETS_COLUMNS.PIPE.VOLUME);
+  
   const volumeHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.VOLUME);
   const volumePipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.VOLUME);
+  
+  console.log('Volume Histórico calculado:', volumeHistorico);
+  console.log('Volume Pipe calculado:', volumePipe);
+  
+  // Debug valores individuais da coluna VOLUME do Pipe
+  console.log('=== VALORES INDIVIDUAIS VOLUME PIPE ===');
+  estruturacao.forEach((row, index) => {
+    const volumeValue = getCellValue(row, SHEETS_COLUMNS.PIPE.VOLUME);
+    const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+    console.log(`${index + 1}. ${operacao}: col_${SHEETS_COLUMNS.PIPE.VOLUME} = "${volumeValue}" (tipo: ${typeof volumeValue})`);
+  });
+  
   const volumeTotal = volumeHistorico + volumePipe;
+  console.log('Volume Total:', volumeTotal);
 
   // Calcula fee de estruturação das duas abas
   const feeEstruturacaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
@@ -486,12 +503,12 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   const kpis: DashboardKPIs = {
     operacoesLiquidadas: currentLiquidadas,
     operacoesEstruturacao: estruturacao.length,
-    volumeLiquidado: (volumeTotal / 1000000000).toFixed(1), // Volume total em bilhões
-    volumeEstruturacao: (volumeTotal / 1000000000).toFixed(1), // Mesmo valor (volume total)
-    feeLiquidado: (feeEstruturacaoTotal / 1000000).toFixed(1), // Fee estruturação total em milhões
-    feeEstruturacao: (feeEstruturacaoTotal / 1000000).toFixed(1), // Mesmo valor (fee total)
-    feeGestaoLiquidado: (feeGestaoTotal / 1000).toFixed(0), // Fee gestão total em milhares
-    feeGestaoEstruturacao: (feeGestaoTotal / 1000).toFixed(0), // Mesmo valor (fee gestão total)
+    volumeLiquidado: formatVolume(volumeTotal), // Volume total formatado
+    volumeEstruturacao: formatVolume(volumeTotal), // Mesmo valor (volume total)
+    feeLiquidado: formatFee(feeEstruturacaoTotal), // Fee estruturação total formatado
+    feeEstruturacao: formatFee(feeEstruturacaoTotal), // Mesmo valor (fee total)
+    feeGestaoLiquidado: formatFee(feeGestaoTotal), // Fee gestão total formatado
+    feeGestaoEstruturacao: formatFee(feeGestaoTotal), // Mesmo valor (fee gestão total)
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
     // Comparações com ano anterior
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
@@ -542,7 +559,7 @@ function calculateSumByColumnIndex(data: SheetData[], columnIndex: number): numb
     if (!value) return sum;
     
     const numValue = typeof value === 'number' ? value : 
-                    parseFloat(String(value).replace(/[R$\s,]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+                    parseFloat(String(value).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
     
     return sum + numValue;
   }, 0);
@@ -576,6 +593,28 @@ function formatDate(value: any): string {
     month: '2-digit',
     year: 'numeric'
   });
+}
+
+function formatVolume(value: number): string {
+  // Converte para bilhões e formata em português brasileiro
+  const bilhoes = value / 1000000000;
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  }).format(bilhoes) + ' bi';
+}
+
+function formatFee(value: number): string {
+  // Formata em milhões em português brasileiro
+  const milhoes = value / 1000000;
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  }).format(milhoes) + ' mi';
 }
 
 function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[]) {

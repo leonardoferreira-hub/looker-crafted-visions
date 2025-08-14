@@ -169,7 +169,8 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
           row[`col_${index}`] = cleanValue;
         } else {
           // Tenta converter para número se parecer um número E não for data
-          const numValue = parseFloat(cleanValue.replace(/[R$\s,]/g, '').replace(/\./g, '').replace(/,/g, '.'));
+          // Para formato brasileiro: 8.004.592.000,00 -> remove R$ e espaços, pontos (separadores de milhares), vírgula vira ponto decimal
+          const numValue = parseFloat(cleanValue.replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.'));
           row[`col_${index}`] = !isNaN(numValue) && cleanValue.match(/^[\d,.\s$R]*$/) ? numValue : cleanValue;
         }
       }
