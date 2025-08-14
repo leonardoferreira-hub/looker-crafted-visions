@@ -28,6 +28,8 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("resumo");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [comparisonStartDate, setComparisonStartDate] = useState<Date | null>(null);
+  const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
   const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate } = useDashboardData(startDate, endDate);
 
   // Mostra o período sendo usado
@@ -71,22 +73,28 @@ export default function Dashboard() {
             <div className="flex items-center space-x-2">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="opacity-80 hover:opacity-100">
                     <Filter className="mr-2 h-4 w-4" />
                     Filtros
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-4" align="start">
                   <div className="space-y-4">
-                    <h4 className="font-medium">Filtrar por Data de Liquidação</h4>
+                    <h4 className="font-medium">Filtros de Data</h4>
                     <DateFilter
                       startDate={startDate}
                       endDate={endDate}
                       onStartDateChange={setStartDate}
                       onEndDateChange={setEndDate}
+                      comparisonStartDate={comparisonStartDate}
+                      comparisonEndDate={comparisonEndDate}
+                      onComparisonStartDateChange={setComparisonStartDate}
+                      onComparisonEndDateChange={setComparisonEndDate}
                       onClear={() => {
                         setStartDate(null);
                         setEndDate(null);
+                        setComparisonStartDate(null);
+                        setComparisonEndDate(null);
                       }}
                     />
                   </div>
