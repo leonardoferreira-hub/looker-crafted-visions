@@ -40,6 +40,12 @@ export function DateFilter({
   const [isCompStartOpen, setIsCompStartOpen] = useState(false);
   const [isCompEndOpen, setIsCompEndOpen] = useState(false);
 
+  // Default dates
+  const defaultStartDate = new Date(2025, 0, 1); // 01/01/2025
+  const defaultEndDate = new Date(); // Today
+  const defaultCompStartDate = new Date(2024, 0, 1); // 01/01/2024
+  const defaultCompEndDate = new Date(2024, 11, 31); // 31/12/2024
+
   return (
     <div className="space-y-4">
       {/* Período Principal */}
@@ -56,7 +62,7 @@ export function DateFilter({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDate ? format(startDate, "dd/MM/yy", { locale: ptBR }) : "Início"}
+                {startDate ? format(startDate, "dd/MM/yy", { locale: ptBR }) : format(defaultStartDate, "dd/MM/yy", { locale: ptBR })}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
@@ -86,7 +92,7 @@ export function DateFilter({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {endDate ? format(endDate, "dd/MM/yy", { locale: ptBR }) : "Fim"}
+                {endDate ? format(endDate, "dd/MM/yy", { locale: ptBR }) : format(defaultEndDate, "dd/MM/yy", { locale: ptBR })}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
@@ -122,7 +128,7 @@ export function DateFilter({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {comparisonStartDate ? format(comparisonStartDate, "dd/MM/yy", { locale: ptBR }) : "Início"}
+                {comparisonStartDate ? format(comparisonStartDate, "dd/MM/yy", { locale: ptBR }) : format(defaultCompStartDate, "dd/MM/yy", { locale: ptBR })}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
@@ -152,7 +158,7 @@ export function DateFilter({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {comparisonEndDate ? format(comparisonEndDate, "dd/MM/yy", { locale: ptBR }) : "Fim"}
+                {comparisonEndDate ? format(comparisonEndDate, "dd/MM/yy", { locale: ptBR }) : format(defaultCompEndDate, "dd/MM/yy", { locale: ptBR })}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 bg-background border border-border shadow-lg z-50" align="start">
