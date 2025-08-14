@@ -610,12 +610,38 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
 
 
   // Processa dados para tabelas usando mapeamento de colunas
-  const proximasLiquidacoes = estruturacao.slice(0, 5).map(row => {
+  // Ordena próximas liquidações por data de previsão e pega as 5 primeiras
+  const estruturacaoOrdenada = [...estruturacao].sort((a, b) => {
+    const previsaoA = getCellValue(a, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+    const previsaoB = getCellValue(b, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+    
+    const dateA = parseDate(previsaoA);
+    const dateB = parseDate(previsaoB);
+    
+    // Se ambas são datas válidas, ordena por data
+    if (dateA && dateB) {
+      return dateA.getTime() - dateB.getTime();
+    }
+    
+    // Se uma é "Liquidada" e outra não, "Liquidada" vai para o final
+    if (String(previsaoA).toLowerCase() === 'liquidada' && String(previsaoB).toLowerCase() !== 'liquidada') {
+      return 1;
+    }
+    if (String(previsaoB).toLowerCase() === 'liquidada' && String(previsaoA).toLowerCase() !== 'liquidada') {
+      return -1;
+    }
+    
+    // Mantém ordem original para outros casos
+    return 0;
+  });
+
+  const proximasLiquidacoes = estruturacaoOrdenada.slice(0, 5).map(row => {
     return {
-      categoria: String(row[`col_${SHEETS_COLUMNS.PIPE.CATEGORIA}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.CATEGORIA] || ''),
-      operacao: String(row[`col_${SHEETS_COLUMNS.PIPE.OPERACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.OPERACAO] || ''),
-      previsaoLiquidacao: String(row[`col_${SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO] || ''),
-      estruturacao: formatCurrency(row[`col_${SHEETS_COLUMNS.PIPE.ESTRUTURACAO}`] || Object.values(row)[SHEETS_COLUMNS.PIPE.ESTRUTURACAO] || 0)
+      categoria: String(getCellValue(row, SHEETS_COLUMNS.PIPE.CATEGORIA) || ''),
+      operacao: String(getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO) || ''),
+      previsaoLiquidacao: formatDate(getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO)),
+      analistaGestao: String(getCellValue(row, SHEETS_COLUMNS.PIPE.ANALISTA_GESTAO) || ''),
+      estruturacao: formatCurrency(getCellValue(row, SHEETS_COLUMNS.PIPE.ESTRUTURACAO) || 0)
     };
   });
 
@@ -624,8 +650,9 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || ''),
       operacao: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO) || ''),
-      estruturacao: formatCurrency(getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO) || 0),
-      dataLiquidacao: formatDate(dataLiquidacao)
+      dataLiquidacao: formatDate(dataLiquidacao),
+      analistaGestao: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.ANALISTA_GESTAO) || ''),
+      estruturacao: formatCurrency(getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO) || 0)
     };
   });
 
@@ -668,12 +695,36 @@ function calculateAverageByColumnIndex(data: SheetData[], columnIndex: number): 
 }
 
 function formatCurrency(value: any): string {
-  const num = typeof value === 'number' ? value : parseFloat(String(value).replace(/[^\d.-]/g, '')) || 0;
-  return new Intl.NumberFormat('pt-BR').format(num);
+  if (!value || value === 0) return 'R$ 0';
+  
+  let num: number;
+  if (typeof value === 'number') {
+    num = value;
+  } else {
+    // Remove símbolos monetários e converte para número
+    const cleanStr = String(value)
+      .replace(/[R$\s]/g, '')         // Remove R$, espaços
+      .replace(/\./g, '')             // Remove pontos (separadores de milhares)
+      .replace(/,/g, '.');            // Converte vírgula para ponto decimal
+    num = parseFloat(cleanStr) || 0;
+  }
+  
+  // Formata no padrão brasileiro com símbolo de moeda
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(num);
 }
 
 function formatDate(value: any): string {
   if (!value) return '';
+  
+  // Se já está no formato "Liquidada", retorna como está
+  if (String(value).toLowerCase() === 'liquidada') {
+    return 'Liquidada';
+  }
   
   const date = parseDate(value);
   if (!date) return String(value); // Retorna o valor original se não conseguir fazer parse
