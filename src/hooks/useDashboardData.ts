@@ -206,38 +206,12 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     
     // Debug específico para Squarelife
     if (operacao && operacao.toLowerCase().includes('squarelife')) {
-      console.log('🔍 OPERAÇÃO SQUARELIFE ENCONTRADA:');
-      console.log('Linha:', index + 1);
-      console.log('Operação completa:', operacao);
-      
-      // Mostra quantas colunas realmente existem
-      const colunas = Object.keys(row);
-      console.log('Número total de colunas:', colunas.length);
-      console.log('Última coluna:', colunas[colunas.length - 1]);
-      console.log('Colunas existentes:', colunas);
-      
-      // Verifica se col_26 existe
-      console.log('col_26 existe?', 'col_26' in row);
-      console.log('row["col_26"]:', row['col_26']);
-      
-      // Mostra TODAS as colunas que têm datas 
-      console.log('TODAS AS DATAS NESTA LINHA:');
-      Object.entries(row).forEach(([key, value]) => {
-        const strValue = String(value);
-        if (strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) || strValue.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-          console.log(`${key}: "${value}"`);
-        }
-      });
-      
-      // Se não há col_26, onde pode estar a data de liquidação?
-      console.log('POSSÍVEIS DATAS DE LIQUIDAÇÃO:');
-      Object.entries(row).forEach(([key, value]) => {
-        const strValue = String(value);
-        if (strValue.includes('Liquidada') || strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/)) {
-          console.log(`${key}: "${value}" ← CANDIDATO`);
-        }
-      });
-      
+      console.log('🔍 SQUARELIFE - PROCESSAMENTO FINAL:');
+      console.log('Operação:', operacao);
+      console.log('col_26 valor:', row['col_26']);
+      console.log('col_26 tipo:', typeof row['col_26']);
+      console.log('getCellValue(col_26):', dataLiquidacao);
+      console.log('isValidHistoricoRow:', isValidHistoricoRow(row));
       console.log('=====================================');
     }
     
@@ -324,7 +298,7 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 
   // Log detalhado das operações que serão consideradas no KPI
   console.log('=== OPERAÇÕES LIQUIDADAS (HISTÓRICO) ===');
-  console.log('Critério: OPERACAO preenchida E DATA_LIQUIDACAO preenchida');
+  console.log('Critério: OPERACAO preenchida E DATA_LIQUIDACAO preenchida (col_26)');
   filteredHistorico.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
@@ -404,7 +378,7 @@ function isValidHistoricoRow(row: SheetData): boolean {
   // Verifica se tem operação preenchida
   const hasOperacao = operacao && String(operacao).trim() !== '';
   
-  // Verifica se tem data de liquidação válida (não vazia, não "null" como string)
+  // Verifica se tem data de liquidação válida na col_26
   const dataStr = dataLiquidacao ? String(dataLiquidacao).trim() : '';
   const hasDataLiquidacao = dataStr !== '' && dataStr !== 'null' && dataStr !== 'undefined';
   

@@ -133,6 +133,14 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
       }
       
       if (Object.keys(row).length > 0 && !values.every(val => !val || val.trim() === '')) {
+        // Debug específico para linha que contém "Squarelife"
+        if (values.some(val => String(val).includes('Squarelife'))) {
+          console.log('🔍 PARSING CSV - LINHA SQUARELIFE:');
+          console.log('Values originais do CSV:', values);
+          console.log('Row criado:', row);
+          console.log('Valor na col_26:', row['col_26']);
+        }
+        
         rows.push(row);
       }
     }
