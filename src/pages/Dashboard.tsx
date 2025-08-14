@@ -4,6 +4,7 @@ import { OperationsCard } from "@/components/OperationsCard";
 import { ChartCard } from "@/components/ChartCard";
 import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
+import { CombinedBarLineChart } from "@/components/CombinedBarLineChart";
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
@@ -167,10 +168,8 @@ export default function Dashboard() {
             {/* Charts Row */}
             <div className="grid gap-6 lg:grid-cols-2">
               <ChartCard title="Operações liquidadas por mês">
-                <CustomLineChart 
+                <CombinedBarLineChart 
                   data={chartData.operacoesPorMes}
-                  xKey="mes"
-                  yKey="liquidadas"
                 />
               </ChartCard>
               

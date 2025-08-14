@@ -173,10 +173,10 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
   
   console.log('📊 Colunas que contêm datas (quantidade de ocorrências):');
   Object.entries(dateColumns)
-    .sort(([,a], [,b]) => b - a) // Ordena por quantidade
+    .sort(([,a], [,b]) => (b as number) - (a as number)) // Ordena por quantidade
     .forEach(([column, count]) => {
-      const columnIndex = column.replace('col_', '');
-      const letter = columnIndex < 26 ? String.fromCharCode(65 + parseInt(columnIndex)) : 'A' + String.fromCharCode(65 + parseInt(columnIndex) - 26);
+      const columnIndex = parseInt(column.replace('col_', ''));
+      const letter = columnIndex < 26 ? String.fromCharCode(65 + columnIndex) : 'A' + String.fromCharCode(65 + columnIndex - 26);
       console.log(`${column} (coluna ${letter}): ${count} datas`);
     });
   
@@ -634,8 +634,9 @@ function formatFee(value: number): string {
 function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[]) {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   const monthNumbers = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+  const currentYear = new Date().getFullYear();
   
-  // Primeiro calcula as contagens por mês
+  // Primeiro calcula as contagens por mês para o ano atual
   const monthlyData = months.map((mes, index) => {
     // Para operações liquidadas, usar a coluna DATA_LIQUIDACAO (coluna 26)
     const liquidadasCount = liquidadas.filter(row => {
@@ -648,7 +649,7 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
         return String(dataLiquidacao).includes(mes) || String(dataLiquidacao).includes(monthNumbers[index]);
       }
       
-      return date.getMonth() === index;
+      return date.getMonth() === index && date.getFullYear() === currentYear;
     }).length;
     
     // Para operações em estruturação, usar a coluna DATA_ENTRADA_PIPE (coluna 19)
@@ -662,23 +663,42 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
         return String(dataEntrada).includes(mes) || String(dataEntrada).includes(monthNumbers[index]);
       }
       
-      return date.getMonth() === index;
+      return date.getMonth() === index && date.getFullYear() === currentYear;
     }).length;
     
     return { mes, liquidadas: liquidadasCount, estruturacoes: estruturacoesCount };
   });
 
-  // Agora converte para soma acumulada (running total)
+  // Calcula dados de 2024 para comparação
+  const monthlyData2024 = months.map((mes, index) => {
+    const liquidadasCount2024 = liquidadas.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index && date.getFullYear() === 2024;
+    }).length;
+    
+    return liquidadasCount2024;
+  });
+
+  // Converte para soma acumulada (running total)
   let liquidadasAcumuladas = 0;
   let estruturacoesAcumuladas = 0;
+  let liquidadasAcumuladas2024 = 0;
   
-  return monthlyData.map(data => {
+  return monthlyData.map((data, index) => {
     liquidadasAcumuladas += data.liquidadas;
     estruturacoesAcumuladas += data.estruturacoes;
+    liquidadasAcumuladas2024 += monthlyData2024[index];
     
     return {
       mes: data.mes,
-      liquidadas: liquidadasAcumuladas, // Soma acumulada
+      liquidadas: data.liquidadas, // Valor mensal (para as barras)
+      liquidadasAcumuladas: liquidadasAcumuladas, // Soma acumulada atual
+      liquidadasAcumuladas2024: liquidadasAcumuladas2024, // Soma acumulada 2024
       estruturacoes: estruturacoesAcumuladas // Soma acumulada
     };
   });
