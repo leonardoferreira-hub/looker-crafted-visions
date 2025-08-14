@@ -157,7 +157,29 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
       console.log('Teste PIPE - Operação:', operacao, 'Previsão:', previsao);
     }
 
-  // Debug: Analisa TODAS as linhas do histórico antes de filtrar
+  // Debug: Analisa onde estão as datas em todas as linhas
+  console.log('=== MAPEAMENTO DE COLUNAS COM DATAS ===');
+  const dateColumns = {};
+  
+  historicoData.forEach((row, index) => {
+    Object.entries(row).forEach(([key, value]) => {
+      const strValue = String(value);
+      if (strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) || strValue.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+        if (!dateColumns[key]) dateColumns[key] = 0;
+        dateColumns[key]++;
+      }
+    });
+  });
+  
+  console.log('📊 Colunas que contêm datas (quantidade de ocorrências):');
+  Object.entries(dateColumns)
+    .sort(([,a], [,b]) => b - a) // Ordena por quantidade
+    .forEach(([column, count]) => {
+      const columnIndex = column.replace('col_', '');
+      const letter = columnIndex < 26 ? String.fromCharCode(65 + parseInt(columnIndex)) : 'A' + String.fromCharCode(65 + parseInt(columnIndex) - 26);
+      console.log(`${column} (coluna ${letter}): ${count} datas`);
+    });
+  
   console.log('=== ANÁLISE DETALHADA DO HISTÓRICO ===');
   console.log('Verificando estrutura dos dados...');
   
@@ -165,17 +187,12 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
     
-    // Debug específico para a linha 270 (Atlas Agro II)
-    if (index === 269) { // índice 269 = linha 270
-      console.log('🎯 LINHA 270 (Atlas Agro II) - DEBUG COMPLETO:');
-      console.log('Linha completa:', row);
-      console.log('Operação encontrada:', operacao);
-      console.log('Data no índice 26:', dataLiquidacao);
-      
-      // Mostra TODOS os valores da linha
-      Object.entries(row).forEach(([key, value]) => {
-        console.log(`${key}: "${value}"`);
-      });
+    // Debug específico para a linha 270 (Atlas Agro II) - APÓS CORREÇÃO
+    if (index === 269 && operacao && operacao.includes('Atlas Agro')) {
+      console.log('🎯 TESTE LINHA 270 (Atlas Agro II) - APÓS CORREÇÃO:');
+      console.log('Operação:', operacao);
+      console.log('Data encontrada:', dataLiquidacao);
+      console.log('Será considerada válida?', isValidHistoricoRow(row));
     }
     
     // Debug da estrutura da linha para encontrar onde estão as datas
@@ -196,18 +213,25 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
     const hasData = dataLiquidacao && String(dataLiquidacao).trim() !== '' && String(dataLiquidacao) !== 'null';
     const isValid = isValidHistoricoRow(row);
     
-    // Debug específico para linhas que têm operação mas não têm data
+    // Debug específico para linhas que têm operação mas não têm data na col_26
     if (hasOperacao && !hasData) {
-      console.log(`🔍 DEBUG LINHA ${index + 1} (${operacao}): Procurando data...`);
-      console.log(`Tentativa col_26:`, row['col_26']);
-      console.log(`Tentativa índice 26:`, row[26]);
-      console.log(`Object.values()[26]:`, Object.values(row)[26]);
+      console.log(`🔍 DEBUG LINHA ${index + 1} (${operacao}): Data não encontrada na col_26`);
+      console.log(`col_26 existe?`, 'col_26' in row);
+      console.log(`col_26 valor:`, row['col_26']);
+      console.log(`col_26 tipo:`, typeof row['col_26']);
       
-      // Procura TODAS as células que contêm datas
+      // Verifica especificamente se há data na col_26
+      if (row['col_26']) {
+        const strValue = String(row['col_26']).trim();
+        console.log(`col_26 como string: "${strValue}"`);
+        console.log(`É data válida?`, strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) !== null);
+      }
+      
+      // Mostra onde realmente estão as datas (apenas para comparação)
       Object.entries(row).forEach(([key, value]) => {
         const strValue = String(value);
         if (strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) || strValue.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-          console.log(`📅 DATA ENCONTRADA em ${key}: "${value}"`);
+          console.log(`📅 DATA EM ${key}: "${value}" (mas queremos col_26)`);
         }
       });
     }
@@ -310,34 +334,12 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null)
 function getCellValue(row: SheetData, columnIndex: number): any {
   if (!row) return null;
   
-  // Tenta diferentes métodos para acessar o valor da célula
-  let value = null;
+  // Vai DIRETO na coluna especificada, sem parar em outras
+  const value = row[`col_${columnIndex}`];
   
-  // Método 1: col_${columnIndex}
-  if (row[`col_${columnIndex}`] !== undefined && row[`col_${columnIndex}`] !== null) {
-    value = row[`col_${columnIndex}`];
-  }
-  
-  // Método 2: índice direto
-  else if (row[columnIndex] !== undefined && row[columnIndex] !== null) {
-    value = row[columnIndex];
-  }
-  
-  // Método 3: Object.values() por índice
-  else {
-    const values = Object.values(row);
-    if (values[columnIndex] !== undefined && values[columnIndex] !== null) {
-      value = values[columnIndex];
-    }
-  }
-  
-  // Método 4: procura por chaves que contenham o índice
-  if (!value) {
-    const keys = Object.keys(row);
-    const possibleKey = keys.find(key => key.includes(String(columnIndex)));
-    if (possibleKey) {
-      value = row[possibleKey];
-    }
+  // Debug específico para DATA_LIQUIDACAO (col_26)
+  if (columnIndex === 26) {
+    console.log(`DEBUG col_26: valor bruto = "${value}", tipo = ${typeof value}`);
   }
   
   // Limpa e valida o valor encontrado
