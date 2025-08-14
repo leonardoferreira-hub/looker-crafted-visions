@@ -181,6 +181,7 @@ export default function Dashboard() {
               <ChartCard title="Operações liquidadas por mês">
                 <CombinedBarLineChart 
                   data={chartData.operacoesPorMes}
+                  endDate={defaultEndDate}
                 />
               </ChartCard>
               

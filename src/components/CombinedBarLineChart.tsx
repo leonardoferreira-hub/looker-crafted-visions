@@ -32,12 +32,15 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   return null;
 };
 
-export function CombinedBarLineChart({ data }: { data: any[] }) {
-  // Filter data to show 2025 only until current month
-  const currentMonth = new Date().getMonth() + 1; // getMonth() returns 0-based index
-  const filteredData = data.map(item => {
-    const monthNumber = parseInt(item.mes.split('/')[0]); // Extract month from "MM/YYYY" format
-    if (monthNumber > currentMonth) {
+export function CombinedBarLineChart({ data, endDate }: { data: any[]; endDate?: Date }) {
+  // Filter data to show 2025 only until the end date from filter period
+  const endMonth = endDate ? endDate.getMonth() + 1 : new Date().getMonth() + 1; // getMonth() returns 0-based index
+  
+  const filteredData = data.map((item, index) => {
+    // Use month index (0-based) instead of parsing month name
+    const monthIndex = index + 1; // Janeiro = 1, Fevereiro = 2, etc.
+    
+    if (monthIndex > endMonth) {
       return { ...item, acumulado2025: undefined }; // Remove future months for 2025
     }
     return item;
