@@ -548,12 +548,12 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('=== DEBUG DADOS PARA GRÁFICO ===');
   console.log('Dados históricos brutos:', historicoData.length);
   console.log('Dados históricos válidos (sem filtro de data):', allValidHistorico.length);
-  console.log('Dados filtrados para KPIs (com filtro 2025):', filteredHistorico.length);
+  console.log('Dados filtrados para KPIs (com filtro 2025):', liquidadas.length);
   
   // Processa dados para gráficos
   const chartData = {
     operacoesPorMes: processMonthlyData(allValidHistorico, estruturacao), // Usa TODOS os dados históricos válidos para comparar 2024 vs 2025
-    categorias: processCategoryData([...filteredHistorico, ...filteredPipe])
+    categorias: processCategoryData([...liquidadas, ...estruturacao])
   };
 
   // Processa dados para tabelas usando mapeamento de colunas
