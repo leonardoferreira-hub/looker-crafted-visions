@@ -24,14 +24,14 @@ interface DataTableProps {
 
 export function DataTable({ title, data, columns, className }: DataTableProps) {
   const getCategoryBadge = (category: string) => {
-    // Usando as mesmas cores do gráfico de distribuição por categoria
+    // Usando as mesmas cores exatas do gráfico CustomPieChart
     const variants: Record<string, string> = {
-      "CRI": "bg-blue-100 text-blue-700 border-blue-200",
-      "CRA": "bg-orange-100 text-orange-700 border-orange-200", 
-      "DEB": "bg-blue-100 text-blue-700 border-blue-200",
-      "Debênture": "bg-blue-100 text-blue-700 border-blue-200",
-      "CR": "bg-purple-100 text-purple-700 border-purple-200",
-      "NC": "bg-teal-100 text-teal-700 border-teal-200",
+      "CRI": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(142,76%,36%)] bg-opacity-20 text-[hsl(142,76%,26%)] border-[hsl(142,76%,36%)]",
+      "CRA": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(25,95%,53%)] bg-opacity-20 text-[hsl(25,95%,43%)] border-[hsl(25,95%,53%)]", 
+      "DEB": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(217,91%,59%)] bg-opacity-20 text-[hsl(217,91%,49%)] border-[hsl(217,91%,59%)]",
+      "Debênture": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(217,91%,59%)] bg-opacity-20 text-[hsl(217,91%,49%)] border-[hsl(217,91%,59%)]",
+      "CR": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(262,83%,58%)] bg-opacity-20 text-[hsl(262,83%,48%)] border-[hsl(262,83%,58%)]",
+      "NC": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(173,58%,39%)] bg-opacity-20 text-[hsl(173,58%,29%)] border-[hsl(173,58%,39%)]",
     };
     
     return variants[category] || "bg-muted/20 text-muted-foreground border-muted/30";
