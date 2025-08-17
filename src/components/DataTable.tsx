@@ -24,13 +24,14 @@ interface DataTableProps {
 
 export function DataTable({ title, data, columns, className }: DataTableProps) {
   const getCategoryBadge = (category: string) => {
+    // Usando as mesmas cores do gráfico de distribuição por categoria
     const variants: Record<string, string> = {
-      "CRI": "bg-chart-1/20 text-chart-1 border-chart-1/30",
-      "CRA": "bg-chart-2/20 text-chart-2 border-chart-2/30",
-      "DEB": "bg-chart-3/20 text-chart-3 border-chart-3/30",
-      "Debênture": "bg-chart-3/20 text-chart-3 border-chart-3/30",
-      "CR": "bg-chart-4/20 text-chart-4 border-chart-4/30",
-      "NC": "bg-chart-5/20 text-chart-5 border-chart-5/30",
+      "CRI": "bg-blue-100 text-blue-700 border-blue-200",
+      "CRA": "bg-orange-100 text-orange-700 border-orange-200", 
+      "DEB": "bg-blue-100 text-blue-700 border-blue-200",
+      "Debênture": "bg-blue-100 text-blue-700 border-blue-200",
+      "CR": "bg-purple-100 text-purple-700 border-purple-200",
+      "NC": "bg-teal-100 text-teal-700 border-teal-200",
     };
     
     return variants[category] || "bg-muted/20 text-muted-foreground border-muted/30";
