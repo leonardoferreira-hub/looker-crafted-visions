@@ -27,7 +27,7 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
     // Mesmas cores do gráfico (com alpha visível) — usando sintaxe Tailwind segura com underscores
     const variants: Record<string, string> = {
       CRI: "border bg-[hsl(142_76%_36%/0.18)] text-[hsl(142_76%_26%)] border-[hsl(142_76%_36%/0.35)]",
-      CRA: "border bg-[hsl(25_95%_53%/0.18)] text-[hsl(25_95%_43%)] border-[hsl(25_95%_53%/0.35)]",
+      CRA: "border bg-[hsl(262_83%_58%/0.18)] text-[hsl(262_83%_48%)] border-[hsl(262_83%_58%/0.35)]",
       DEB: "border bg-[hsl(217_91%_59%/0.18)] text-[hsl(217_91%_40%)] border-[hsl(217_91%_59%/0.35)]",
       "Debênture": "border bg-[hsl(217_91%_59%/0.18)] text-[hsl(217_91%_40%)] border-[hsl(217_91%_59%/0.35)]",
       CR: "border bg-[hsl(262_83%_58%/0.18)] text-[hsl(262_83%_48%)] border-[hsl(262_83%_58%/0.35)]",
