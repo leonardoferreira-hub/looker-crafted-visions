@@ -12,11 +12,15 @@ const CustomTooltip = ({ active, payload, label, formatter }: CustomTooltipProps
     return (
       <div className="bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg p-3 shadow-lg">
         {label && <p className="text-sm font-medium text-foreground mb-1">{label}</p>}
-        {payload.map((entry, index) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {`${entry.name}: ${formatter ? formatter(entry.value) : entry.value}`}
-          </p>
-        ))}
+        {payload.map((entry, index) => {
+          const data = entry.payload;
+          return (
+            <div key={index} className="text-sm" style={{ color: entry.color }}>
+              <p>{`${entry.name}: ${formatter ? formatter(entry.value) : entry.value}`}</p>
+              {data.count && <p className="text-xs opacity-80">{`${data.count} operações`}</p>}
+            </div>
+          );
+        })}
       </div>
     );
   }
