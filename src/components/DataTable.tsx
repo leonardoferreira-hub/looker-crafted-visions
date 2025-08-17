@@ -24,14 +24,14 @@ interface DataTableProps {
 
 export function DataTable({ title, data, columns, className }: DataTableProps) {
   const getCategoryBadge = (category: string) => {
-    // Usando as mesmas cores exatas do gráfico CustomPieChart
+    // Mesmas cores do gráfico (com alpha visível) — usando sintaxe Tailwind segura com underscores
     const variants: Record<string, string> = {
-      "CRI": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(142,76%,36%)] bg-opacity-20 text-[hsl(142,76%,26%)] border-[hsl(142,76%,36%)]",
-      "CRA": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(25,95%,53%)] bg-opacity-20 text-[hsl(25,95%,43%)] border-[hsl(25,95%,53%)]", 
-      "DEB": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(217,91%,59%)] bg-opacity-20 text-[hsl(217,91%,49%)] border-[hsl(217,91%,59%)]",
-      "Debênture": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(217,91%,59%)] bg-opacity-20 text-[hsl(217,91%,49%)] border-[hsl(217,91%,59%)]",
-      "CR": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(262,83%,58%)] bg-opacity-20 text-[hsl(262,83%,48%)] border-[hsl(262,83%,58%)]",
-      "NC": "border border-opacity-30 text-sm font-medium" + " " + "bg-[hsl(173,58%,39%)] bg-opacity-20 text-[hsl(173,58%,29%)] border-[hsl(173,58%,39%)]",
+      CRI: "border bg-[hsl(142_76%_36%/0.18)] text-[hsl(142_76%_26%)] border-[hsl(142_76%_36%/0.35)]",
+      CRA: "border bg-[hsl(25_95%_53%/0.18)] text-[hsl(25_95%_43%)] border-[hsl(25_95%_53%/0.35)]",
+      DEB: "border bg-[hsl(217_91%_59%/0.18)] text-[hsl(217_91%_40%)] border-[hsl(217_91%_59%/0.35)]",
+      "Debênture": "border bg-[hsl(217_91%_59%/0.18)] text-[hsl(217_91%_40%)] border-[hsl(217_91%_59%/0.35)]",
+      CR: "border bg-[hsl(262_83%_58%/0.18)] text-[hsl(262_83%_48%)] border-[hsl(262_83%_58%/0.35)]",
+      NC: "border bg-[hsl(173_58%_39%/0.18)] text-[hsl(173_58%_29%)] border-[hsl(173_58%_39%/0.35)]",
     };
     
     return variants[category] || "bg-muted/20 text-muted-foreground border-muted/30";
