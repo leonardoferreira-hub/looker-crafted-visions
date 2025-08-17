@@ -57,20 +57,20 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm">
-        <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:h-16 items-start sm:items-center justify-between gap-3 p-4 sm:px-6">
+          <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
             <div className="flex items-center">
               <img 
                 src="/lovable-uploads/b46458cc-55a4-4a1a-a98e-f6f80b5c6a30.png" 
                 alt="Travessia Logo" 
-                className="h-8 w-auto"
+                className="h-6 sm:h-8 w-auto"
               />
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
             <ConnectionStatus
               isConnected={isConnected}
               loading={loading}
@@ -78,15 +78,15 @@ export default function Dashboard() {
               onRefresh={refetch}
             />
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-1 sm:flex-none">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="opacity-80 hover:opacity-100">
-                    <Filter className="mr-2 h-4 w-4" />
-                    Filtros
+                  <Button variant="outline" size="sm" className="opacity-80 hover:opacity-100 flex-1 sm:flex-none">
+                    <Filter className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Filtros</span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-4 bg-background border border-border shadow-lg z-50" align="start">
+                <PopoverContent className="w-auto p-4 bg-background border border-border shadow-lg z-50" align="end">
                   <div className="space-y-4">
                     <h4 className="font-medium">Filtros de Data</h4>
                     <DateFilter
@@ -108,18 +108,18 @@ export default function Dashboard() {
                   </div>
                 </PopoverContent>
               </Popover>
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Exportar
+              <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Exportar</span>
               </Button>
               
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                     <Settings className="h-4 w-4" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px]">
+                <SheetContent className="w-full sm:w-[400px] md:w-[540px]">
                   <SheetHeader>
                     <SheetTitle>Configurações do Dashboard</SheetTitle>
                     <SheetDescription>
@@ -136,12 +136,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <div className="p-4 sm:p-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-            <TabsTrigger value="resumo">Resumo</TabsTrigger>
-            <TabsTrigger value="estruturacao">Estruturação</TabsTrigger>
-            <TabsTrigger value="liquidadas">Liquidadas</TabsTrigger>
+            <TabsTrigger value="resumo" className="text-xs sm:text-sm">Resumo</TabsTrigger>
+            <TabsTrigger value="estruturacao" className="text-xs sm:text-sm">Estruturação</TabsTrigger>
+            <TabsTrigger value="liquidadas" className="text-xs sm:text-sm">Liquidadas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="resumo" className="space-y-6">
@@ -182,26 +182,30 @@ export default function Dashboard() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid gap-6 lg:grid-cols-2">
-              <ChartCard title="Operações liquidadas por mês">
-                <CombinedBarLineChart 
-                  data={chartData.operacoesPorMes}
-                  endDate={defaultEndDate}
-                  comparisonEndDate={defaultComparisonEndDate}
-                />
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+              <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CombinedBarLineChart 
+                    data={chartData.operacoesPorMes}
+                    endDate={defaultEndDate}
+                    comparisonEndDate={defaultComparisonEndDate}
+                  />
+                </div>
               </ChartCard>
               
-              <ChartCard title="Distribuição por categoria">
-                <CustomPieChart 
-                  data={chartData.categorias}
-                  dataKey="value"
-                  nameKey="name"
-                />
+              <ChartCard title="Distribuição por categoria" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomPieChart 
+                    data={chartData.categorias}
+                    dataKey="value"
+                    nameKey="name"
+                  />
+                </div>
               </ChartCard>
             </div>
 
             {/* Tables Row */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               <DataTable
                 title="Próximas liquidações"
                 data={proximasLiquidacoesLimitadas}

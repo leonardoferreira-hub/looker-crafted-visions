@@ -70,19 +70,19 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
   return (
     <Card className={cn("bg-card border-border/50 shadow-lg", className)}>
       {title && (
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">{title}</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm sm:text-base font-semibold">{title}</CardTitle>
         </CardHeader>
       )}
       <CardContent className="p-0">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader>
+            <TableHeader className="hidden sm:table-header-group">
               <TableRow className="border-border/50">
                 {columns.map((column) => (
                   <TableHead
                     key={column.key}
-                    className={cn("text-muted-foreground font-medium", column.className)}
+                    className={cn("text-muted-foreground font-medium text-xs sm:text-sm", column.className)}
                   >
                     {column.label}
                   </TableHead>
@@ -95,10 +95,47 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
                   key={index}
                   className="border-border/50 hover:bg-muted/30 transition-colors"
                 >
+                  {/* Mobile Card Layout */}
+                  <TableCell className="block sm:hidden p-4 space-y-2" colSpan={columns.length}>
+                    <div className="grid grid-cols-1 gap-2">
+                      {columns.map((column) => (
+                        <div key={column.key} className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {column.label}:
+                          </span>
+                          <div className="text-sm">
+                            {column.render ? (
+                              column.render(row[column.key], row)
+                            ) : column.key === 'categoria' ? (
+                              <Badge 
+                                variant="outline" 
+                                className={`${getCategoryBadge(row[column.key])} text-xs`}
+                              >
+                                {row[column.key]}
+                              </Badge>
+                            ) : column.key.toLowerCase().includes('estruturacao') || 
+                                column.key.toLowerCase().includes('volume') ||
+                                column.key.toLowerCase().includes('remuneracao') ? (
+                              <span className="font-medium">
+                                {formatCurrency(row[column.key])}
+                              </span>
+                            ) : column.key.toLowerCase().includes('data') ||
+                                column.key.toLowerCase().includes('previsao') ? (
+                              formatDate(row[column.key])
+                            ) : (
+                              row[column.key] || '-'
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </TableCell>
+                  
+                  {/* Desktop Table Layout */}
                   {columns.map((column) => (
                     <TableCell
                       key={column.key}
-                      className={cn("text-sm", column.className)}
+                      className={cn("hidden sm:table-cell text-xs sm:text-sm", column.className)}
                     >
                       {column.render ? (
                         column.render(row[column.key], row)
