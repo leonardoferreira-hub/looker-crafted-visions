@@ -32,14 +32,22 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   dataKey: string;
   nameKey: string;
 }) {
-  // Cores mais distintas para evitar confusão entre DEB e CR
-  const COLORS = [
-    'hsl(217, 91%, 59%)',  // Azul vibrante (DEB)
-    'hsl(142, 76%, 36%)',  // Verde (CCI) 
-    'hsl(25, 95%, 53%)',   // Laranja (CRA)
-    'hsl(262, 83%, 58%)',  // Roxo (CR) - mudou de azul para roxo
-    'hsl(173, 58%, 39%)',  // Teal/Verde-azulado
-    'hsl(0, 84%, 60%)',    // Vermelho
+  // Mapa de cores fixo por categoria para manter consistência com Badges/Tabela
+  const CATEGORY_COLORS: Record<string, string> = {
+    CRI: 'hsl(142, 76%, 36%)',
+    CRA: 'hsl(262, 83%, 58%)',
+    DEB: 'hsl(217, 91%, 59%)',
+    'Debênture': 'hsl(217, 91%, 59%)',
+    CR: 'hsl(262, 83%, 58%)',
+    NC: 'hsl(173, 58%, 39%)',
+  };
+  const DEFAULT_COLORS = [
+    'hsl(217, 91%, 59%)',
+    'hsl(142, 76%, 36%)',
+    'hsl(25, 95%, 53%)',
+    'hsl(262, 83%, 58%)',
+    'hsl(173, 58%, 39%)',
+    'hsl(0, 84%, 60%)',
   ];
 
   const CustomLegend = (props: any) => {
@@ -85,9 +93,11 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
                 dataKey={dataKey}
                 nameKey={nameKey}
               >
-                {data.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
+                {data.map((item, index) => {
+                  const key = item[nameKey];
+                  const color = CATEGORY_COLORS[key] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+                  return <Cell key={`cell-${index}`} fill={color} />;
+                })}
               </Pie>
               <Tooltip 
                 content={<CustomTooltip formatter={(value) => `${value}%`} />}
@@ -98,10 +108,11 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
         
         {/* Legenda - Ao lado da pizza */}
         <div className="flex flex-col justify-center">
-          <CustomLegend payload={data.map((item, index) => ({
-            value: item[nameKey],
-            color: COLORS[index % COLORS.length]
-          }))} />
+          <CustomLegend payload={data.map((item, index) => {
+            const key = item[nameKey];
+            const color = CATEGORY_COLORS[key] || DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+            return { value: key, color };
+          })} />
         </div>
       </div>
     </div>
