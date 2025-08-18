@@ -175,10 +175,10 @@ export default function Dashboard() {
               />
               <KPICard
                 title="Fee de Gestão"
-                value={`${(Number(kpis.feeGestaoLiquidado || 0) + Number(kpis.feeGestaoEstruturacao || 0)).toLocaleString('pt-BR')}`}
-                leftValue={`${Number(kpis.feeGestaoLiquidado || 0).toLocaleString('pt-BR')}`}
+                value={`${Math.round((Number(kpis.feeGestaoLiquidado || 0) + Number(kpis.feeGestaoEstruturacao || 0)) * 1000000).toLocaleString('pt-BR')}`}
+                leftValue={`${Math.round(Number(kpis.feeGestaoLiquidado || 0) * 1000000).toLocaleString('pt-BR')}`}
                 leftLabel="Liquidado"
-                rightValue={`${Number(kpis.feeGestaoEstruturacao || 0).toLocaleString('pt-BR')}`}
+                rightValue={`${Math.round(Number(kpis.feeGestaoEstruturacao || 0) * 1000000).toLocaleString('pt-BR')}`}
                 rightLabel="Estruturação"
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
                 change={kpis.feeLiquidadoChange}
