@@ -26,12 +26,12 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
   const getCategoryBadge = (category: string) => {
     // Mesmas cores do gráfico (com alpha visível) — usando sintaxe Tailwind segura com underscores
     const variants: Record<string, string> = {
-      CRI: "border-2 font-semibold bg-[hsl(142_76%_36%/0.32)] text-[hsl(142_76%_18%)] border-[hsl(142_76%_36%/0.65)] shadow-[0_0_12px_hsl(142_76%_36%/0.35)]",
-      CRA: "border-2 font-semibold bg-[hsl(262_83%_58%/0.28)] text-[hsl(262_83%_30%)] border-[hsl(262_83%_58%/0.65)] shadow-[0_0_12px_hsl(262_83%_58%/0.35)]",
-      DEB: "border-2 font-semibold bg-[hsl(217_91%_59%/0.28)] text-[hsl(217_91%_32%)] border-[hsl(217_91%_59%/0.65)] shadow-[0_0_12px_hsl(217_91%_59%/0.35)]",
-      "Debênture": "border-2 font-semibold bg-[hsl(217_91%_59%/0.28)] text-[hsl(217_91%_32%)] border-[hsl(217_91%_59%/0.65)] shadow-[0_0_12px_hsl(217_91%_59%/0.35)]",
-      CR: "border-2 font-semibold bg-[hsl(262_83%_58%/0.28)] text-[hsl(262_83%_30%)] border-[hsl(262_83%_58%/0.65)] shadow-[0_0_12px_hsl(262_83%_58%/0.35)]",
-      NC: "border-2 font-semibold bg-[hsl(173_58%_39%/0.28)] text-[hsl(173_58%_22%)] border-[hsl(173_58%_39%/0.65)] shadow-[0_0_12px_hsl(173_58%_39%/0.35)]",
+      CRI: "border-2 font-semibold bg-[hsl(142_76%_55%/0.9)] text-white border-[hsl(142_76%_45%)] shadow-[0_0_12px_hsl(142_76%_55%/0.4)]",
+      CRA: "border-2 font-semibold bg-[hsl(25_95%_55%/0.9)] text-white border-[hsl(25_95%_45%)] shadow-[0_0_12px_hsl(25_95%_55%/0.4)]",
+      DEB: "border-2 font-semibold bg-[hsl(217_91%_55%/0.9)] text-white border-[hsl(217_91%_45%)] shadow-[0_0_12px_hsl(217_91%_55%/0.4)]",
+      "Debênture": "border-2 font-semibold bg-[hsl(217_91%_55%/0.9)] text-white border-[hsl(217_91%_45%)] shadow-[0_0_12px_hsl(217_91%_55%/0.4)]",
+      CR: "border-2 font-semibold bg-[hsl(340_82%_52%/0.9)] text-white border-[hsl(340_82%_42%)] shadow-[0_0_12px_hsl(340_82%_52%/0.4)]",
+      NC: "border-2 font-semibold bg-[hsl(173_58%_45%/0.9)] text-white border-[hsl(173_58%_35%)] shadow-[0_0_12px_hsl(173_58%_45%/0.4)]",
     };
     
     return variants[category] || "bg-muted/20 text-muted-foreground border-muted/30";

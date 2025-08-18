@@ -32,22 +32,22 @@ export function CustomPieChart({ data, dataKey, nameKey }: {
   dataKey: string;
   nameKey: string;
 }) {
-  // Mapa de cores fixo por categoria para manter consistência com Badges/Tabela
+  // Paleta de cores mais diversa e contrastante por categoria
   const CATEGORY_COLORS: Record<string, string> = {
-    CRI: 'hsl(142, 76%, 36%)',
-    CRA: 'hsl(262, 83%, 58%)',
-    DEB: 'hsl(217, 91%, 59%)',
-    'Debênture': 'hsl(217, 91%, 59%)',
-    CR: 'hsl(262, 83%, 58%)',
-    NC: 'hsl(173, 58%, 39%)',
+    CRI: 'hsl(142, 76%, 55%)',      // Verde vibrante
+    CRA: 'hsl(25, 95%, 55%)',       // Laranja vibrante  
+    DEB: 'hsl(217, 91%, 55%)',      // Azul vibrante
+    'Debênture': 'hsl(217, 91%, 55%)', // Azul vibrante (mesmo que DEB)
+    CR: 'hsl(340, 82%, 52%)',       // Rosa/Magenta vibrante
+    NC: 'hsl(173, 58%, 45%)',       // Teal
   };
   const DEFAULT_COLORS = [
-    'hsl(217, 91%, 59%)',
-    'hsl(142, 76%, 36%)',
-    'hsl(25, 95%, 53%)',
-    'hsl(262, 83%, 58%)',
-    'hsl(173, 58%, 39%)',
-    'hsl(0, 84%, 60%)',
+    'hsl(217, 91%, 55%)', // Azul
+    'hsl(142, 76%, 55%)', // Verde  
+    'hsl(25, 95%, 55%)',  // Laranja
+    'hsl(340, 82%, 52%)', // Rosa/Magenta
+    'hsl(173, 58%, 45%)', // Teal
+    'hsl(0, 84%, 60%)',   // Vermelho
   ];
 
   const CustomLegend = (props: any) => {
