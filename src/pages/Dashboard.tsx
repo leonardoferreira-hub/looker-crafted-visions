@@ -153,8 +153,8 @@ export default function Dashboard() {
                 estruturacao={kpis.operacoesEstruturacao}
                 change={kpis.operacoesLiquidadasChange}
                 tooltipInfo={{
-                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
                   currentValue: `${kpis.operacoesLiquidadas + kpis.operacoesEstruturacao} operações`,
                   comparisonValue: `${kpis.lastYearOperacoes || 0} operações`,
                   calculation: "Soma de operações liquidadas + operações em estruturação no período atual vs operações liquidadas no mesmo período do ano anterior"
@@ -170,8 +170,8 @@ export default function Dashboard() {
                 change={kpis.volumeLiquidadoChange}
                 variant="success"
                 tooltipInfo={{
-                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
                   currentValue: `R$ ${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bilhões`,
                   comparisonValue: `R$ ${((kpis.lastYearVolume || 0) / 1000000000).toFixed(1)} bilhões`,
                   calculation: "Soma do volume de operações liquidadas + volume em estruturação (em bilhões de reais) vs volume liquidado no mesmo período do ano anterior"
@@ -187,8 +187,8 @@ export default function Dashboard() {
                 change={kpis.feeLiquidadoChange}
                 variant="warning"
                 tooltipInfo={{
-                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
                   currentValue: `R$ ${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} milhões`,
                   comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões`,
                   calculation: "Soma dos fees de estruturação das operações liquidadas + em estruturação (coluna 'Estruturação' das planilhas) vs fees liquidados no mesmo período do ano anterior"
@@ -204,8 +204,8 @@ export default function Dashboard() {
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
                 change={kpis.feeLiquidadoChange}
                 tooltipInfo={{
-                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
                   currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
                   comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
                   calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."

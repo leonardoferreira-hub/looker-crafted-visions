@@ -80,7 +80,7 @@ export function OperationsCard({
           </Card>
         </TooltipTrigger>
         {tooltipInfo && (
-          <TooltipContent side="top" className="max-w-sm p-4">
+          <TooltipContent side="top" className="max-w-sm p-4 bg-background/95 backdrop-blur-sm border shadow-lg">
             <div className="space-y-2">
               <div className="font-semibold text-sm border-b pb-2 mb-3">Total de Operações - Detalhes</div>
               
