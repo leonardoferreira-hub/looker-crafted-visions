@@ -99,6 +99,8 @@ export interface DashboardKPIs {
   feeEstruturacao: string;
   feeGestaoLiquidado: string;
   feeGestaoEstruturacao: string;
+  feeGestaoLiquidadoRaw: number;
+  feeGestaoEstruturacaoRaw: number;
   feeMedio2025: string;
   // Comparações com ano anterior
   operacoesLiquidadasChange?: { value: string; type: 'positive' | 'negative' };
@@ -641,6 +643,8 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeEstruturacao: formatFee(feeEstruturacaoPipe), // Fee apenas estruturação
     feeGestaoLiquidado: formatFee(feeGestaoHistorico), // Fee gestão apenas liquidadas
     feeGestaoEstruturacao: formatFee(feeGestaoPipe), // Fee gestão apenas estruturação
+    feeGestaoLiquidadoRaw: feeGestaoHistorico,
+    feeGestaoEstruturacaoRaw: feeGestaoPipe,
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
     // Comparações com ano anterior (mesmo período relativo)
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
