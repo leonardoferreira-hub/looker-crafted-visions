@@ -91,89 +91,89 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((row, index) => {
-                const hasResumo = row.resumo && row.resumo.trim() !== '';
-                
-                const RowContent = (
-                  <TableRow
-                    key={index}
-                    className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
-                  >
-                  {/* Mobile Card Layout */}
-                  <TableCell className="block sm:hidden p-4 space-y-2" colSpan={columns.length}>
-                    <div className="grid grid-cols-1 gap-2">
-                      {columns.map((column) => (
-                        <div key={column.key} className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground font-medium">
-                            {column.label}:
-                          </span>
-                          <div className="text-sm">
-                            {column.render ? (
-                              column.render(row[column.key], row)
-                            ) : column.key === 'categoria' ? (
-                              <Badge 
-                                variant="outline" 
-                                className={`${getCategoryBadge(row[column.key])} text-xs`}
-                              >
-                                {row[column.key]}
-                              </Badge>
-                            ) : column.key.toLowerCase().includes('estruturacao') || 
-                                column.key.toLowerCase().includes('volume') ||
-                                column.key.toLowerCase().includes('remuneracao') ? (
-                              <span className="font-medium">
-                                {formatCurrency(row[column.key])}
-                              </span>
-                            ) : column.key.toLowerCase().includes('data') ||
-                                column.key.toLowerCase().includes('previsao') ? (
-                              formatDate(row[column.key])
-                            ) : (
-                              row[column.key] || '-'
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </TableCell>
+              <TooltipProvider>
+                {data.map((row, index) => {
+                  const hasResumo = row.resumo && row.resumo.trim() !== '';
+                  console.log(`DataTable Row ${index}:`, { operacao: row.operacao, resumo: row.resumo, hasResumo });
                   
-                  {/* Desktop Table Layout */}
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.key}
-                      className={cn("hidden sm:table-cell text-xs sm:text-sm", column.className)}
-                    >
-                      {column.render ? (
-                        column.render(row[column.key], row)
-                      ) : column.key === 'categoria' ? (
-                        <Badge 
-                          variant="outline" 
-                          className={getCategoryBadge(row[column.key])}
+                  const RowContent = (
+                    <>
+                      {/* Mobile Card Layout */}
+                      <TableCell className="block sm:hidden p-4 space-y-2" colSpan={columns.length}>
+                        <div className="grid grid-cols-1 gap-2">
+                          {columns.map((column) => (
+                            <div key={column.key} className="flex justify-between items-center">
+                              <span className="text-xs text-muted-foreground font-medium">
+                                {column.label}:
+                              </span>
+                              <div className="text-sm">
+                                {column.render ? (
+                                  column.render(row[column.key], row)
+                                ) : column.key === 'categoria' ? (
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`${getCategoryBadge(row[column.key])} text-xs`}
+                                  >
+                                    {row[column.key]}
+                                  </Badge>
+                                ) : column.key.toLowerCase().includes('estruturacao') || 
+                                    column.key.toLowerCase().includes('volume') ||
+                                    column.key.toLowerCase().includes('remuneracao') ? (
+                                  <span className="font-medium">
+                                    {formatCurrency(row[column.key])}
+                                  </span>
+                                ) : column.key.toLowerCase().includes('data') ||
+                                    column.key.toLowerCase().includes('previsao') ? (
+                                  formatDate(row[column.key])
+                                ) : (
+                                  row[column.key] || '-'
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
+                      
+                      {/* Desktop Table Layout */}
+                      {columns.map((column) => (
+                        <TableCell
+                          key={column.key}
+                          className={cn("hidden sm:table-cell text-xs sm:text-sm", column.className)}
                         >
-                          {row[column.key]}
-                        </Badge>
-                      ) : column.key.toLowerCase().includes('estruturacao') || 
-                          column.key.toLowerCase().includes('volume') ||
-                          column.key.toLowerCase().includes('remuneracao') ? (
-                        <span className="font-medium">
-                          {formatCurrency(row[column.key])}
-                        </span>
-                      ) : column.key.toLowerCase().includes('data') ||
-                          column.key.toLowerCase().includes('previsao') ? (
-                        formatDate(row[column.key])
-                      ) : (
-                        row[column.key] || '-'
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-                );
+                          {column.render ? (
+                            column.render(row[column.key], row)
+                          ) : column.key === 'categoria' ? (
+                            <Badge 
+                              variant="outline" 
+                              className={getCategoryBadge(row[column.key])}
+                            >
+                              {row[column.key]}
+                            </Badge>
+                          ) : column.key.toLowerCase().includes('estruturacao') || 
+                              column.key.toLowerCase().includes('volume') ||
+                              column.key.toLowerCase().includes('remuneracao') ? (
+                            <span className="font-medium">
+                              {formatCurrency(row[column.key])}
+                            </span>
+                          ) : column.key.toLowerCase().includes('data') ||
+                              column.key.toLowerCase().includes('previsao') ? (
+                            formatDate(row[column.key])
+                          ) : (
+                            row[column.key] || '-'
+                          )}
+                        </TableCell>
+                      ))}
+                    </>
+                  );
 
-                // Se tem resumo, envolve com tooltip
-                if (hasResumo) {
-                  return (
-                    <TooltipProvider key={index}>
-                      <Tooltip>
+                  // Se tem resumo, envolve a row com tooltip
+                  if (hasResumo) {
+                    return (
+                      <Tooltip key={index}>
                         <TooltipTrigger asChild>
-                          {RowContent}
+                          <TableRow className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer">
+                            {RowContent}
+                          </TableRow>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-sm p-3 bg-background/95 backdrop-blur-sm border shadow-lg">
                           <div className="text-sm">
@@ -182,13 +182,20 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
                           </div>
                         </TooltipContent>
                       </Tooltip>
-                    </TooltipProvider>
-                  );
-                }
+                    );
+                  }
 
-                // Se não tem resumo, retorna a row normalmente
-                return RowContent;
-              })}
+                  // Se não tem resumo, retorna a row normalmente
+                  return (
+                    <TableRow 
+                      key={index}
+                      className="border-border/50 hover:bg-muted/30 transition-colors"
+                    >
+                      {RowContent}
+                    </TableRow>
+                  );
+                })}
+              </TooltipProvider>
             </TableBody>
           </Table>
         </div>

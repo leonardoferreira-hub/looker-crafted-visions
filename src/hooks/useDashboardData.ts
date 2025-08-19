@@ -693,6 +693,12 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
     const resumo = getCellValue(row, SHEETS_COLUMNS.PIPE.RESUMO);
     
+    console.log(`=== PROXIMAS LIQUIDACOES ROW ${index} ===`);
+    console.log('Operacao:', operacao);
+    console.log('Resumo raw (col_23):', row['col_23']);
+    console.log('Resumo getCellValue:', resumo);
+    console.log('Resumo final:', String(resumo || ''));
+    
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.PIPE.CATEGORIA) || ''),
       operacao: String(operacao || ''),
@@ -708,6 +714,12 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const estruturacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const resumo = getCellValue(row, SHEETS_COLUMNS.HISTORICO.RESUMO);
+    
+    console.log(`=== ULTIMAS LIQUIDACOES ROW ${index} ===`);
+    console.log('Operacao:', operacao);
+    console.log('Resumo raw (col_23):', row['col_23']);
+    console.log('Resumo getCellValue:', resumo);
+    console.log('Resumo final:', String(resumo || ''));
     
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || ''),
