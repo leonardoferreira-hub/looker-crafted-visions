@@ -68,6 +68,19 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
     }
   };
 
+  const getCategoryHoverClass = (category: string) => {
+    const hoverVariants: Record<string, string> = {
+      CRI: "hover:bg-[hsl(142_76%_55%/0.1)]",
+      CRA: "hover:bg-[hsl(25_95%_55%/0.1)]", 
+      DEB: "hover:bg-[hsl(217_91%_55%/0.1)]",
+      "Debênture": "hover:bg-[hsl(217_91%_55%/0.1)]",
+      CR: "hover:bg-[hsl(340_82%_52%/0.1)]",
+      NC: "hover:bg-[hsl(173_58%_45%/0.1)]",
+    };
+    
+    return hoverVariants[category] || "hover:bg-muted/30";
+  };
+
   return (
     <Card className={cn("bg-card border-border/50 shadow-lg", className)}>
       {title && (
@@ -171,7 +184,7 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
                     return (
                       <Tooltip key={index}>
                         <TooltipTrigger asChild>
-                          <TableRow className="border-border/50 hover:bg-accent/50 transition-all duration-200 ease-in-out cursor-pointer hover:shadow-sm">
+                          <TableRow className={cn("border-border/50 transition-all duration-200 ease-in-out cursor-pointer hover:shadow-sm", getCategoryHoverClass(row.categoria))}>
                             {RowContent}
                           </TableRow>
                         </TooltipTrigger>
@@ -189,7 +202,7 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
                   return (
                     <TableRow 
                       key={index}
-                      className="border-border/50 hover:bg-accent/50 transition-all duration-200 ease-in-out hover:shadow-sm"
+                      className={cn("border-border/50 transition-all duration-200 ease-in-out hover:shadow-sm", getCategoryHoverClass(row.categoria))}
                     >
                       {RowContent}
                     </TableRow>
