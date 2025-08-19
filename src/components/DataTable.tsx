@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps {
@@ -90,11 +91,14 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((row, index) => (
-                <TableRow
-                  key={index}
-                  className="border-border/50 hover:bg-muted/30 transition-colors"
-                >
+              {data.map((row, index) => {
+                const hasResumo = row.resumo && row.resumo.trim() !== '';
+                
+                const RowContent = (
+                  <TableRow
+                    key={index}
+                    className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                  >
                   {/* Mobile Card Layout */}
                   <TableCell className="block sm:hidden p-4 space-y-2" colSpan={columns.length}>
                     <div className="grid grid-cols-1 gap-2">
@@ -161,7 +165,30 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
                     </TableCell>
                   ))}
                 </TableRow>
-              ))}
+                );
+
+                // Se tem resumo, envolve com tooltip
+                if (hasResumo) {
+                  return (
+                    <TooltipProvider key={index}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          {RowContent}
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-sm p-3 bg-background/95 backdrop-blur-sm border shadow-lg">
+                          <div className="text-sm">
+                            <p className="font-medium mb-1">{row.operacao}</p>
+                            <p className="text-muted-foreground">{row.resumo}</p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                }
+
+                // Se não tem resumo, retorna a row normalmente
+                return RowContent;
+              })}
             </TableBody>
           </Table>
         </div>

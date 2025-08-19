@@ -691,13 +691,15 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const previsao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
     const estruturacao = getCellValue(row, SHEETS_COLUMNS.PIPE.ESTRUTURACAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+    const resumo = getCellValue(row, SHEETS_COLUMNS.PIPE.RESUMO);
     
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.PIPE.CATEGORIA) || ''),
       operacao: String(operacao || ''),
       previsaoLiquidacao: formatDate(previsao),
       analistaGestao: String(getCellValue(row, SHEETS_COLUMNS.PIPE.ANALISTA_GESTAO) || ''),
-      estruturacao: formatCurrency(estruturacao || 0)
+      estruturacao: formatCurrency(estruturacao || 0),
+      resumo: String(resumo || '')
     };
   });
 
@@ -705,13 +707,15 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
     const estruturacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    const resumo = getCellValue(row, SHEETS_COLUMNS.HISTORICO.RESUMO);
     
     return {
       categoria: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || ''),
       operacao: String(operacao || ''),
       dataLiquidacao: formatDate(dataLiquidacao),
       analistaGestao: String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.ANALISTA_GESTAO) || ''),
-      estruturacao: formatCurrency(estruturacao || 0)
+      estruturacao: formatCurrency(estruturacao || 0),
+      resumo: String(resumo || '')
     };
   });
 
