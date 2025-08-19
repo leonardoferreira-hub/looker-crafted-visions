@@ -594,9 +594,42 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('Fee Liquidado 2025 (para comparação):', feeEstruturacaoHistorico, '/ Fee Histórico 2024:', lastYearFeeHistorico);
 
   // Calcula fee de gestão das duas abas
+  console.log('=== DEBUG FEE GESTÃO ===');
+  console.log('Coluna GESTAO Histórico:', SHEETS_COLUMNS.HISTORICO.GESTAO);
+  console.log('Coluna GESTAO Pipe:', SHEETS_COLUMNS.PIPE.GESTAO);
+  
+  // Debug detalhado dos valores de gestão
+  console.log('=== VALORES GESTÃO HISTÓRICO (2025) ===');
+  liquidadas.forEach((row, index) => {
+    const gestaoValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.GESTAO);
+    const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
+    const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    if (gestaoValue && gestaoValue !== 0) {
+      console.log(`${index + 1}. ${operacao} (${dataLiquidacao}): col_${SHEETS_COLUMNS.HISTORICO.GESTAO} = "${gestaoValue}" (tipo: ${typeof gestaoValue})`);
+    }
+  });
+  
+  console.log('=== VALORES GESTÃO PIPE (EM ESTRUTURAÇÃO) ===');
+  estruturacao.forEach((row, index) => {
+    const gestaoValue = getCellValue(row, SHEETS_COLUMNS.PIPE.GESTAO);
+    const operacao = getCellValue(row, SHEETS_COLUMNS.PIPE.OPERACAO);
+    const previsao = getCellValue(row, SHEETS_COLUMNS.PIPE.PREVISAO_LIQUIDACAO);
+    if (gestaoValue && gestaoValue !== 0) {
+      console.log(`${index + 1}. ${operacao} (${previsao}): col_${SHEETS_COLUMNS.PIPE.GESTAO} = "${gestaoValue}" (tipo: ${typeof gestaoValue})`);
+    }
+  });
+  
   const feeGestaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO);
   const feeGestaoPipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.GESTAO);
   const feeGestaoTotal = feeGestaoHistorico + feeGestaoPipe;
+  
+  console.log('Fee Gestão Histórico (liquidadas 2025):', feeGestaoHistorico);
+  console.log('Fee Gestão Pipe (em estruturação):', feeGestaoPipe);
+  console.log('Fee Gestão Total:', feeGestaoTotal);
+  
+  // Verificar se os valores batem com o esperado
+  console.log('ESPERADO: Histórico = 166.900, Pipe = 329.000');
+  console.log('REAL: Histórico =', feeGestaoHistorico, ', Pipe =', feeGestaoPipe);
 
   // Calcula KPIs usando valores das duas abas
   const kpis: DashboardKPIs = {
@@ -685,16 +718,25 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
 }
 
 function calculateSumByColumnIndex(data: SheetData[], columnIndex: number): number {
-  return data.reduce((sum, row) => {
+  let total = 0;
+  console.log(`=== CALCULANDO SOMA COLUNA ${columnIndex} ===`);
+  
+  data.forEach((row, index) => {
     const value = getCellValue(row, columnIndex);
     
-    if (!value) return sum;
+    if (!value) return;
     
     const numValue = typeof value === 'number' ? value : 
                     parseFloat(String(value).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
     
-    return sum + numValue;
-  }, 0);
+    if (numValue > 0) {
+      console.log(`Linha ${index + 1}: "${value}" -> ${numValue}`);
+      total += numValue;
+    }
+  });
+  
+  console.log(`Total coluna ${columnIndex}: ${total}`);
+  return total;
 }
 
 function calculateAverageByColumnIndex(data: SheetData[], columnIndex: number): string {
