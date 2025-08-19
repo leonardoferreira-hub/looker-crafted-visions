@@ -171,7 +171,7 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
                     return (
                       <Tooltip key={index}>
                         <TooltipTrigger asChild>
-                          <TableRow className="border-border/50 hover:bg-muted/30 transition-colors cursor-pointer">
+                          <TableRow className="border-border/50 hover:bg-accent/50 transition-all duration-200 ease-in-out cursor-pointer hover:shadow-sm">
                             {RowContent}
                           </TableRow>
                         </TooltipTrigger>
@@ -189,7 +189,7 @@ export function DataTable({ title, data, columns, className }: DataTableProps) {
                   return (
                     <TableRow 
                       key={index}
-                      className="border-border/50 hover:bg-muted/30 transition-colors"
+                      className="border-border/50 hover:bg-accent/50 transition-all duration-200 ease-in-out hover:shadow-sm"
                     >
                       {RowContent}
                     </TableRow>
