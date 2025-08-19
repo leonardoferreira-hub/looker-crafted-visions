@@ -73,7 +73,7 @@ export function OperationsCard({
                   ) : (
                     <TrendingDown className="mr-1 h-4 w-4" />
                   )}
-                  <span>{change.value} vs mesmo período 2024</span>
+                  <span>{change.value} liquidadas vs mesmo período 2024</span>
                 </div>
               )}
             </CardContent>

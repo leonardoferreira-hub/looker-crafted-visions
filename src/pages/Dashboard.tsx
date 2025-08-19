@@ -155,9 +155,9 @@ export default function Dashboard() {
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `${kpis.operacoesLiquidadas + kpis.operacoesEstruturacao} operações`,
+                  currentValue: `${kpis.operacoesLiquidadas} operações liquidadas`,
                   comparisonValue: `${kpis.lastYearOperacoes || 0} operações`,
-                  calculation: "Soma de operações liquidadas + operações em estruturação no período atual vs operações liquidadas no mesmo período do ano anterior"
+                  calculation: "Comparação de operações liquidadas no período atual vs operações liquidadas no mesmo período do ano anterior"
                 }}
               />
               <KPICard
@@ -172,9 +172,9 @@ export default function Dashboard() {
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `R$ ${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bilhões`,
+                  currentValue: `R$ ${kpis.volumeLiquidado} bilhões liquidado`,
                   comparisonValue: `R$ ${((kpis.lastYearVolume || 0) / 1000000000).toFixed(1)} bilhões`,
-                  calculation: "Soma do volume de operações liquidadas + volume em estruturação (em bilhões de reais) vs volume liquidado no mesmo período do ano anterior"
+                  calculation: "Comparação do volume liquidado no período atual vs volume liquidado no mesmo período do ano anterior"
                 }}
               />
               <KPICard
@@ -189,9 +189,9 @@ export default function Dashboard() {
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `R$ ${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} milhões`,
+                  currentValue: `R$ ${kpis.feeLiquidado} milhões liquidado`,
                   comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões`,
-                  calculation: "Soma dos fees de estruturação das operações liquidadas + em estruturação (coluna 'Estruturação' das planilhas) vs fees liquidados no mesmo período do ano anterior"
+                  calculation: "Comparação do fee de estruturação liquidado no período atual vs fee liquidado no mesmo período do ano anterior"
                 }}
               />
                <KPICard
