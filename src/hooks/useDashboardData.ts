@@ -102,6 +102,10 @@ export interface DashboardKPIs {
   feeGestaoLiquidadoRaw: number;
   feeGestaoEstruturacaoRaw: number;
   feeMedio2025: string;
+  // Valores de comparação (mesmo período do ano anterior)
+  lastYearOperacoes?: number;
+  lastYearVolume?: number;
+  lastYearFee?: number;
   // Comparações com ano anterior
   operacoesLiquidadasChange?: { value: string; type: 'positive' | 'negative' };
   volumeLiquidadoChange?: { value: string; type: 'positive' | 'negative' };
@@ -646,6 +650,10 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeGestaoLiquidadoRaw: feeGestaoHistorico,
     feeGestaoEstruturacaoRaw: feeGestaoPipe,
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
+    // Valores de comparação (mesmo período do ano anterior)
+    lastYearOperacoes: lastYearLiquidadas,
+    lastYearVolume: lastYearVolumeHistorico,
+    lastYearFee: lastYearFeeHistorico,
     // Comparações com ano anterior (mesmo período relativo)
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
     volumeLiquidadoChange: getPercentChange(volumeTotal, lastYearVolumeHistorico), // Compara volume total 2025 vs histórico 2024

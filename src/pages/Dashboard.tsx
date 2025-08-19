@@ -154,9 +154,10 @@ export default function Dashboard() {
                 change={kpis.operacoesLiquidadasChange}
                 tooltipInfo={{
                   currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: "Janeiro - Dezembro 2024",
-                  currentValue: `${kpis.operacoesLiquidadas} operações liquidadas em 2025`,
-                  calculation: "Soma de todas as operações com status 'liquidado' no período atual vs mesmo período do ano anterior"
+                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
+                  currentValue: `${kpis.operacoesLiquidadas + kpis.operacoesEstruturacao} operações`,
+                  comparisonValue: `${kpis.lastYearOperacoes || 0} operações`,
+                  calculation: "Soma de operações liquidadas + operações em estruturação no período atual vs operações liquidadas no mesmo período do ano anterior"
                 }}
               />
               <KPICard
@@ -170,10 +171,10 @@ export default function Dashboard() {
                 variant="success"
                 tooltipInfo={{
                   currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: "Janeiro - Dezembro 2024",
+                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
                   currentValue: `R$ ${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bilhões`,
-                  comparisonValue: kpis.volumeLiquidadoChange ? `Comparado com mesmo período de 2024` : "Sem dados de comparação",
-                  calculation: "Soma do volume de operações liquidadas + volume em estruturação (em bilhões de reais)"
+                  comparisonValue: `R$ ${((kpis.lastYearVolume || 0) / 1000000000).toFixed(1)} bilhões`,
+                  calculation: "Soma do volume de operações liquidadas + volume em estruturação (em bilhões de reais) vs volume liquidado no mesmo período do ano anterior"
                 }}
               />
               <KPICard
@@ -187,10 +188,10 @@ export default function Dashboard() {
                 variant="warning"
                 tooltipInfo={{
                   currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: "Janeiro - Dezembro 2024",
+                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
                   currentValue: `R$ ${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} milhões`,
-                  comparisonValue: kpis.feeLiquidadoChange ? `Fee de ${kpis.feeLiquidadoChange.value} vs 2024` : "Sem dados de comparação",
-                  calculation: "Soma dos fees de estruturação das operações liquidadas + em estruturação (coluna 'Estruturação' das planilhas)"
+                  comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões`,
+                  calculation: "Soma dos fees de estruturação das operações liquidadas + em estruturação (coluna 'Estruturação' das planilhas) vs fees liquidados no mesmo período do ano anterior"
                 }}
               />
                <KPICard
@@ -204,9 +205,9 @@ export default function Dashboard() {
                 change={kpis.feeLiquidadoChange}
                 tooltipInfo={{
                   currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: "Janeiro - Dezembro 2024",
+                  comparisonPeriod: `Janeiro - ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}/2024`,
                   currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
-                  comparisonValue: `Liquidado: R$ ${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')} | Estruturação: R$ ${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`,
+                  comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
                   calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
                 }}
               />
