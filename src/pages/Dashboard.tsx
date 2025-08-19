@@ -152,6 +152,12 @@ export default function Dashboard() {
                 liquidadas={kpis.operacoesLiquidadas}
                 estruturacao={kpis.operacoesEstruturacao}
                 change={kpis.operacoesLiquidadasChange}
+                tooltipInfo={{
+                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: "Janeiro - Dezembro 2024",
+                  currentValue: `${kpis.operacoesLiquidadas} operações liquidadas em 2025`,
+                  calculation: "Soma de todas as operações com status 'liquidado' no período atual vs mesmo período do ano anterior"
+                }}
               />
               <KPICard
                 title="Volume Total"
@@ -162,6 +168,13 @@ export default function Dashboard() {
                 rightLabel="Estruturação"
                 change={kpis.volumeLiquidadoChange}
                 variant="success"
+                tooltipInfo={{
+                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: "Janeiro - Dezembro 2024",
+                  currentValue: `R$ ${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bilhões`,
+                  comparisonValue: kpis.volumeLiquidadoChange ? `Comparado com mesmo período de 2024` : "Sem dados de comparação",
+                  calculation: "Soma do volume de operações liquidadas + volume em estruturação (em bilhões de reais)"
+                }}
               />
               <KPICard
                 title="Fee de Estruturação"
@@ -172,6 +185,13 @@ export default function Dashboard() {
                 rightLabel="Estruturação"
                 change={kpis.feeLiquidadoChange}
                 variant="warning"
+                tooltipInfo={{
+                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: "Janeiro - Dezembro 2024",
+                  currentValue: `R$ ${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} milhões`,
+                  comparisonValue: kpis.feeLiquidadoChange ? `Fee de ${kpis.feeLiquidadoChange.value} vs 2024` : "Sem dados de comparação",
+                  calculation: "Soma dos fees de estruturação das operações liquidadas + em estruturação (coluna 'Estruturação' das planilhas)"
+                }}
               />
                <KPICard
                 title="Fee de Gestão"
@@ -182,6 +202,13 @@ export default function Dashboard() {
                 rightLabel="Estruturação"
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
                 change={kpis.feeLiquidadoChange}
+                tooltipInfo={{
+                  currentPeriod: `Janeiro 2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: "Janeiro - Dezembro 2024",
+                  currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
+                  comparisonValue: `Liquidado: R$ ${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')} | Estruturação: R$ ${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`,
+                  calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
+                }}
               />
             </div>
 
