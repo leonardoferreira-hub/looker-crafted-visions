@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { KPICard } from "@/components/KPICard";
 import { OperationsCard } from "@/components/OperationsCard";
+import { RevenueCard } from "@/components/RevenueCard";
 import { ChartCard } from "@/components/ChartCard";
 import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
@@ -146,7 +147,7 @@ export default function Dashboard() {
 
           <TabsContent value="resumo" className="space-y-6">
             {/* Main KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <OperationsCard
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
@@ -177,55 +178,27 @@ export default function Dashboard() {
                   calculation: "Comparação do volume liquidado no período atual vs volume liquidado no mesmo período do ano anterior"
                 }}
               />
-              <KPICard
-                title="Fee de Estruturação"
-                value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
-                leftValue={kpis.feeLiquidado}
-                leftLabel="Liquidado"
-                rightValue={kpis.feeEstruturacao}
-                rightLabel="Estruturação"
-                change={kpis.feeLiquidadoChange}
-                variant="warning"
-                tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `R$ ${kpis.feeLiquidado} milhões liquidado`,
-                  comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões`,
-                  calculation: "Comparação do fee de estruturação liquidado no período atual vs fee liquidado no mesmo período do ano anterior"
-                }}
-              />
-               <KPICard
-                title="Fee de Gestão"
-                value={`${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
-                leftValue={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                leftLabel="Liquidado"
-                rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                rightLabel="Estruturação"
-                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                change={kpis.feeLiquidadoChange}
-                tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
-                  comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
-                  calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
-                }}
-              />
-              <KPICard
-                title="Fee de Colocação"
-                value={`${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
-                leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                leftLabel="Liquidado"
-                rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                rightLabel="Estruturação"
-                change={kpis.feeLiquidadoChange}
-                variant="primary"
-                tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `R$ ${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
-                  comparisonValue: `Dados de colocação não disponíveis para comparação histórica`,
-                  calculation: "Soma dos fees de colocação (originação) da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
+              <RevenueCard
+                data={{
+                  estruturacao: {
+                    liquidado: kpis.feeLiquidado,
+                    estruturacao: kpis.feeEstruturacao,
+                    liquidadoRaw: parseFloat(kpis.feeLiquidado) * 1000000,
+                    estruturacaoRaw: parseFloat(kpis.feeEstruturacao) * 1000000,
+                    change: kpis.feeLiquidadoChange
+                  },
+                  gestao: {
+                    liquidado: `${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`,
+                    estruturacao: `${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`,
+                    liquidadoRaw: kpis.feeGestaoLiquidadoRaw || 0,
+                    estruturacaoRaw: kpis.feeGestaoEstruturacaoRaw || 0
+                  },
+                  colocacao: {
+                    liquidado: `${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`,
+                    estruturacao: `${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`,
+                    liquidadoRaw: kpis.feeColocacaoLiquidadoRaw || 0,
+                    estruturacaoRaw: kpis.feeColocacaoEstruturacaoRaw || 0
+                  }
                 }}
               />
             </div>
