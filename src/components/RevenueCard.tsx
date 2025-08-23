@@ -136,7 +136,7 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
 
   return (
     <Card className={cn(
-      "transition-all duration-300 hover:shadow-xl border-2 bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400 shadow-xl shadow-emerald-500/25",
+      "transition-all duration-300 hover:shadow-xl border-2 bg-gradient-to-br from-rose-600 to-rose-700 border-rose-500 shadow-xl shadow-rose-500/25",
       className
     )}>
       <CardHeader className="pb-3 text-center">
@@ -175,7 +175,7 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
             estruturacao={data.gestao.estruturacao}
             liquidadoRaw={data.gestao.liquidadoRaw}
             estruturacaoRaw={data.gestao.estruturacaoRaw}
-            color="bg-blue-600/30 hover:bg-blue-600/40 border-blue-400/30"
+            color="bg-amber-600/40 hover:bg-amber-600/50 border-amber-400/40"
             tooltipInfo={{
               currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
               comparisonPeriod: `Dados não disponíveis para comparação histórica`,
@@ -194,7 +194,7 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
               liquidadoRaw={data.estruturacao.liquidadoRaw}
               estruturacaoRaw={data.estruturacao.estruturacaoRaw}
               change={data.estruturacao.change}
-              color="bg-orange-600/30 hover:bg-orange-600/40 border-orange-400/30"
+              color="bg-orange-600/40 hover:bg-orange-600/50 border-orange-400/40"
               tooltipInfo={{
                 currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                 comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -211,7 +211,7 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
               estruturacao={data.colocacao.estruturacao}
               liquidadoRaw={data.colocacao.liquidadoRaw}
               estruturacaoRaw={data.colocacao.estruturacaoRaw}
-              color="bg-purple-600/30 hover:bg-purple-600/40 border-purple-400/30"
+              color="bg-violet-600/40 hover:bg-violet-600/50 border-violet-400/40"
               tooltipInfo={{
                 currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                 comparisonPeriod: `Dados não disponíveis para comparação histórica`,

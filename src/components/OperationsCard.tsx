@@ -35,7 +35,7 @@ export function OperationsCard({
         <TooltipTrigger asChild>
           <Card className={cn(
             "transition-all duration-300 hover:shadow-2xl hover:scale-[1.05] border-2 text-white cursor-help",
-            "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25",
+            "bg-gradient-to-br from-indigo-600 to-indigo-700 border-indigo-500 shadow-xl shadow-indigo-500/25",
             className
           )}>
             <CardHeader className="pb-3 text-center relative">
