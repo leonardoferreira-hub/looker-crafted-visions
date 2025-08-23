@@ -298,20 +298,48 @@ export default function Dashboard() {
               />
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <ChartCard title="Fee de Estruturação por mês">
-                <CustomLineChart 
-                  data={chartData.operacoesPorMes}
-                  xKey="mes"
-                  yKey="estruturacoes"
-                />
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+              <ChartCard title="Operações em Estruturação e Volume" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CombinedBarLineChart 
+                    data={chartData.operacoesPorMes}
+                    endDate={defaultEndDate}
+                    comparisonEndDate={defaultComparisonEndDate}
+                  />
+                </div>
               </ChartCard>
-              
-              <DataTable
-                title="Próximas liquidações"
-                data={proximasLiquidacoesLimitadas}
-                columns={proximasColumns}
-              />
+
+              <ChartCard title="Fee de Estruturação e Fee de Colocação" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomLineChart 
+                    data={chartData.operacoesPorMes}
+                    xKey="mes"
+                    yKey="estruturacoes"
+                  />
+                </div>
+              </ChartCard>
+            </div>
+
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+              <ChartCard title="Meta Comercial" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomLineChart 
+                    data={chartData.operacoesPorMes}
+                    xKey="mes"
+                    yKey="liquidacoes"
+                  />
+                </div>
+              </ChartCard>
+
+              <ChartCard title="Tempo Médio de Estruturação" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomPieChart 
+                    data={chartData.categorias}
+                    dataKey="value"
+                    nameKey="name"
+                  />
+                </div>
+              </ChartCard>
             </div>
           </TabsContent>
 
