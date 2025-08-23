@@ -272,85 +272,36 @@ export default function Dashboard() {
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {/* Operações & Volume Card */}
-              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 shadow-lg hover:shadow-xl transition-all duration-300" style={{background: 'linear-gradient(135deg, hsl(217 91% 59% / 0.1), hsl(142 76% 36% / 0.1)), hsl(var(--card))'}}>
-                <div className="absolute inset-0" style={{background: 'linear-gradient(135deg, hsl(217 91% 59% / 0.05), hsl(142 76% 36% / 0.05))'}}></div>
-                <div className="relative">
-                  <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{background: 'linear-gradient(135deg, hsl(217 91% 59%), hsl(142 76% 36%))'}}></div>
-                    Operações & Volume
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="bg-background/40 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Operações em Estruturação</p>
-                      <p className="text-xl font-bold mt-1" style={{color: 'hsl(217 91% 59%)'}}>{kpis.operacoesEstruturacao}</p>
-                    </div>
-                    <div className="bg-background/40 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Volume em Estruturação</p>
-                      <p className="text-xl font-bold mt-1" style={{color: 'hsl(142 76% 36%)'}}>{kpis.volumeEstruturacao} bi</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Fee Estruturação & Colocação Card */}
-              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 shadow-lg hover:shadow-xl transition-all duration-300" style={{background: 'linear-gradient(135deg, hsl(142 76% 36% / 0.1), hsl(25 95% 53% / 0.1)), hsl(var(--card))'}}>
-                <div className="absolute inset-0" style={{background: 'linear-gradient(135deg, hsl(142 76% 36% / 0.05), hsl(25 95% 53% / 0.05))'}}></div>
-                <div className="relative">
-                  <h3 className="text-base font-semibold text-foreground mb-1 flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{background: 'linear-gradient(135deg, hsl(142 76% 36%), hsl(25 95% 53%))'}}></div>
-                    Fee Estruturação & Colocação
-                  </h3>
-                  <div className="inline-flex items-center px-3 py-1 rounded-full mb-3 border" style={{backgroundColor: 'hsl(25 95% 53% / 0.1)', borderColor: 'hsl(25 95% 53% / 0.3)'}}>
-                    <p className="text-xs font-medium" style={{color: 'hsl(25 95% 53%)'}}>Meta comercial: A ser informada</p>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="bg-background/40 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Fee de Estruturação</p>
-                      <p className="text-xl font-bold mt-1" style={{color: 'hsl(142 76% 36%)'}}>{kpis.feeEstruturacao} mi</p>
-                    </div>
-                    <div className="bg-background/40 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Fee de Colocação</p>
-                      <p className="text-xl font-bold mt-1" style={{color: 'hsl(25 95% 53%)'}}>{Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Fee de Gestão Card */}
-              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 shadow-lg hover:shadow-xl transition-all duration-300" style={{background: 'linear-gradient(135deg, hsl(142 76% 50% / 0.1), hsl(173 58% 45% / 0.1)), hsl(var(--card))'}}>
-                <div className="absolute inset-0" style={{background: 'linear-gradient(135deg, hsl(142 76% 50% / 0.05), hsl(173 58% 45% / 0.05))'}}></div>
-                <div className="relative">
-                  <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{background: 'linear-gradient(135deg, hsl(142 76% 50%), hsl(173 58% 45%))'}}></div>
-                    Fee de Gestão
-                  </h3>
-                  <div className="bg-background/40 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Fee de Gestão em Estruturação</p>
-                    <p className="text-2xl font-bold mt-2" style={{color: 'hsl(142 76% 50%)'}}>{Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tempo Médio Card */}
-              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 shadow-lg hover:shadow-xl transition-all duration-300" style={{background: 'linear-gradient(135deg, hsl(262 83% 58% / 0.1), hsl(0 84% 60% / 0.1)), hsl(var(--card))'}}>
-                <div className="absolute inset-0" style={{background: 'linear-gradient(135deg, hsl(262 83% 58% / 0.05), hsl(0 84% 60% / 0.05))'}}></div>
-                <div className="relative">
-                  <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{background: 'linear-gradient(135deg, hsl(262 83% 58%), hsl(0 84% 60%))'}}></div>
-                    Tempo Médio
-                  </h3>
-                  <div className="bg-background/40 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Tempo Médio de Estruturação</p>
-                        <p className="text-2xl font-bold mt-2" style={{color: 'hsl(262 83% 58%)'}}>7,0 dias</p>
-                      </div>
-                      <div className="px-2 py-1 rounded-full text-sm font-medium border" style={{backgroundColor: 'hsl(142 76% 50% / 0.1)', color: 'hsl(142 76% 50%)', borderColor: 'hsl(142 76% 50% / 0.3)'}}>-15%</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <KPICard
+                title="Operações em Estruturação"
+                value={kpis.operacoesEstruturacao.toString()}
+                subtitle={`Volume: ${kpis.volumeEstruturacao} bi`}
+                variant="primary"
+              />
+              <KPICard
+                title="Fee Estruturação"
+                value={`${kpis.feeEstruturacao} mi`}
+                leftValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                leftLabel="Fee Colocação"
+                rightValue={kpis.feeEstruturacao}
+                rightLabel="Fee Estruturação"
+                variant="success"
+              />
+              <KPICard
+                title="Fee de Gestão"
+                value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                variant="warning"
+              />
+              <KPICard
+                title="Tempo Médio"
+                value="7,0 dias"
+                subtitle="Tempo médio de estruturação"
+                change={{
+                  value: "15%",
+                  type: "positive"
+                }}
+              />
             </div>
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
