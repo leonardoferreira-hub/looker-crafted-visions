@@ -195,23 +195,6 @@ export default function Dashboard() {
                 }}
               />
                <KPICard
-                title="Fee de Gestão"
-                value={`${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
-                leftValue={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                leftLabel="Liquidado"
-                rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                rightLabel="Estruturação"
-                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                change={kpis.feeLiquidadoChange}
-                tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
-                  comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
-                  calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
-                }}
-              />
-              <KPICard
                 title="Fee de Colocação"
                 value={`${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
                 leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
@@ -226,6 +209,23 @@ export default function Dashboard() {
                   currentValue: `R$ ${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
                   comparisonValue: `Dados de colocação não disponíveis para comparação histórica`,
                   calculation: "Soma dos fees de colocação (originação) da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
+                }}
+              />
+              <KPICard
+                title="Fee de Gestão"
+                value={`${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
+                leftValue={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                leftLabel="Liquidado"
+                rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                rightLabel="Estruturação"
+                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                change={kpis.feeLiquidadoChange}
+                tooltipInfo={{
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                  currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
+                  comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
+                  calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
                 }}
               />
             </div>
