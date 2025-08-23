@@ -272,73 +272,57 @@ export default function Dashboard() {
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <KPICard
-                title="Operações & Volume"
-                value={kpis.operacoesEstruturacao.toString()}
-                leftValue={kpis.operacoesEstruturacao.toString()}
-                leftLabel="Operações"
-                rightValue={`${kpis.volumeEstruturacao} bi`}
-                rightLabel="Volume"
-                variant="primary"
-              />
-              <KPICard
-                title="Fee Estruturação & Colocação"
-                value={`${(parseFloat(kpis.feeEstruturacao) + (kpis.feeColocacaoEstruturacaoRaw || 0) / 1000000).toFixed(1)} mi`}
-                leftValue={`${kpis.feeEstruturacao} mi`}
-                leftLabel="Estruturação"
-                rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                rightLabel="Colocação"
-                subtitle="Meta comercial: A ser informada"
-                variant="warning"
-              />
-              <KPICard
-                title="Fee de Gestão"
-                value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                subtitle="em estruturação"
-                variant="success"
-              />
-              <KPICard
-                title="Tempo Médio"
-                value="7,0"
-                subtitle="dias para estruturação"
-                change={{ value: "-15%", type: "positive" }}
-              />
+              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground">Operações & Volume</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-2xl font-bold text-primary">{kpis.operacoesEstruturacao}</p>
+                    <p className="text-xs text-muted-foreground">Operações</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-primary">{kpis.volumeEstruturacao} bi</p>
+                    <p className="text-xs text-muted-foreground">Volume</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground">Fee Estruturação & Colocação</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-2xl font-bold text-warning">{kpis.feeEstruturacao} mi</p>
+                    <p className="text-xs text-muted-foreground">Estruturação</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-warning">{Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
+                    <p className="text-xs text-muted-foreground">Colocação</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground border-t pt-2">Meta comercial: A ser informada</p>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground">Fee de Gestão</h3>
+                <div>
+                  <p className="text-2xl font-bold text-success">{Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
+                  <p className="text-xs text-muted-foreground">em estruturação</p>
+                </div>
+              </div>
+              
+              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground">Tempo Médio</h3>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-2xl font-bold">7,0</p>
+                    <p className="text-xs text-muted-foreground">dias para estruturação</p>
+                  </div>
+                  <div className="text-sm text-green-600">-15%</div>
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-              <ChartCard title="Operações em Estruturação e Volume" className="min-h-[300px] sm:min-h-[400px]">
-                <div className="h-[250px] sm:h-[350px]">
-                  <CombinedBarLineChart 
-                    data={chartData.operacoesPorMes}
-                    endDate={defaultEndDate}
-                    comparisonEndDate={defaultComparisonEndDate}
-                  />
-                </div>
-              </ChartCard>
-
-              <ChartCard title="Fee de Estruturação e Fee de Colocação" className="min-h-[300px] sm:min-h-[400px]">
-                <div className="h-[250px] sm:h-[350px]">
-                  <CustomLineChart 
-                    data={chartData.operacoesPorMes}
-                    xKey="mes"
-                    yKey="estruturacoes"
-                  />
-                </div>
-              </ChartCard>
-            </div>
-
-            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-              <ChartCard title="Meta Comercial" className="min-h-[300px] sm:min-h-[400px]">
-                <div className="h-[250px] sm:h-[350px]">
-                  <CustomLineChart 
-                    data={chartData.operacoesPorMes}
-                    xKey="mes"
-                    yKey="liquidacoes"
-                  />
-                </div>
-              </ChartCard>
-
-              <ChartCard title="Tempo Médio de Estruturação" className="min-h-[300px] sm:min-h-[400px]">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
+              <ChartCard title="% dos Lastros em Estruturação" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CustomPieChart 
                     data={chartData.categorias}
@@ -347,6 +331,34 @@ export default function Dashboard() {
                   />
                 </div>
               </ChartCard>
+
+              <ChartCard title="Investidores em Estruturação" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomPieChart 
+                    data={chartData.categorias}
+                    dataKey="value"
+                    nameKey="name"
+                  />
+                </div>
+              </ChartCard>
+
+              <ChartCard title="Prestadores de Serviço em Estruturação" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomPieChart 
+                    data={chartData.categorias}
+                    dataKey="value"
+                    nameKey="name"
+                  />
+                </div>
+              </ChartCard>
+            </div>
+
+            <div className="grid gap-4 sm:gap-6">
+              <DataTable
+                title="Próximas liquidações"
+                data={proximasLiquidacoesLimitadas}
+                columns={proximasColumns}
+              />
             </div>
           </TabsContent>
 
