@@ -273,22 +273,29 @@ export default function Dashboard() {
             {/* Estruturação KPIs */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <KPICard
-                title="Em Estruturação"
+                title="Operações & Volume"
                 value={kpis.operacoesEstruturacao.toString()}
-                subtitle="operações ativas"
+                leftValue={kpis.operacoesEstruturacao.toString()}
+                leftLabel="Operações"
+                rightValue={`${kpis.volumeEstruturacao} bi`}
+                rightLabel="Volume"
                 variant="primary"
               />
               <KPICard
-                title="Volume"
-                value={`${kpis.volumeEstruturacao} bi`}
-                subtitle="em estruturação"
-                variant="success"
+                title="Fee Estruturação & Colocação"
+                value={`${(parseFloat(kpis.feeEstruturacao) + (kpis.feeColocacaoEstruturacaoRaw || 0) / 1000000).toFixed(1)} mi`}
+                leftValue={`${kpis.feeEstruturacao} mi`}
+                leftLabel="Estruturação"
+                rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                rightLabel="Colocação"
+                subtitle="Meta comercial: A ser informada"
+                variant="warning"
               />
               <KPICard
-                title="Fee Estruturação"
-                value={`${kpis.feeEstruturacao} mi`}
-                subtitle="previsto"
-                variant="warning"
+                title="Fee de Gestão"
+                value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                subtitle="em estruturação"
+                variant="success"
               />
               <KPICard
                 title="Tempo Médio"
