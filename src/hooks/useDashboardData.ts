@@ -101,6 +101,10 @@ export interface DashboardKPIs {
   feeGestaoEstruturacao: string;
   feeGestaoLiquidadoRaw: number;
   feeGestaoEstruturacaoRaw: number;
+  feeColocacaoLiquidado: string;
+  feeColocacaoEstruturacao: string;
+  feeColocacaoLiquidadoRaw: number;
+  feeColocacaoEstruturacaoRaw: number;
   feeMedio2025: string;
   // Valores de comparação (mesmo período do ano anterior)
   lastYearOperacoes?: number;
@@ -637,6 +641,15 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('ESPERADO: Histórico = 166.900, Pipe = 329.000');
   console.log('REAL: Histórico =', feeGestaoHistorico, ', Pipe =', feeGestaoPipe);
 
+  // Calcula Fee de Colocação (ORIGINACAO)
+  const feeColocacaoHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ORIGINACAO);
+  const feeColocacaoPipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.ORIGINACAO);
+  const feeColocacaoTotal = feeColocacaoHistorico + feeColocacaoPipe;
+  
+  console.log('Fee Colocação Histórico (liquidadas 2025):', feeColocacaoHistorico);
+  console.log('Fee Colocação Pipe (em estruturação):', feeColocacaoPipe);
+  console.log('Fee Colocação Total:', feeColocacaoTotal);
+
   // Calcula KPIs usando valores das duas abas
   const kpis: DashboardKPIs = {
     operacoesLiquidadas: currentLiquidadas,
@@ -649,6 +662,10 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeGestaoEstruturacao: formatFee(feeGestaoPipe), // Fee gestão apenas estruturação
     feeGestaoLiquidadoRaw: feeGestaoHistorico,
     feeGestaoEstruturacaoRaw: feeGestaoPipe,
+    feeColocacaoLiquidado: formatFee(feeColocacaoHistorico), // Fee colocação apenas liquidadas
+    feeColocacaoEstruturacao: formatFee(feeColocacaoPipe), // Fee colocação apenas estruturação
+    feeColocacaoLiquidadoRaw: feeColocacaoHistorico,
+    feeColocacaoEstruturacaoRaw: feeColocacaoPipe,
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
     // Valores de comparação (mesmo período do ano anterior)
     lastYearOperacoes: lastYearLiquidadas,
