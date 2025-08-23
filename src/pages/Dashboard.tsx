@@ -147,7 +147,7 @@ export default function Dashboard() {
 
           <TabsContent value="resumo" className="space-y-6">
             {/* Main KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <OperationsCard
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
@@ -179,6 +179,7 @@ export default function Dashboard() {
                 }}
               />
               <RevenueCard
+                className="col-span-2"
                 data={{
                   estruturacao: {
                     liquidado: kpis.feeLiquidado,

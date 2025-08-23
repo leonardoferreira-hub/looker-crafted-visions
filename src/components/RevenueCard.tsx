@@ -136,7 +136,7 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
 
   return (
     <Card className={cn(
-      "transition-all duration-300 hover:shadow-xl border-2 bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400 shadow-xl shadow-emerald-500/25 col-span-2 lg:col-span-3",
+      "transition-all duration-300 hover:shadow-xl border-2 bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400 shadow-xl shadow-emerald-500/25",
       className
     )}>
       <CardHeader className="pb-3 text-center">
