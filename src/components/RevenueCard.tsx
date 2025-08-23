@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { TrendingUp, TrendingDown, Info, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface RevenueData {
+interface FeeData {
   estruturacao: {
     liquidado: string;
     estruturacao: string;
@@ -26,7 +26,7 @@ interface RevenueData {
 }
 
 interface RevenueCardProps {
-  data: RevenueData;
+  data: FeeData;
   className?: string;
 }
 
@@ -43,67 +43,15 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
     return Math.round(value).toLocaleString('pt-BR');
   };
 
-  const FeeSection = ({ 
-    title, 
-    liquidado, 
-    estruturacao, 
-    liquidadoRaw,
-    estruturacaoRaw,
-    change,
-    color 
-  }: {
-    title: string;
-    liquidado: string;
-    estruturacao: string;
-    liquidadoRaw: number;
-    estruturacaoRaw: number;
-    change?: { value: string; type: "positive" | "negative" };
-    color: string;
-  }) => (
-    <div className={cn("p-4 rounded-lg border border-white/20", color)}>
-      <div className="flex justify-between items-center mb-3">
-        <h4 className="text-sm font-semibold text-white/90 uppercase tracking-wide">{title}</h4>
-        <div className="text-lg font-bold text-white">
-          {formatValue(liquidadoRaw + estruturacaoRaw)}
-        </div>
-      </div>
-      
-      <div className="flex justify-between items-center text-white/80 text-sm">
-        <div className="text-center">
-          <div className="font-semibold">{liquidado}</div>
-          <div className="text-xs opacity-70">Liquidado</div>
-        </div>
-        <div className="w-px h-8 bg-white/30 mx-3"></div>
-        <div className="text-center">
-          <div className="font-semibold">{estruturacao}</div>
-          <div className="text-xs opacity-70">Estruturação</div>
-        </div>
-      </div>
-
-      {change && (
-        <div className="flex items-center justify-center mt-2 pt-2 border-t border-white/20">
-          <div className="flex items-center text-xs font-medium text-white/90">
-            {change.type === "positive" ? (
-              <TrendingUp className="mr-1 h-3 w-3" />
-            ) : (
-              <TrendingDown className="mr-1 h-3 w-3" />
-            )}
-            <span>{change.value} vs 2024</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <Card className={cn(
-            "transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] border-2 text-white cursor-help bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400 shadow-xl shadow-emerald-500/25",
+            "transition-all duration-300 hover:shadow-2xl hover:scale-[1.05] border-2 text-white cursor-help bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400 shadow-xl shadow-emerald-500/25 col-span-2 lg:col-span-3",
             className
           )}>
-            <CardHeader className="pb-4 text-center relative">
+            <CardHeader className="pb-3 text-center relative">
               <CardTitle className="text-sm font-bold text-white/90 uppercase tracking-wide flex items-center justify-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 Receita
@@ -111,55 +59,54 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
               </CardTitle>
             </CardHeader>
             
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
               {/* Valor total */}
-              <div className="text-center border-b border-white/20 pb-4">
-                <div className="text-4xl font-black tracking-tight text-white mb-2">
+              <div className="text-center">
+                <div className="text-5xl font-black tracking-tight text-white">
                   {formatValue(totalGeral)}
-                </div>
-                <div className="flex justify-between items-center text-white/90 text-sm">
-                  <div className="text-center flex-1">
-                    <div className="text-xl font-bold">{formatValue(totalLiquidado)}</div>
-                    <div className="text-xs uppercase tracking-wide opacity-80">Total Liquidado</div>
-                  </div>
-                  <div className="w-px h-6 bg-white/30 mx-3"></div>
-                  <div className="text-center flex-1">
-                    <div className="text-xl font-bold">{formatValue(totalEstruturacao)}</div>
-                    <div className="text-xs uppercase tracking-wide opacity-80">Total Estruturação</div>
-                  </div>
                 </div>
               </div>
 
-              {/* Seções de cada fee */}
-              <div className="space-y-3">
-                <FeeSection
-                  title="Estruturação"
-                  liquidado={data.estruturacao.liquidado}
-                  estruturacao={data.estruturacao.estruturacao}
-                  liquidadoRaw={data.estruturacao.liquidadoRaw}
-                  estruturacaoRaw={data.estruturacao.estruturacaoRaw}
-                  change={data.estruturacao.change}
-                  color="bg-orange-500/20"
-                />
-                
-                <FeeSection
-                  title="Gestão"
-                  liquidado={data.gestao.liquidado}
-                  estruturacao={data.gestao.estruturacao}
-                  liquidadoRaw={data.gestao.liquidadoRaw}
-                  estruturacaoRaw={data.gestao.estruturacaoRaw}
-                  color="bg-blue-500/20"
-                />
-                
-                <FeeSection
-                  title="Colocação"
-                  liquidado={data.colocacao.liquidado}
-                  estruturacao={data.colocacao.estruturacao}
-                  liquidadoRaw={data.colocacao.liquidadoRaw}
-                  estruturacaoRaw={data.colocacao.estruturacaoRaw}
-                  color="bg-purple-500/20"
-                />
+              {/* Breakdown liquidado vs estruturação */}
+              <div className="flex justify-between items-center text-white/90">
+                <div className="text-center flex-1">
+                  <div className="text-2xl font-bold">{formatValue(totalLiquidado)}</div>
+                  <div className="text-xs uppercase tracking-wide opacity-80">Liquidado</div>
+                </div>
+                <div className="w-px h-8 bg-white/30 mx-3"></div>
+                <div className="text-center flex-1">
+                  <div className="text-2xl font-bold">{formatValue(totalEstruturacao)}</div>
+                  <div className="text-xs uppercase tracking-wide opacity-80">Estruturação</div>
+                </div>
               </div>
+
+              {/* Breakdown por tipo de fee */}
+              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/20">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-orange-200">{formatValue(data.estruturacao.liquidadoRaw + data.estruturacao.estruturacaoRaw)}</div>
+                  <div className="text-xs uppercase tracking-wide opacity-80">Estruturação</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-blue-200">{formatValue(data.gestao.liquidadoRaw + data.gestao.estruturacaoRaw)}</div>
+                  <div className="text-xs uppercase tracking-wide opacity-80">Gestão</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-purple-200">{formatValue(data.colocacao.liquidadoRaw + data.colocacao.estruturacaoRaw)}</div>
+                  <div className="text-xs uppercase tracking-wide opacity-80">Colocação</div>
+                </div>
+              </div>
+
+              {/* Comparativo com ano anterior */}
+              {data.estruturacao.change && (
+                <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
+                  {data.estruturacao.change.type === "positive" ? (
+                    <TrendingUp className="mr-1 h-4 w-4" />
+                  ) : (
+                    <TrendingDown className="mr-1 h-4 w-4" />
+                  )}
+                  <span>{data.estruturacao.change.value} vs mesmo período 2024</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TooltipTrigger>
@@ -188,7 +135,9 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
             <div className="text-xs pt-2 border-t">
               <span className="font-medium">Fonte dos dados:</span>
               <div className="text-muted-foreground">
-                Consolidação dos fees de estruturação, gestão e colocação das abas Histórico (liquidadas) e Pipe (estruturação)
+                Fee de Estruturação: colunas Estruturação das abas Histórico e Pipe<br/>
+                Fee de Gestão: colunas Gestão das abas Histórico e Pipe<br/>
+                Fee de Colocação: colunas Originação das abas Histórico e Pipe
               </div>
             </div>
           </div>
