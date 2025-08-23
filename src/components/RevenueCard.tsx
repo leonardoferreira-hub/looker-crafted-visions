@@ -30,6 +30,97 @@ interface RevenueCardProps {
   className?: string;
 }
 
+const FeeSubCard = ({ 
+  title, 
+  total, 
+  liquidado, 
+  estruturacao, 
+  liquidadoRaw,
+  estruturacaoRaw,
+  change,
+  color,
+  tooltipInfo 
+}: {
+  title: string;
+  total: string;
+  liquidado: string;
+  estruturacao: string;
+  liquidadoRaw: number;
+  estruturacaoRaw: number;
+  change?: { value: string; type: "positive" | "negative" };
+  color: string;
+  tooltipInfo: any;
+}) => (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className={cn(
+          "p-4 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-200 hover:shadow-lg cursor-help",
+          color
+        )}>
+          <div className="text-center mb-3">
+            <div className="text-lg font-bold text-white">{total}</div>
+            <div className="text-xs uppercase tracking-wide text-white/80">{title}</div>
+          </div>
+          
+          <div className="flex justify-between items-center text-white/90 text-sm">
+            <div className="text-center">
+              <div className="font-semibold">{liquidado}</div>
+              <div className="text-xs opacity-70">Liquidado</div>
+            </div>
+            <div className="w-px h-6 bg-white/30 mx-2"></div>
+            <div className="text-center">
+              <div className="font-semibold">{estruturacao}</div>
+              <div className="text-xs opacity-70">Estruturação</div>
+            </div>
+          </div>
+
+          {change && (
+            <div className="flex items-center justify-center mt-2 pt-2 border-t border-white/20">
+              <div className="flex items-center text-xs font-medium text-white/90">
+                {change.type === "positive" ? (
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                ) : (
+                  <TrendingDown className="mr-1 h-3 w-3" />
+                )}
+                <span>{change.value} vs 2024</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-sm p-4 bg-background/95 backdrop-blur-sm border shadow-lg">
+        <div className="space-y-2">
+          <div className="font-semibold text-sm border-b pb-2 mb-3">{title} - Detalhes</div>
+          
+          <div className="text-xs">
+            <span className="font-medium">Período atual:</span> {tooltipInfo.currentPeriod}
+            {tooltipInfo.currentValue && (
+              <span className="block text-primary font-semibold">{tooltipInfo.currentValue}</span>
+            )}
+          </div>
+          
+          {tooltipInfo.comparisonPeriod && (
+            <div className="text-xs">
+              <span className="font-medium">Período comparação:</span> {tooltipInfo.comparisonPeriod}
+              {tooltipInfo.comparisonValue && (
+                <span className="block text-muted-foreground">{tooltipInfo.comparisonValue}</span>
+              )}
+            </div>
+          )}
+          
+          {tooltipInfo.calculation && (
+            <div className="text-xs pt-2 border-t">
+              <span className="font-medium">Cálculo:</span>
+              <div className="text-muted-foreground">{tooltipInfo.calculation}</div>
+            </div>
+          )}
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
+
 export function RevenueCard({ data, className }: RevenueCardProps) {
   // Calcula receita total
   const totalLiquidado = data.estruturacao.liquidadoRaw + data.gestao.liquidadoRaw + data.colocacao.liquidadoRaw;
@@ -44,105 +135,91 @@ export function RevenueCard({ data, className }: RevenueCardProps) {
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Card className={cn(
-            "transition-all duration-300 hover:shadow-2xl hover:scale-[1.05] border-2 text-white cursor-help bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400 shadow-xl shadow-emerald-500/25 col-span-2 lg:col-span-3",
-            className
-          )}>
-            <CardHeader className="pb-3 text-center relative">
-              <CardTitle className="text-sm font-bold text-white/90 uppercase tracking-wide flex items-center justify-center gap-2">
-                <DollarSign className="h-4 w-4" />
-                Receita
-                <Info className="h-3 w-3 opacity-60" />
-              </CardTitle>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              {/* Valor total */}
-              <div className="text-center">
-                <div className="text-5xl font-black tracking-tight text-white">
-                  {formatValue(totalGeral)}
-                </div>
-              </div>
-
-              {/* Breakdown liquidado vs estruturação */}
-              <div className="flex justify-between items-center text-white/90">
-                <div className="text-center flex-1">
-                  <div className="text-2xl font-bold">{formatValue(totalLiquidado)}</div>
-                  <div className="text-xs uppercase tracking-wide opacity-80">Liquidado</div>
-                </div>
-                <div className="w-px h-8 bg-white/30 mx-3"></div>
-                <div className="text-center flex-1">
-                  <div className="text-2xl font-bold">{formatValue(totalEstruturacao)}</div>
-                  <div className="text-xs uppercase tracking-wide opacity-80">Estruturação</div>
-                </div>
-              </div>
-
-              {/* Breakdown por tipo de fee */}
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/20">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-orange-200">{formatValue(data.estruturacao.liquidadoRaw + data.estruturacao.estruturacaoRaw)}</div>
-                  <div className="text-xs uppercase tracking-wide opacity-80">Estruturação</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-blue-200">{formatValue(data.gestao.liquidadoRaw + data.gestao.estruturacaoRaw)}</div>
-                  <div className="text-xs uppercase tracking-wide opacity-80">Gestão</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-purple-200">{formatValue(data.colocacao.liquidadoRaw + data.colocacao.estruturacaoRaw)}</div>
-                  <div className="text-xs uppercase tracking-wide opacity-80">Colocação</div>
-                </div>
-              </div>
-
-              {/* Comparativo com ano anterior */}
-              {data.estruturacao.change && (
-                <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
-                  {data.estruturacao.change.type === "positive" ? (
-                    <TrendingUp className="mr-1 h-4 w-4" />
-                  ) : (
-                    <TrendingDown className="mr-1 h-4 w-4" />
-                  )}
-                  <span>{data.estruturacao.change.value} vs mesmo período 2024</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-md p-4 bg-background/95 backdrop-blur-sm border shadow-lg">
-          <div className="space-y-2">
-            <div className="font-semibold text-sm border-b pb-2 mb-3">Receita Total - Detalhes</div>
-            
-            <div className="text-xs">
-              <span className="font-medium">Período atual:</span> 01/01/2025 - {new Date().toLocaleDateString('pt-BR')}
-            </div>
-            
-            <div className="text-xs">
-              <span className="font-medium">Total geral:</span>
-              <span className="block text-primary font-semibold">R$ {formatValue(totalGeral)}</span>
-            </div>
-            
-            <div className="text-xs pt-2 border-t">
-              <span className="font-medium">Composição:</span>
-              <div className="text-muted-foreground space-y-1 mt-1">
-                <div>• Fee de Estruturação: R$ {formatValue(data.estruturacao.liquidadoRaw + data.estruturacao.estruturacaoRaw)}</div>
-                <div>• Fee de Gestão: R$ {formatValue(data.gestao.liquidadoRaw + data.gestao.estruturacaoRaw)}</div>
-                <div>• Fee de Colocação: R$ {formatValue(data.colocacao.liquidadoRaw + data.colocacao.estruturacaoRaw)}</div>
-              </div>
-            </div>
-            
-            <div className="text-xs pt-2 border-t">
-              <span className="font-medium">Fonte dos dados:</span>
-              <div className="text-muted-foreground">
-                Fee de Estruturação: colunas Estruturação das abas Histórico e Pipe<br/>
-                Fee de Gestão: colunas Gestão das abas Histórico e Pipe<br/>
-                Fee de Colocação: colunas Originação das abas Histórico e Pipe
-              </div>
-            </div>
+    <Card className={cn(
+      "transition-all duration-300 hover:shadow-xl border-2 bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-400 shadow-xl shadow-emerald-500/25 col-span-2 lg:col-span-3",
+      className
+    )}>
+      <CardHeader className="pb-3 text-center">
+        <CardTitle className="text-sm font-bold text-white/90 uppercase tracking-wide flex items-center justify-center gap-2">
+          <DollarSign className="h-4 w-4" />
+          Receita
+        </CardTitle>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        {/* Valor total */}
+        <div className="text-center">
+          <div className="text-4xl font-black tracking-tight text-white">
+            {formatValue(totalGeral)}
           </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </div>
+
+        {/* Breakdown liquidado vs estruturação */}
+        <div className="flex justify-between items-center text-white/90 pb-4 border-b border-white/20">
+          <div className="text-center flex-1">
+            <div className="text-xl font-bold">{formatValue(totalLiquidado)}</div>
+            <div className="text-xs uppercase tracking-wide opacity-80">Liquidado</div>
+          </div>
+          <div className="w-px h-6 bg-white/30 mx-3"></div>
+          <div className="text-center flex-1">
+            <div className="text-xl font-bold">{formatValue(totalEstruturacao)}</div>
+            <div className="text-xs uppercase tracking-wide opacity-80">Estruturação</div>
+          </div>
+        </div>
+
+        {/* Sub-cards para cada tipo de fee */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <FeeSubCard
+            title="Estruturação"
+            total={formatValue(data.estruturacao.liquidadoRaw + data.estruturacao.estruturacaoRaw)}
+            liquidado={data.estruturacao.liquidado}
+            estruturacao={data.estruturacao.estruturacao}
+            liquidadoRaw={data.estruturacao.liquidadoRaw}
+            estruturacaoRaw={data.estruturacao.estruturacaoRaw}
+            change={data.estruturacao.change}
+            color="bg-orange-500/20 hover:bg-orange-500/30"
+            tooltipInfo={{
+              currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+              comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+              currentValue: `R$ ${data.estruturacao.liquidado} milhões liquidado`,
+              comparisonValue: `Dados históricos de estruturação`,
+              calculation: "Soma dos valores da coluna Estruturação das abas Histórico (liquidadas) e Pipe (em estruturação)"
+            }}
+          />
+          
+          <FeeSubCard
+            title="Gestão"
+            total={formatValue(data.gestao.liquidadoRaw + data.gestao.estruturacaoRaw)}
+            liquidado={data.gestao.liquidado}
+            estruturacao={data.gestao.estruturacao}
+            liquidadoRaw={data.gestao.liquidadoRaw}
+            estruturacaoRaw={data.gestao.estruturacaoRaw}
+            color="bg-blue-500/20 hover:bg-blue-500/30"
+            tooltipInfo={{
+              currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+              comparisonPeriod: `Dados não disponíveis para comparação histórica`,
+              currentValue: `R$ ${Math.round((data.gestao.liquidadoRaw + data.gestao.estruturacaoRaw) / 1000).toLocaleString('pt-BR')} milhares`,
+              calculation: "Soma dos valores da coluna Gestão das abas Histórico (liquidadas) e Pipe (em estruturação)"
+            }}
+          />
+          
+          <FeeSubCard
+            title="Colocação"
+            total={formatValue(data.colocacao.liquidadoRaw + data.colocacao.estruturacaoRaw)}
+            liquidado={data.colocacao.liquidado}
+            estruturacao={data.colocacao.estruturacao}
+            liquidadoRaw={data.colocacao.liquidadoRaw}
+            estruturacaoRaw={data.colocacao.estruturacaoRaw}
+            color="bg-purple-500/20 hover:bg-purple-500/30"
+            tooltipInfo={{
+              currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+              comparisonPeriod: `Dados não disponíveis para comparação histórica`,
+              currentValue: `R$ ${Math.round((data.colocacao.liquidadoRaw + data.colocacao.estruturacaoRaw) / 1000).toLocaleString('pt-BR')} milhares`,
+              calculation: "Soma dos valores da coluna Originação das abas Histórico (liquidadas) e Pipe (em estruturação)"
+            }}
+          />
+        </div>
+      </CardContent>
+    </Card>
   );
 }
