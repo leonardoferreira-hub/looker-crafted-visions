@@ -271,52 +271,84 @@ export default function Dashboard() {
 
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
-                <h3 className="text-sm font-medium text-muted-foreground">Operações & Volume</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-2xl font-bold text-primary">{kpis.operacoesEstruturacao}</p>
-                    <p className="text-xs text-muted-foreground">Operações</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-primary">{kpis.volumeEstruturacao} bi</p>
-                    <p className="text-xs text-muted-foreground">Volume</p>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {/* Operações & Volume Card */}
+              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 bg-gradient-to-br from-card to-card/80 shadow-md hover:shadow-lg transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-blue/5 to-primary-green/5"></div>
+                <div className="relative">
+                  <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary-blue to-primary-green"></div>
+                    Operações & Volume
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="bg-background/20 rounded-lg p-3 backdrop-blur-sm">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Operações em Estruturação</p>
+                      <p className="text-xl font-bold text-primary mt-1">{kpis.operacoesEstruturacao}</p>
+                    </div>
+                    <div className="bg-background/20 rounded-lg p-3 backdrop-blur-sm">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Volume em Estruturação</p>
+                      <p className="text-xl font-bold text-primary mt-1">{kpis.volumeEstruturacao} bi</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
-                <h3 className="text-sm font-medium text-muted-foreground">Fee Estruturação & Colocação</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-2xl font-bold text-warning">{kpis.feeEstruturacao} mi</p>
-                    <p className="text-xs text-muted-foreground">Estruturação</p>
+
+              {/* Fee Estruturação & Colocação Card */}
+              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 bg-gradient-to-br from-card to-card/80 shadow-md hover:shadow-lg transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-primary-orange/5"></div>
+                <div className="relative">
+                  <h3 className="text-base font-semibold text-foreground mb-1 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary-green to-primary-orange"></div>
+                    Fee Estruturação & Colocação
+                  </h3>
+                  <div className="inline-flex items-center px-2 py-1 rounded-full bg-warning/10 border border-warning/20 mb-3">
+                    <p className="text-xs text-warning font-medium">Meta comercial: A ser informada</p>
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold text-warning">{Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
-                    <p className="text-xs text-muted-foreground">Colocação</p>
+                  <div className="space-y-3">
+                    <div className="bg-background/20 rounded-lg p-3 backdrop-blur-sm">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Fee de Estruturação</p>
+                      <p className="text-xl font-bold text-primary mt-1">{kpis.feeEstruturacao} mi</p>
+                    </div>
+                    <div className="bg-background/20 rounded-lg p-3 backdrop-blur-sm">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Fee de Colocação</p>
+                      <p className="text-xl font-bold text-primary mt-1">{Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
+                    </div>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground border-t pt-2">Meta comercial: A ser informada</p>
               </div>
-              
-              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
-                <h3 className="text-sm font-medium text-muted-foreground">Fee de Gestão</h3>
-                <div>
-                  <p className="text-2xl font-bold text-success">{Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
-                  <p className="text-xs text-muted-foreground">em estruturação</p>
+
+              {/* Fee de Gestão Card */}
+              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 bg-gradient-to-br from-card to-card/80 shadow-md hover:shadow-lg transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-success/5 to-primary-teal/5"></div>
+                <div className="relative">
+                  <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-success to-primary-teal"></div>
+                    Fee de Gestão
+                  </h3>
+                  <div className="bg-background/20 rounded-lg p-4 backdrop-blur-sm">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Fee de Gestão em Estruturação</p>
+                    <p className="text-2xl font-bold text-primary mt-2">{Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}</p>
+                  </div>
                 </div>
               </div>
-              
-              <div className="bg-card border border-border rounded-lg p-4 space-y-3">
-                <h3 className="text-sm font-medium text-muted-foreground">Tempo Médio</h3>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-2xl font-bold">7,0</p>
-                    <p className="text-xs text-muted-foreground">dias para estruturação</p>
+
+              {/* Tempo Médio Card */}
+              <div className="relative overflow-hidden rounded-xl border border-border/50 p-6 bg-gradient-to-br from-card to-card/80 shadow-md hover:shadow-lg transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-purple/5 to-primary-red/5"></div>
+                <div className="relative">
+                  <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary-purple to-primary-red"></div>
+                    Tempo Médio
+                  </h3>
+                  <div className="bg-background/20 rounded-lg p-4 backdrop-blur-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Tempo Médio de Estruturação</p>
+                        <p className="text-2xl font-bold text-primary mt-2">7,0 dias</p>
+                      </div>
+                      <div className="bg-success/10 text-success px-2 py-1 rounded-full text-sm font-medium">-15%</div>
+                    </div>
                   </div>
-                  <div className="text-sm text-green-600">-15%</div>
                 </div>
               </div>
             </div>
