@@ -146,7 +146,7 @@ export default function Dashboard() {
 
           <TabsContent value="resumo" className="space-y-6">
             {/* Main KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
               <OperationsCard
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
@@ -177,70 +177,57 @@ export default function Dashboard() {
                   calculation: "Comparação do volume liquidado no período atual vs volume liquidado no mesmo período do ano anterior"
                 }}
               />
-            </div>
-
-            {/* Fee Cards Section with unified background */}
-            <div className="bg-slate-50/50 dark:bg-slate-800/30 rounded-lg p-6 border border-slate-200/50 dark:border-slate-700/50">
-              <h3 className="text-lg font-semibold mb-4 text-slate-700 dark:text-slate-300">Análise de Fees</h3>
-              <div className="grid gap-4">
-                {/* Fee de Gestão - Primeira linha, ocupa toda a largura */}
-                <div className="w-full">
-                  <KPICard
-                    title="Fee de Gestão"
-                    value={`${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
-                    leftValue={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                    leftLabel="Liquidado"
-                    rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                    rightLabel="Estruturação"
-                    subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                    change={kpis.feeLiquidadoChange}
-                    tooltipInfo={{
-                      currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                      comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                      currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
-                      comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
-                      calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
-                    }}
-                  />
-                </div>
-                {/* Fee de Estruturação e Colocação - Segunda linha, lado a lado */}
-                <div className="grid gap-4 md:grid-cols-2">
-                  <KPICard
-                    title="Fee de Estruturação"
-                    value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
-                    leftValue={kpis.feeLiquidado}
-                    leftLabel="Liquidado"
-                    rightValue={kpis.feeEstruturacao}
-                    rightLabel="Estruturação"
-                    change={kpis.feeLiquidadoChange}
-                    variant="warning"
-                    tooltipInfo={{
-                      currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                      comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                      currentValue: `R$ ${kpis.feeLiquidado} milhões liquidado`,
-                      comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões`,
-                      calculation: "Comparação do fee de estruturação liquidado no período atual vs fee liquidado no mesmo período do ano anterior"
-                    }}
-                  />
-                  <KPICard
-                    title="Fee de Colocação"
-                    value={`${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
-                    leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                    leftLabel="Liquidado"
-                    rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                    rightLabel="Estruturação"
-                    change={kpis.feeLiquidadoChange}
-                    variant="primary"
-                    tooltipInfo={{
-                      currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                      comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                      currentValue: `R$ ${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
-                      comparisonValue: `Dados de colocação não disponíveis para comparação histórica`,
-                      calculation: "Soma dos fees de colocação (originação) da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
-                    }}
-                  />
-                </div>
-              </div>
+              <KPICard
+                title="Fee de Estruturação"
+                value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
+                leftValue={kpis.feeLiquidado}
+                leftLabel="Liquidado"
+                rightValue={kpis.feeEstruturacao}
+                rightLabel="Estruturação"
+                change={kpis.feeLiquidadoChange}
+                variant="warning"
+                tooltipInfo={{
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                  currentValue: `R$ ${kpis.feeLiquidado} milhões liquidado`,
+                  comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões`,
+                  calculation: "Comparação do fee de estruturação liquidado no período atual vs fee liquidado no mesmo período do ano anterior"
+                }}
+              />
+               <KPICard
+                title="Fee de Gestão"
+                value={`${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
+                leftValue={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                leftLabel="Liquidado"
+                rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                rightLabel="Estruturação"
+                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                change={kpis.feeLiquidadoChange}
+                tooltipInfo={{
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                  currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
+                  comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
+                  calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
+                }}
+              />
+              <KPICard
+                title="Fee de Colocação"
+                value={`${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
+                leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                leftLabel="Liquidado"
+                rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                rightLabel="Estruturação"
+                change={kpis.feeLiquidadoChange}
+                variant="primary"
+                tooltipInfo={{
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                  currentValue: `R$ ${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
+                  comparisonValue: `Dados de colocação não disponíveis para comparação histórica`,
+                  calculation: "Soma dos fees de colocação (originação) da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
+                }}
+              />
             </div>
 
             {/* Charts Row */}
