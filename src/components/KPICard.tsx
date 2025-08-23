@@ -44,7 +44,7 @@ export function KPICard({
       case "primary":
         return "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25";
       case "success":
-        return "bg-gradient-to-br from-teal-600 to-teal-700 border-teal-500 shadow-xl shadow-teal-500/25";
+        return "bg-gradient-to-br from-green-500 to-green-600 border-green-400 shadow-xl shadow-green-500/25";
       case "warning":
         return "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25";
       default:
