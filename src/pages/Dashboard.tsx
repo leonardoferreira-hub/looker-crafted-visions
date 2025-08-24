@@ -289,7 +289,6 @@ export default function Dashboard() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <KPICard
                 title="Operações em Estruturação"
-                value={kpis.operacoesEstruturacao.toString()}
                 leftValue={kpis.operacoesEstruturacao.toString()}
                 leftLabel="Operações"
                 rightValue={`${kpis.volumeEstruturacao} bi`}

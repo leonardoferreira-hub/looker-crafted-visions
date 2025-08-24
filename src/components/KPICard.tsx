@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface KPICardProps {
   title: string;
-  value: string;
+  value?: string;
   subtitle?: string;
   leftValue?: string;
   leftLabel?: string;
@@ -69,22 +69,24 @@ export function KPICard({
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Número principal centralizado */}
-              <div className="text-center">
-                <div className="text-5xl font-black tracking-tight text-white">
-                  {value}
+              {value && (
+                <div className="text-center">
+                  <div className="text-5xl font-black tracking-tight text-white">
+                    {value}
+                  </div>
                 </div>
-              </div>
+              )}
               
               {/* Breakdown ou subtitle */}
               {(leftValue && rightValue && leftLabel && rightLabel) ? (
-                <div className="flex justify-between items-center text-white/90">
+                <div className={`flex justify-between items-center text-white/90 ${!value ? 'pt-2' : ''}`}>
                   <div className="text-center flex-1">
-                    <div className="text-2xl font-bold">{leftValue}</div>
+                    <div className={`${!value ? 'text-4xl' : 'text-2xl'} font-bold`}>{leftValue}</div>
                     <div className="text-xs uppercase tracking-wide opacity-80">{leftLabel}</div>
                   </div>
                   <div className="w-px h-8 bg-white/30 mx-3"></div>
                   <div className="text-center flex-1">
-                    <div className="text-2xl font-bold">{rightValue}</div>
+                    <div className={`${!value ? 'text-4xl' : 'text-2xl'} font-bold`}>{rightValue}</div>
                     <div className="text-xs uppercase tracking-wide opacity-80">{rightLabel}</div>
                   </div>
                 </div>
