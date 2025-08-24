@@ -286,7 +286,7 @@ export default function Dashboard() {
 
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <KPICard
                 title="Operações em Estruturação"
                 leftValue={kpis.operacoesEstruturacao.toString()}
@@ -309,15 +309,6 @@ export default function Dashboard() {
                 value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
                 variant="warning"
-              />
-              <KPICard
-                title="Tempo Médio"
-                value="7,0 dias"
-                subtitle="Tempo médio de estruturação"
-                change={{
-                  value: "15%",
-                  type: "positive"
-                }}
               />
             </div>
 
