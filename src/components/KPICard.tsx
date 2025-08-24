@@ -81,12 +81,12 @@ export function KPICard({
               {(leftValue && rightValue && leftLabel && rightLabel) ? (
                 <div className="flex justify-between items-center text-white/90">
                   <div className="text-center flex-1">
-                    <div className={`${!value ? 'text-4xl mb-2' : 'text-2xl'} font-bold`}>{leftValue}</div>
+                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{leftValue}</div>
                     <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{leftLabel}</div>
                   </div>
                   <div className={`w-px bg-white/30 mx-4 ${!value ? 'h-12' : 'h-8'}`}></div>
                   <div className="text-center flex-1">
-                    <div className={`${!value ? 'text-4xl mb-2' : 'text-2xl'} font-bold`}>{rightValue}</div>
+                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{rightValue}</div>
                     <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{rightLabel}</div>
                   </div>
                 </div>
