@@ -159,9 +159,9 @@ export default function Dashboard() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="resumo" className="space-y-6">
+          <TabsContent value="resumo" className="space-y-8">
             {/* Main KPIs - Top Row */}
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
               <OperationsCard
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
@@ -195,7 +195,7 @@ export default function Dashboard() {
             </div>
 
             {/* Bottom Row - 3 Fee Cards */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
               <KPICard
                 title="Fee de Estruturação"
                 value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
