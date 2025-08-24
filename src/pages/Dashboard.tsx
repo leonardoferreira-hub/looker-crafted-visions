@@ -160,8 +160,8 @@ export default function Dashboard() {
           </TabsList>
 
           <TabsContent value="resumo" className="space-y-6">
-            {/* Main KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {/* Main KPIs - Top Row */}
+            <div className="grid gap-4 md:grid-cols-2">
               <OperationsCard
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
@@ -192,6 +192,10 @@ export default function Dashboard() {
                   calculation: "Comparação do volume liquidado no período atual vs volume liquidado no mesmo período do ano anterior"
                 }}
               />
+            </div>
+
+            {/* Bottom Row - 3 Fee Cards */}
+            <div className="grid gap-4 md:grid-cols-3">
               <KPICard
                 title="Fee de Estruturação"
                 value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
