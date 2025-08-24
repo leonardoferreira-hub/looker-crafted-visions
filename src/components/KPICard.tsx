@@ -67,7 +67,7 @@ export function KPICard({
                 {tooltipInfo && <Info className="h-3 w-3 opacity-60" />}
               </CardTitle>
             </CardHeader>
-            <CardContent className={`${!value && leftValue && rightValue ? 'flex flex-col justify-center h-full' : 'space-y-4'}`}>
+            <CardContent className={`${!value && leftValue && rightValue ? 'flex flex-col justify-center h-full py-6' : 'space-y-4'}`}>
               {/* Número principal centralizado */}
               {value && (
                 <div className="text-center">
@@ -79,7 +79,7 @@ export function KPICard({
               
               {/* Breakdown ou subtitle */}
               {(leftValue && rightValue && leftLabel && rightLabel) ? (
-                <div className={`flex justify-between items-center text-white/90 ${!value ? 'py-8' : ''}`}>
+                <div className={`flex justify-between items-center text-white/90 ${!value ? 'py-4' : ''}`}>
                   <div className="text-center flex-1">
                     <div className={`${!value ? 'text-4xl mb-2' : 'text-2xl'} font-bold`}>{leftValue}</div>
                     <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{leftLabel}</div>
