@@ -67,7 +67,7 @@ export function KPICard({
                 {tooltipInfo && <Info className="h-3 w-3 opacity-60" />}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className={`${!value && leftValue && rightValue ? 'flex flex-col justify-center h-full' : 'space-y-4'}`}>
               {/* Número principal centralizado */}
               {value && (
                 <div className="text-center">
@@ -79,15 +79,15 @@ export function KPICard({
               
               {/* Breakdown ou subtitle */}
               {(leftValue && rightValue && leftLabel && rightLabel) ? (
-                <div className={`flex justify-between items-center text-white/90 ${!value ? 'pt-2' : ''}`}>
+                <div className={`flex justify-between items-center text-white/90 ${!value ? 'py-8' : ''}`}>
                   <div className="text-center flex-1">
-                    <div className={`${!value ? 'text-4xl' : 'text-2xl'} font-bold`}>{leftValue}</div>
-                    <div className="text-xs uppercase tracking-wide opacity-80">{leftLabel}</div>
+                    <div className={`${!value ? 'text-4xl mb-2' : 'text-2xl'} font-bold`}>{leftValue}</div>
+                    <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{leftLabel}</div>
                   </div>
-                  <div className="w-px h-8 bg-white/30 mx-3"></div>
+                  <div className={`w-px bg-white/30 mx-4 ${!value ? 'h-12' : 'h-8'}`}></div>
                   <div className="text-center flex-1">
-                    <div className={`${!value ? 'text-4xl' : 'text-2xl'} font-bold`}>{rightValue}</div>
-                    <div className="text-xs uppercase tracking-wide opacity-80">{rightLabel}</div>
+                    <div className={`${!value ? 'text-4xl mb-2' : 'text-2xl'} font-bold`}>{rightValue}</div>
+                    <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{rightLabel}</div>
                   </div>
                 </div>
               ) : subtitle && (
