@@ -139,9 +139,24 @@ export default function Dashboard() {
       <div className="p-4 sm:p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-            <TabsTrigger value="resumo" className="text-xs sm:text-sm">Resumo</TabsTrigger>
-            <TabsTrigger value="estruturacao" className="text-xs sm:text-sm">Estruturação</TabsTrigger>
-            <TabsTrigger value="liquidadas" className="text-xs sm:text-sm">Liquidadas</TabsTrigger>
+            <TabsTrigger 
+              value="resumo" 
+              className="text-xs sm:text-sm hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-400/50 hover:shadow-blue-500/30 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600"
+            >
+              Resumo
+            </TabsTrigger>
+            <TabsTrigger 
+              value="estruturacao" 
+              className="text-xs sm:text-sm hover:bg-orange-500/20 hover:text-orange-400 hover:border-orange-400/50 hover:shadow-orange-500/30 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-600"
+            >
+              Estruturação
+            </TabsTrigger>
+            <TabsTrigger 
+              value="liquidadas" 
+              className="text-xs sm:text-sm hover:bg-green-500/20 hover:text-green-400 hover:border-green-400/50 hover:shadow-green-500/30 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600"
+            >
+              Liquidadas
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="resumo" className="space-y-6">
