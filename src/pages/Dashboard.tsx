@@ -166,7 +166,6 @@ export default function Dashboard() {
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
                 estruturacao={kpis.operacoesEstruturacao}
-                variant="indigo"
                 change={kpis.operacoesLiquidadasChange}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
@@ -176,7 +175,7 @@ export default function Dashboard() {
                   calculation: "Comparação de operações liquidadas no período atual vs operações liquidadas no mesmo período do ano anterior"
                 }}
               />
-              <KPICard
+               <KPICard
                 title="Volume Total"
                 value={`${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bi`}
                 leftValue={`${kpis.volumeLiquidado} bi`}
@@ -184,7 +183,6 @@ export default function Dashboard() {
                 rightValue={`${kpis.volumeEstruturacao} bi`}
                 rightLabel="Estruturação"
                 change={kpis.volumeLiquidadoChange}
-                variant="success"
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -197,7 +195,7 @@ export default function Dashboard() {
 
             {/* Bottom Row - 3 Fee Cards */}
             <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-              <KPICard
+               <KPICard
                 title="Fee de Estruturação"
                 value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
                 leftValue={kpis.feeLiquidado}
@@ -205,7 +203,6 @@ export default function Dashboard() {
                 rightValue={kpis.feeEstruturacao}
                 rightLabel="Estruturação"
                 change={kpis.feeLiquidadoChange}
-                variant="warning"
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -222,7 +219,6 @@ export default function Dashboard() {
                 rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                 rightLabel="Estruturação"
                 change={kpis.feeLiquidadoChange}
-                variant="primary"
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -239,7 +235,6 @@ export default function Dashboard() {
                 rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                 rightLabel="Estruturação"
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                variant="secondary"
                 change={kpis.feeLiquidadoChange}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
