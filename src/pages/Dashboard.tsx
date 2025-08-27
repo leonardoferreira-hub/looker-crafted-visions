@@ -166,7 +166,7 @@ export default function Dashboard() {
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
                 estruturacao={kpis.operacoesEstruturacao}
-                variant="teal"
+                variant="indigo"
                 change={kpis.operacoesLiquidadasChange}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,

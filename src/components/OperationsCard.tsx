@@ -36,9 +36,9 @@ export function OperationsCard({
       case "purple":
         return "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25";
       case "indigo":
-        return "bg-gradient-to-br from-indigo-500 to-indigo-600 border-indigo-400 shadow-xl shadow-indigo-500/25";
+        return "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25";
       case "teal":
-        return "bg-gradient-to-br from-teal-500 to-teal-600 border-teal-400 shadow-xl shadow-teal-500/25";
+        return "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25";
       default:
         return "bg-gradient-to-br from-slate-500 to-slate-600 border-slate-400 shadow-xl shadow-slate-500/25";
     }

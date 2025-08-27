@@ -42,13 +42,13 @@ export function KPICard({
   const getVariantStyles = () => {
     switch (variant) {
       case "primary":
-        return "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25";
+        return "bg-gradient-to-br from-red-500 to-red-600 border-red-400 shadow-xl shadow-red-500/25";
       case "success":
         return "bg-gradient-to-br from-green-500 to-green-600 border-green-400 shadow-xl shadow-green-500/25";
       case "warning":
         return "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25";
       case "secondary":
-        return "bg-gradient-to-br from-indigo-500 to-indigo-600 border-indigo-400 shadow-xl shadow-indigo-500/25";
+        return "bg-gradient-to-br from-pink-500 to-pink-600 border-pink-400 shadow-xl shadow-pink-500/25";
       default:
         return "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25";
     }
