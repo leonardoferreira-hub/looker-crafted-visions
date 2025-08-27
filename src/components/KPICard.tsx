@@ -15,7 +15,7 @@ interface KPICardProps {
     value: string;
     type: "positive" | "negative";
   };
-  variant?: "default" | "primary" | "success" | "warning";
+  variant?: "default" | "primary" | "success" | "warning" | "secondary";
   className?: string;
   tooltipInfo?: {
     currentPeriod?: string;
@@ -47,6 +47,8 @@ export function KPICard({
         return "bg-gradient-to-br from-green-500 to-green-600 border-green-400 shadow-xl shadow-green-500/25";
       case "warning":
         return "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25";
+      case "secondary":
+        return "bg-gradient-to-br from-indigo-500 to-indigo-600 border-indigo-400 shadow-xl shadow-indigo-500/25";
       default:
         return "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25";
     }

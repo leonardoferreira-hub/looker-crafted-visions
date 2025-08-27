@@ -166,6 +166,7 @@ export default function Dashboard() {
                 totalOperations={kpis.operacoesLiquidadas + kpis.operacoesEstruturacao}
                 liquidadas={kpis.operacoesLiquidadas}
                 estruturacao={kpis.operacoesEstruturacao}
+                variant="teal"
                 change={kpis.operacoesLiquidadasChange}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
@@ -230,7 +231,7 @@ export default function Dashboard() {
                   calculation: "Soma dos fees de colocação (originação) da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
                 }}
               />
-              <KPICard
+               <KPICard
                 title="Fee de Gestão"
                 value={`${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
                 leftValue={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
@@ -238,6 +239,7 @@ export default function Dashboard() {
                 rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                 rightLabel="Estruturação"
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                variant="secondary"
                 change={kpis.feeLiquidadoChange}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
