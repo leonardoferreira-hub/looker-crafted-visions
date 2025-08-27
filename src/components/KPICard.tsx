@@ -54,8 +54,8 @@ export function KPICard({
       // Fee de Colocação - Vermelho
       "Fee de Colocação": "bg-gradient-to-br from-red-500 to-red-600 border-red-400 shadow-xl shadow-red-500/25",
       
-      // Fee de Gestão - Rosa
-      "Fee de Gestão": "bg-gradient-to-br from-pink-500 to-pink-600 border-pink-400 shadow-xl shadow-pink-500/25",
+      // Fee de Gestão - Roxo
+      "Fee de Gestão": "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25",
       
       // Operações - Azul (para casos especiais)
       "Operações em Estruturação": "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25",
