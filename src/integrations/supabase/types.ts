@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      authorized_emails: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          role: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          id?: string
+          role?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          id?: string
+          role?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -47,6 +71,10 @@ export type Database = {
     }
     Functions: {
       is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_authorized_user: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }

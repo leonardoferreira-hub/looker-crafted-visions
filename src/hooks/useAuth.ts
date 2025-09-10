@@ -29,86 +29,6 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast({
-          title: "Erro no login",
-          description: error.message,
-          variant: "destructive",
-        });
-        return { error };
-      }
-
-      toast({
-        title: "Login realizado com sucesso!",
-        description: "Bem-vindo de volta.",
-      });
-
-      return { error: null };
-    } catch (error: any) {
-      toast({
-        title: "Erro no login",
-        description: "Ocorreu um erro inesperado.",
-        variant: "destructive",
-      });
-      return { error };
-    }
-  };
-
-  const signUp = async (email: string, password: string, displayName?: string) => {
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            display_name: displayName
-          }
-        }
-      });
-
-      if (error) {
-        if (error.message.includes('User already registered')) {
-          toast({
-            title: "Usuário já cadastrado",
-            description: "Este email já está cadastrado. Tente fazer login.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Erro no cadastro",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-        return { error };
-      }
-
-      toast({
-        title: "Cadastro realizado!",
-        description: "Verifique seu email para confirmar a conta.",
-      });
-
-      return { error: null };
-    } catch (error: any) {
-      toast({
-        title: "Erro no cadastro",
-        description: "Ocorreu um erro inesperado.",
-        variant: "destructive",
-      });
-      return { error };
-    }
-  };
-
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -142,8 +62,6 @@ export const useAuth = () => {
     user,
     session,
     loading,
-    signIn,
-    signUp,
     signOut,
     isAuthenticated: !!user,
   };
