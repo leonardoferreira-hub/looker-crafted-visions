@@ -21,11 +21,7 @@ export const useUserRole = () => {
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
-      // Se não estiver autenticado, usa localStorage como fallback
-      const savedRole = localStorage.getItem('userRole') as UserRole;
-      if (savedRole && (savedRole === 'admin' || savedRole === 'viewer')) {
-        setUserRole(savedRole);
-      }
+      setUserRole('viewer');
       setIsLoading(false);
       return;
     }
@@ -41,11 +37,7 @@ export const useUserRole = () => {
 
         if (error) {
           console.error('Error fetching user profile:', error);
-          // Fallback para localStorage em caso de erro
-          const savedRole = localStorage.getItem('userRole') as UserRole;
-          if (savedRole && (savedRole === 'admin' || savedRole === 'viewer')) {
-            setUserRole(savedRole);
-          }
+          setUserRole('viewer');
         } else if (data) {
           const profileData: Profile = {
             id: data.id,
@@ -57,16 +49,10 @@ export const useUserRole = () => {
           };
           setProfile(profileData);
           setUserRole(data.role as UserRole);
-          // Sincroniza com localStorage
-          localStorage.setItem('userRole', data.role);
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
-        // Fallback para localStorage
-        const savedRole = localStorage.getItem('userRole') as UserRole;
-        if (savedRole && (savedRole === 'admin' || savedRole === 'viewer')) {
-          setUserRole(savedRole);
-        }
+        setUserRole('viewer');
       } finally {
         setIsLoading(false);
       }
@@ -75,28 +61,6 @@ export const useUserRole = () => {
     fetchUserProfile();
   }, [user, isAuthenticated]);
 
-  const changeRole = async (newRole: UserRole) => {
-    setUserRole(newRole);
-    localStorage.setItem('userRole', newRole);
-
-    // Se estiver autenticado, atualiza no Supabase também
-    if (isAuthenticated && user && profile) {
-      try {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ role: newRole })
-          .eq('user_id', user.id);
-
-        if (error) {
-          console.error('Error updating user role:', error);
-        } else {
-          setProfile({ ...profile, role: newRole });
-        }
-      } catch (error) {
-        console.error('Error updating user role:', error);
-      }
-    }
-  };
 
   const hasPermission = (requiredRole: UserRole) => {
     if (requiredRole === 'viewer') return true;
@@ -105,7 +69,6 @@ export const useUserRole = () => {
 
   return {
     userRole,
-    changeRole,
     hasPermission,
     isLoading,
     isAdmin: userRole === 'admin',
