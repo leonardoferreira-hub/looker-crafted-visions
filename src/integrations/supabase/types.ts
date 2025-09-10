@@ -78,6 +78,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      sync_profile_roles: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
