@@ -8,6 +8,7 @@ import { CombinedBarLineChart } from "@/components/CombinedBarLineChart";
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
+import { RoleSelector } from "@/components/RoleSelector";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -69,6 +70,7 @@ export default function Dashboard() {
             <div className="text-xs sm:text-sm text-muted-foreground">
               {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
             </div>
+            <RoleSelector />
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
             <ConnectionStatus
@@ -203,6 +205,7 @@ export default function Dashboard() {
                 rightValue={kpis.feeEstruturacao}
                 rightLabel="Estruturação"
                 change={kpis.feeLiquidadoChange}
+                requiresAdminAccess={true}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -219,6 +222,7 @@ export default function Dashboard() {
                 rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                 rightLabel="Estruturação"
                 change={kpis.feeLiquidadoChange}
+                requiresAdminAccess={true}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -236,6 +240,7 @@ export default function Dashboard() {
                 rightLabel="Estruturação"
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
                 change={kpis.feeLiquidadoChange}
+                requiresAdminAccess={true}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -304,12 +309,14 @@ export default function Dashboard() {
                 rightValue={kpis.feeEstruturacao}
                 rightLabel="Fee Estruturação"
                 variant="success"
+                requiresAdminAccess={true}
               />
               <KPICard
                 title="Fee de Gestão"
                 value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
                 variant="warning"
+                requiresAdminAccess={true}
               />
             </div>
 
@@ -376,11 +383,13 @@ export default function Dashboard() {
                 subtitle="estruturação liquidada"
                 variant="warning"
                 change={kpis.feeLiquidadoChange}
+                requiresAdminAccess={true}
               />
               <KPICard
                 title="Fee de Gestão"
                 value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
                 subtitle="gestão liquidada"
+                requiresAdminAccess={true}
               />
             </div>
 
