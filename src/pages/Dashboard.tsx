@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { KPICard } from "@/components/KPICard";
 import { OperationsCard } from "@/components/OperationsCard";
 import { ChartCard } from "@/components/ChartCard";
@@ -10,6 +11,7 @@ import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
 import { RoleSelector } from "@/components/RoleSelector";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -22,7 +24,9 @@ import {
   Filter,
   Download,
   RefreshCw,
-  Settings
+  Settings,
+  LogOut,
+  User
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -32,6 +36,34 @@ export default function Dashboard() {
   const [comparisonStartDate, setComparisonStartDate] = useState<Date | null>(null);
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
   const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
+  const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect to auth
+  }
 
   // Mostra o período sendo usado
 
@@ -69,6 +101,10 @@ export default function Dashboard() {
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
               {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
+            </div>
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+              <User className="h-3 w-3 sm:h-4 sm:w-4" />
+              {user?.email}
             </div>
             <RoleSelector />
           </div>
@@ -113,6 +149,16 @@ export default function Dashboard() {
               <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                 <Download className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Exportar</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+                className="flex items-center gap-1 sm:gap-2 flex-1 sm:flex-none"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Sair</span>
               </Button>
               
               <Sheet>
@@ -363,47 +409,59 @@ export default function Dashboard() {
 
           <TabsContent value="liquidadas" className="space-y-6">
             {/* Liquidadas KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <KPICard
-                title="Liquidadas"
-                value={kpis.operacoesLiquidadas.toString()}
-                subtitle="operações concluídas"
+                title="Operações Liquidadas"
+                leftValue={kpis.operacoesLiquidadas.toString()}
+                leftLabel="Operações"
+                rightValue={`${kpis.volumeLiquidado} bi`}
+                rightLabel="Volume"
                 variant="success"
-                change={kpis.operacoesLiquidadasChange}
               />
               <KPICard
-                title="Volume Liquidado"
-                value={`${kpis.volumeLiquidado} bi`}
-                subtitle="total realizado"
-                variant="primary"
-              />
-              <KPICard
-                title="Fee Realizado"
+                title="Fee Liquidado"
                 value={`${kpis.feeLiquidado} mi`}
-                subtitle="estruturação liquidada"
-                variant="warning"
-                change={kpis.feeLiquidadoChange}
+                leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                leftLabel="Fee Colocação"
+                rightValue={kpis.feeLiquidado}
+                rightLabel="Fee Liquidado"
+                variant="primary"
                 requiresAdminAccess={true}
               />
               <KPICard
                 title="Fee de Gestão"
                 value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                subtitle="gestão liquidada"
+                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                variant="warning"
                 requiresAdminAccess={true}
               />
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <ChartCard title="Distribuição por categoria">
-                <CustomPieChart 
-                  data={chartData.categorias}
-                  dataKey="value"
-                  nameKey="name"
-                />
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+              <ChartCard title="Volume liquidado por mês" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomLineChart 
+                    data={chartData.operacoesPorMes}
+                    xKey="mes"
+                    yKey="acumulado2025"
+                  />
+                </div>
               </ChartCard>
               
+              <ChartCard title="Performance mensal" className="min-h-[300px] sm:min-h-[400px]">
+                <div className="h-[250px] sm:h-[350px]">
+                  <CustomLineChart 
+                    data={chartData.operacoesPorMes}
+                    xKey="mes"
+                    yKey="estruturacoes"
+                  />
+                </div>
+              </ChartCard>
+            </div>
+
+            <div className="grid gap-4 sm:gap-6">
               <DataTable
-                title="Últimas liquidações"
+                title="Todas as liquidações"
                 data={ultimasLiquidacoes}
                 columns={ultimasColumns}
               />

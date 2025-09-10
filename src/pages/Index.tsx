@@ -57,13 +57,13 @@ const Index = () => {
           </div>
 
           <div className="pt-8">
-            <Button 
-              size="lg" 
-              onClick={() => navigate('/dashboard')}
-              className="bg-[var(--gradient-primary)] hover:shadow-[var(--shadow-premium)] transition-all duration-300"
-            >
-              Acessar Dashboard
-            </Button>
+          <Button 
+            size="lg" 
+            onClick={() => navigate('/auth')}
+            className="bg-[var(--gradient-primary)] hover:shadow-[var(--shadow-premium)] transition-all duration-300"
+          >
+            Fazer Login
+          </Button>
           </div>
         </div>
       </div>
