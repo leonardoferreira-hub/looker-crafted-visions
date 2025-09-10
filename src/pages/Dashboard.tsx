@@ -9,7 +9,6 @@ import { CombinedBarLineChart } from "@/components/CombinedBarLineChart";
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
-import { RoleSelector } from "@/components/RoleSelector";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -106,7 +105,6 @@ export default function Dashboard() {
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
               {user?.email}
             </div>
-            <RoleSelector />
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
             <ConnectionStatus

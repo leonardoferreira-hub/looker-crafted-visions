@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { TrendingUp, TrendingDown, Info, Lock } from "lucide-react";
+import { TrendingUp, TrendingDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -43,6 +43,7 @@ export function KPICard({
   requiresAdminAccess = false
 }: KPICardProps) {
   const { hasPermission } = useUserRole();
+  
   // Sistema de cores padronizado baseado no título do card
   const getVariantStyles = () => {
     // Mapear títulos para cores consistentes
@@ -75,6 +76,10 @@ export function KPICard({
 
   const canAccess = !requiresAdminAccess || hasPermission('admin');
 
+  if (!canAccess) {
+    return null;
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -91,56 +96,44 @@ export function KPICard({
               </CardTitle>
             </CardHeader>
             <CardContent className={`${!value && leftValue && rightValue ? 'flex-1 flex flex-col justify-center py-6' : 'space-y-4'}`}>
-              {!canAccess ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="text-center">
-                    <Lock className="h-8 w-8 mx-auto mb-2 text-white/60" />
-                    <p className="text-lg font-bold text-white/80">Acesso Restrito</p>
-                    <p className="text-xs text-white/60 mt-1">Apenas administradores</p>
+              {/* Número principal centralizado */}
+              {value && (
+                <div className="text-center">
+                  <div className="text-5xl font-black tracking-tight text-white">
+                    {value}
                   </div>
                 </div>
-              ) : (
-                <>
-                  {/* Número principal centralizado */}
-                  {value && (
-                    <div className="text-center">
-                      <div className="text-5xl font-black tracking-tight text-white">
-                        {value}
-                      </div>
-                    </div>
+              )}
+              
+              {/* Breakdown ou subtitle */}
+              {(leftValue && rightValue && leftLabel && rightLabel) ? (
+                <div className="flex justify-between items-center text-white/90">
+                  <div className="text-center flex-1">
+                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{leftValue}</div>
+                    <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{leftLabel}</div>
+                  </div>
+                  <div className={`w-px bg-white/30 mx-4 ${!value ? 'h-12' : 'h-8'}`}></div>
+                  <div className="text-center flex-1">
+                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{rightValue}</div>
+                    <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{rightLabel}</div>
+                  </div>
+                </div>
+              ) : subtitle && (
+                <div className="text-center text-white/90">
+                  <div className="text-sm uppercase tracking-wide opacity-80">{subtitle}</div>
+                </div>
+              )}
+              
+              {/* Comparativo com ano anterior */}
+              {change && (
+                <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
+                  {change.type === "positive" ? (
+                    <TrendingUp className="mr-1 h-4 w-4" />
+                  ) : (
+                    <TrendingDown className="mr-1 h-4 w-4" />
                   )}
-                  
-                  {/* Breakdown ou subtitle */}
-                  {(leftValue && rightValue && leftLabel && rightLabel) ? (
-                    <div className="flex justify-between items-center text-white/90">
-                      <div className="text-center flex-1">
-                        <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{leftValue}</div>
-                        <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{leftLabel}</div>
-                      </div>
-                      <div className={`w-px bg-white/30 mx-4 ${!value ? 'h-12' : 'h-8'}`}></div>
-                      <div className="text-center flex-1">
-                        <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{rightValue}</div>
-                        <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{rightLabel}</div>
-                      </div>
-                    </div>
-                  ) : subtitle && (
-                    <div className="text-center text-white/90">
-                      <div className="text-sm uppercase tracking-wide opacity-80">{subtitle}</div>
-                    </div>
-                  )}
-                  
-                  {/* Comparativo com ano anterior */}
-                  {change && (
-                    <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
-                      {change.type === "positive" ? (
-                        <TrendingUp className="mr-1 h-4 w-4" />
-                      ) : (
-                        <TrendingDown className="mr-1 h-4 w-4" />
-                      )}
-                      <span>{change.value} liquidado vs mesmo período 2024</span>
-                    </div>
-                  )}
-                </>
+                  <span>{change.value} liquidado vs mesmo período 2024</span>
+                </div>
               )}
             </CardContent>
           </Card>
