@@ -391,7 +391,7 @@ export default function Dashboard() {
               <ChartCard title="% dos Lastros em Estruturação" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CustomPieChart 
-                    data={chartData.categorias}
+                    data={chartData.lastros}
                     dataKey="value"
                     nameKey="name"
                   />

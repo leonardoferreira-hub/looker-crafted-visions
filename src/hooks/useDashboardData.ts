@@ -751,7 +751,8 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   // Processa dados para gráficos usando dados filtrados por ano
   const graphData = {
     operacoesPorMes: chartData ? processMonthlyDataWithYears(chartData.filtered2024, chartData.filtered2025, estruturacao) : processMonthlyData(liquidadas, estruturacao),
-    categorias: processCategoryData([...liquidadas, ...estruturacao])
+    categorias: processCategoryData([...liquidadas, ...estruturacao]),
+    lastros: processLastroData(estruturacao)
   };
 
   return {
@@ -1074,6 +1075,29 @@ function processCategoryData(data: SheetData[]) {
     name,
     value: Math.round((count / data.length) * 100),
     count
+  }));
+}
+
+function processLastroData(data: SheetData[]) {
+  console.log('🎯 processLastroData chamada com:', data.length, 'itens');
+  
+  const lastros: { [key: string]: number } = {};
+  
+  data.forEach(row => {
+    // Usar mapeamento de colunas para lastro da aba PIPE
+    const lastro = String(getCellValue(row, SHEETS_COLUMNS.PIPE.LASTRO) || 'Não informado').trim();
+    
+    // Se o lastro está vazio, classifica como "Não informado"
+    const lastroKey = lastro === '' || lastro === 'null' || lastro === 'undefined' ? 'Não informado' : lastro;
+    
+    lastros[lastroKey] = (lastros[lastroKey] || 0) + 1;
+  });
+  
+  console.log('Lastros processados:', lastros);
+  
+  return Object.entries(lastros).map(([name, value]) => ({
+    name,
+    value
   }));
 }
 
