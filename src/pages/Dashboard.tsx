@@ -230,13 +230,13 @@ export default function Dashboard() {
                 rightLabel="Estruturação"
                 variant="primary"
                 change={kpis.volumeLiquidadoChange}
-                tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                  currentValue: `R$ ${kpis.volumeLiquidado} bilhões liquidado`,
-                  comparisonValue: `R$ ${((kpis.lastYearVolume || 0) / 1000000000).toFixed(1)} bilhões`,
-                  calculation: "Comparação do volume liquidado no período atual vs volume liquidado no mesmo período do ano anterior"
-                }}
+                 tooltipInfo={{
+                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                   currentValue: `R$ ${kpis.volumeLiquidado} bilhões liquidado (do total ${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bi)`,
+                   comparisonValue: `R$ ${((kpis.lastYearVolume || 0) / 1000000000).toFixed(1)} bilhões liquidado em 2024`,
+                   calculation: "Comparação do volume liquidado no período atual vs volume liquidado no mesmo período do ano anterior (comparação justa: liquidado vs liquidado)"
+                 }}
               />
             </div>
 

@@ -673,7 +673,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     lastYearFee: lastYearFeeHistorico,
     // Comparações com ano anterior (mesmo período relativo)
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
-    volumeLiquidadoChange: getPercentChange(volumeTotal, lastYearVolumeHistorico), // Compara volume total 2025 vs histórico 2024
+    volumeLiquidadoChange: getPercentChange(currentVolumeHistorico, lastYearVolumeHistorico), // Compara volume liquidado 2025 vs volume liquidado 2024
     feeLiquidadoChange: getPercentChange(feeEstruturacaoHistorico, lastYearFeeHistorico) // Compara fee liquidado 2025 vs fee liquidado 2024
   };
 
