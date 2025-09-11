@@ -26,6 +26,7 @@ interface KPICardProps {
     calculation?: string;
   };
   requiresAdminAccess?: boolean;
+  showComparison?: boolean;
 }
 
 export function KPICard({ 
@@ -40,7 +41,8 @@ export function KPICard({
   variant,
   className,
   tooltipInfo,
-  requiresAdminAccess = false
+  requiresAdminAccess = false,
+  showComparison = true
 }: KPICardProps) {
   const { hasPermission } = useUserRole();
   
@@ -139,20 +141,22 @@ export function KPICard({
               )}
               
               {/* Comparativo com ano anterior */}
-              <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
-                {change ? (
-                  <>
-                    {change.type === "positive" ? (
-                      <TrendingUp className="mr-1 h-4 w-4" />
-                    ) : (
-                      <TrendingDown className="mr-1 h-4 w-4" />
-                    )}
-                    <span>{change.value} vol. liquidado vs mesmo período 2024</span>
-                  </>
-                ) : (
-                  <span className="text-white/70 text-xs">Dados de comparação não disponíveis.</span>
-                )}
-              </div>
+              {showComparison && (
+                <div className="flex items-center justify-center text-sm font-bold text-white border-t border-white/20 pt-3">
+                  {change ? (
+                    <>
+                      {change.type === "positive" ? (
+                        <TrendingUp className="mr-1 h-4 w-4" />
+                      ) : (
+                        <TrendingDown className="mr-1 h-4 w-4" />
+                      )}
+                      <span>{change.value} vol. liquidado vs mesmo período 2024</span>
+                    </>
+                  ) : (
+                    <span className="text-white/70 text-xs">Dados de comparação não disponíveis.</span>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TooltipTrigger>

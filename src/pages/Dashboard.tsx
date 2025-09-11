@@ -345,7 +345,7 @@ export default function Dashboard() {
                  leftLabel="Operações"
                  rightValue={`${kpis.volumeEstruturacao} bi`}
                  rightLabel="Volume"
-                 variant="primary"
+                  variant="primary" showComparison={false}
                  tooltipInfo={{
                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                    comparisonPeriod: "Dados atuais em estruturação",
@@ -361,7 +361,7 @@ export default function Dashboard() {
                  leftLabel="Fee Colocação"
                  rightValue={kpis.feeEstruturacao}
                  rightLabel="Fee Estruturação"
-                 variant="success"
+                  variant="success" showComparison={false}
                  requiresAdminAccess={true}
                  tooltipInfo={{
                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
@@ -375,7 +375,7 @@ export default function Dashboard() {
                  title="Fee de Gestão"
                  value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                  subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                 variant="warning"
+                  variant="warning" showComparison={false}
                  requiresAdminAccess={true}
                  tooltipInfo={{
                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
@@ -437,7 +437,7 @@ export default function Dashboard() {
                    leftLabel="Operações"
                    rightValue={`${kpis.volumeLiquidado} bi`}
                    rightLabel="Volume"
-                   variant="primary"
+                    variant="primary" showComparison={false}
                    tooltipInfo={{
                      currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                      comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -453,7 +453,7 @@ export default function Dashboard() {
                    leftLabel="Fee Colocação"
                    rightValue={kpis.feeLiquidado}
                    rightLabel="Fee Liquidado"
-                   variant="success"
+                    variant="success" showComparison={false}
                    requiresAdminAccess={true}
                    tooltipInfo={{
                      currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
@@ -467,7 +467,7 @@ export default function Dashboard() {
                 title="Fee de Gestão"
                 value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                variant="warning"
+                 variant="warning" showComparison={false}
                 requiresAdminAccess={true}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
