@@ -228,6 +228,7 @@ export default function Dashboard() {
                 leftLabel="Liquidado"
                 rightValue={`${kpis.volumeEstruturacao} bi`}
                 rightLabel="Estruturação"
+                variant="primary"
                 change={kpis.volumeLiquidadoChange}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
@@ -248,6 +249,7 @@ export default function Dashboard() {
                 leftLabel="Liquidado"
                 rightValue={kpis.feeEstruturacao}
                 rightLabel="Estruturação"
+                variant="success"
                 change={kpis.feeLiquidadoChange}
                 requiresAdminAccess={true}
                 tooltipInfo={{
@@ -258,15 +260,16 @@ export default function Dashboard() {
                   calculation: "Comparação do fee de estruturação liquidado no período atual vs fee liquidado no mesmo período do ano anterior"
                 }}
               />
-               <KPICard
-                title="Fee de Colocação"
-                value={`${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
-                leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                leftLabel="Liquidado"
-                rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                rightLabel="Estruturação"
-                change={kpis.feeLiquidadoChange}
-                requiresAdminAccess={true}
+                <KPICard
+                 title="Fee de Colocação"
+                 value={`${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')}`}
+                 leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                 leftLabel="Liquidado"
+                 rightValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                 rightLabel="Estruturação"
+                 variant="secondary"
+                 change={kpis.feeLiquidadoChange}
+                 requiresAdminAccess={true}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
@@ -283,6 +286,7 @@ export default function Dashboard() {
                 rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                 rightLabel="Estruturação"
                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                variant="warning"
                 change={kpis.feeLiquidadoChange}
                 requiresAdminAccess={true}
                 tooltipInfo={{
@@ -429,24 +433,24 @@ export default function Dashboard() {
           <TabsContent value="liquidadas" className="space-y-6">
             {/* Liquidadas KPIs */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <KPICard
-                title="Operações Liquidadas"
-                leftValue={kpis.operacoesLiquidadas.toString()}
-                leftLabel="Operações"
-                rightValue={`${kpis.volumeLiquidado} bi`}
-                rightLabel="Volume"
-                variant="success"
-              />
-              <KPICard
-                title="Fee Liquidado"
-                value={`${kpis.feeLiquidado} mi`}
-                leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                leftLabel="Fee Colocação"
-                rightValue={kpis.feeLiquidado}
-                rightLabel="Fee Liquidado"
-                variant="primary"
-                requiresAdminAccess={true}
-              />
+               <KPICard
+                 title="Operações Liquidadas"
+                 leftValue={kpis.operacoesLiquidadas.toString()}
+                 leftLabel="Operações"
+                 rightValue={`${kpis.volumeLiquidado} bi`}
+                 rightLabel="Volume"
+                 variant="primary"
+               />
+               <KPICard
+                 title="Fee Liquidado"
+                 value={`${kpis.feeLiquidado} mi`}
+                 leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                 leftLabel="Fee Colocação"
+                 rightValue={kpis.feeLiquidado}
+                 rightLabel="Fee Liquidado"
+                 variant="success"
+                 requiresAdminAccess={true}
+               />
               <KPICard
                 title="Fee de Gestão"
                 value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
