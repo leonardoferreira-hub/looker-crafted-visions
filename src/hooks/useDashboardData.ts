@@ -425,7 +425,11 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
     console.log('Dados 2024 filtrados:', filtered2024.length);
     console.log('Dados KPIs (2025):', filteredHistorico.length);
 
-    return processSheetData(filteredHistorico, filteredPipe, lastYearData, { filtered2024, filtered2025 });
+    const result = processSheetData(filteredHistorico, filteredPipe, lastYearData, { filtered2024, filtered2025 });
+    return {
+      ...result,
+      rawPipeData: filteredPipe // Include raw pipe data for projections
+    };
   }, [data, defaultStartDate, defaultEndDate, defaultComparisonStartDate, defaultComparisonEndDate]);
 
   return {

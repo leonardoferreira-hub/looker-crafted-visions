@@ -38,7 +38,7 @@ export default function Dashboard() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [comparisonStartDate, setComparisonStartDate] = useState<Date | null>(null);
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
-  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
+  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
 
   const navigate = useNavigate();
@@ -62,6 +62,82 @@ export default function Dashboard() {
     
     return chartData.operacoesPorMes;
   }, [chartData, selectedCategory]);
+
+  // Função para calcular projeções de liquidação baseadas no pipe por categoria
+  const calculatePipeProjections = React.useMemo(() => {
+    if (!rawPipeData || rawPipeData.length === 0) return {};
+    
+    const projectionsByMonth: Record<number, number> = {};
+    
+    rawPipeData.forEach(row => {
+      // Get previsao liquidacao from pipe data (column E = index 4)
+      const previsaoLiquidacao = row[`col_4`]; 
+      const categoria = String(row[`col_2`] || '').trim(); // CATEGORIA column (column C = index 2)
+      
+      if (!previsaoLiquidacao) return;
+      
+      // Filter by selected category if not "Todas"
+      if (selectedCategory !== 'Todas' && categoria !== selectedCategory) return;
+      
+      // Simple date parsing - try multiple approaches
+      let date: Date | null = null;
+      const dateStr = String(previsaoLiquidacao).trim();
+      
+      // Try direct parsing first
+      date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        // Try DD/MM/YYYY format
+        const ddmmyyyy = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (ddmmyyyy) {
+          date = new Date(parseInt(ddmmyyyy[3]), parseInt(ddmmyyyy[2]) - 1, parseInt(ddmmyyyy[1]));
+        }
+      }
+      
+      if (!date || isNaN(date.getTime())) return;
+      
+      // Only consider 2025 projections
+      if (date.getFullYear() !== 2025) return;
+      
+      const month = date.getMonth();
+      projectionsByMonth[month] = (projectionsByMonth[month] || 0) + 1;
+    });
+    
+    console.log('Pipe projections by month:', projectionsByMonth);
+    return projectionsByMonth;
+  }, [rawPipeData, selectedCategory]);
+
+  // Processar dados para separar realizado vs projetado 2025
+  const processedChartData = React.useMemo(() => {
+    if (!filteredChartData || filteredChartData.length === 0) return [];
+    
+    const currentMonth = new Date().getMonth(); // 0 = Janeiro, 8 = Setembro
+    
+    return filteredChartData.map((item, index) => {
+      const isRealizado = index <= currentMonth; // Jan-Set = realizado
+      
+      // Para meses futuros, usar projeções do pipe em vez dos dados históricos
+      let projectedValue = null;
+      if (!isRealizado) {
+        const monthProjections = calculatePipeProjections[index] || 0;
+        // Somar projeções às operações já realizadas para obter o acumulado projetado
+        const realizedSoFar = index > 0 ? (filteredChartData[currentMonth]?.acumulado2025 || 0) : 0;
+        
+        // Calcular acumulado de projeções até este mês
+        let accumulatedProjections = 0;
+        for (let i = currentMonth + 1; i <= index; i++) {
+          accumulatedProjections += calculatePipeProjections[i] || 0;
+        }
+        
+        projectedValue = realizedSoFar + accumulatedProjections;
+      }
+      
+      return {
+        ...item,
+        acumulado2025_realizado: isRealizado ? item.acumulado2025 : null,
+        acumulado2025_projetado: !isRealizado ? projectedValue : null,
+      };
+    });
+  }, [filteredChartData, calculatePipeProjections]);
 
 
   useEffect(() => {
@@ -347,7 +423,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={filteredChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <LineChart data={processedChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
                           <XAxis 
                             dataKey="mes" 
@@ -375,11 +451,22 @@ export default function Dashboard() {
                           />
                           <Line 
                             type="monotone" 
-                            dataKey="acumulado2025" 
-                            stroke="hsl(var(--primary))" 
+                            dataKey="acumulado2025_realizado" 
+                            stroke="#2563eb"
                             strokeWidth={2}
-                            name="Acumulado 2025"
-                            dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                            name="2025 Realizado"
+                            dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
+                            connectNulls={false}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="acumulado2025_projetado" 
+                            stroke="#2563eb"
+                            strokeWidth={2}
+                            strokeDasharray="5 5"
+                            name="2025 Projetado"
+                            dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
+                            connectNulls={false}
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -580,7 +667,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={filteredChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <LineChart data={processedChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
                           <XAxis 
                             dataKey="mes" 
@@ -608,11 +695,22 @@ export default function Dashboard() {
                           />
                           <Line 
                             type="monotone" 
-                            dataKey="acumulado2025" 
-                            stroke="hsl(var(--primary))" 
+                            dataKey="acumulado2025_realizado" 
+                            stroke="#2563eb"
                             strokeWidth={2}
-                            name="Acumulado 2025"
-                            dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                            name="2025 Realizado"
+                            dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
+                            connectNulls={false}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="acumulado2025_projetado" 
+                            stroke="#2563eb"
+                            strokeWidth={2}
+                            strokeDasharray="5 5"
+                            name="2025 Projetado"
+                            dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
+                            connectNulls={false}
                           />
                         </LineChart>
                       </ResponsiveContainer>
