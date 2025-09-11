@@ -44,31 +44,45 @@ export function KPICard({
 }: KPICardProps) {
   const { hasPermission } = useUserRole();
   
-  // Sistema de cores padronizado baseado no título do card
+  // Sistema de cores padronizado: usa 'variant' quando fornecido; caso contrário, mapeia por título
   const getVariantStyles = () => {
+    const variantStyles: Record<string, string> = {
+      default: "bg-gradient-to-br from-card to-card border-border shadow-xl shadow-black/10",
+      primary: "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25",
+      success: "bg-gradient-to-br from-green-500 to-green-600 border-green-400 shadow-xl shadow-green-500/25",
+      warning: "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25",
+      secondary: "bg-gradient-to-br from-slate-500 to-slate-600 border-slate-400 shadow-xl shadow-slate-500/25",
+    };
+
     // Mapear títulos para cores consistentes
     const colorMap: Record<string, string> = {
       // Volume - Verde
-      "Volume Total": "bg-gradient-to-br from-green-500 to-green-600 border-green-400 shadow-xl shadow-green-500/25",
-      "Volume Liquidado": "bg-gradient-to-br from-green-500 to-green-600 border-green-400 shadow-xl shadow-green-500/25",
+      "Volume Total": variantStyles.success,
+      "Volume Liquidado": variantStyles.success,
       
       // Fee de Estruturação - Laranja
-      "Fee de Estruturação": "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25",
-      "Fee Estruturação": "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25",
+      "Fee de Estruturação": variantStyles.warning,
+      "Fee Estruturação": variantStyles.warning,
       
-      // Fee de Colocação - Vermelho
-      "Fee de Colocação": "bg-gradient-to-br from-red-500 to-red-600 border-red-400 shadow-xl shadow-red-500/25",
+      // Fee de Colocação - Cinza/secondary
+      "Fee de Colocação": variantStyles.secondary,
       
-      // Fee de Gestão - Roxo
+      // Fee de Gestão - Roxo (mantém identidade)
       "Fee de Gestão": "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25",
       
-      // Operações - Azul (para casos especiais)
-      "Operações em Estruturação": "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25",
-      "Liquidadas": "bg-gradient-to-br from-blue-500 to-blue-600 border-blue-400 shadow-xl shadow-blue-500/25",
+      // Operações - Azul
+      "Operações em Estruturação": variantStyles.primary,
+      "Operações Liquidadas": variantStyles.primary,
+      "Liquidadas": variantStyles.primary,
       
       // Fee Realizado - Laranja (mesmo que Fee de Estruturação)
-      "Fee Realizado": "bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 shadow-xl shadow-orange-500/25",
+      "Fee Realizado": variantStyles.warning,
+      
+      // Fee Liquidado - Verde
+      "Fee Liquidado": variantStyles.success,
     };
+
+    if (variant && variantStyles[variant]) return variantStyles[variant];
 
     // Usar mapeamento baseado no título, ou cor padrão
     return colorMap[title] || "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25";
