@@ -37,7 +37,28 @@ export default function Dashboard() {
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
   const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
+
   const navigate = useNavigate();
+
+  // Filtrar dados por categoria usando a mesma lógica original
+  const filteredChartData = React.useMemo(() => {
+    if (!chartData.operacoesPorMes || selectedCategory === 'Todas') {
+      return chartData.operacoesPorMes || [];
+    }
+    
+    // Se há função de filtro por categoria, usa ela
+    if (chartData.operacoesPorMesPorCategoria) {
+      try {
+        const result = chartData.operacoesPorMesPorCategoria(selectedCategory);
+        return result && Array.isArray(result) && result.length > 0 ? result : chartData.operacoesPorMes;
+      } catch (error) {
+        console.warn('Erro ao filtrar por categoria:', error);
+        return chartData.operacoesPorMes;
+      }
+    }
+    
+    return chartData.operacoesPorMes;
+  }, [chartData, selectedCategory]);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -304,7 +325,7 @@ export default function Dashboard() {
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CombinedBarLineChartWithFilter 
-                    data={chartData.operacoesPorMes || []}
+                    data={filteredChartData}
                     endDate={defaultEndDate}
                     comparisonEndDate={defaultComparisonEndDate}
                     categories={chartData.categories || []}
@@ -488,7 +509,7 @@ export default function Dashboard() {
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CombinedBarLineChartWithFilter 
-                    data={chartData.operacoesPorMes || []}
+                    data={filteredChartData}
                     endDate={defaultEndDate}
                     comparisonEndDate={defaultComparisonEndDate}
                     categories={chartData.categories || []}

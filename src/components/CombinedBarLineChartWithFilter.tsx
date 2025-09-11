@@ -52,41 +52,6 @@ export function CombinedBarLineChartWithFilter({
   onCategoryChange, 
   selectedCategory 
 }: CombinedBarLineChartWithFilterProps) {
-  // Verificação de segurança para dados
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-        <div className="text-center">
-          <p>Nenhum dado disponível para exibir o gráfico</p>
-          <p className="text-sm mt-1">Verifique a conexão com o Google Sheets</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Processamento dos dados com filtro de categoria
-  const processedData = React.useMemo(() => {
-    if (!data || data.length === 0) return [];
-    
-    // Se categoria é "Todas", mostra todos os dados
-    if (selectedCategory === 'Todas') {
-      return data.map((item) => ({
-        mes: item.mes || '',
-        acumulado2024: item.acumulado2024 || 0,
-        acumulado2025: item.acumulado2025 || 0,
-      }));
-    }
-
-    // Para categoria específica, precisamos fazer o filtro aqui
-    // Por enquanto, retornamos os dados originais até implementarmos filtro
-    return data.map((item) => ({
-      mes: item.mes || '',
-      acumulado2024: item.acumulado2024 || 0,
-      acumulado2025: item.acumulado2025 || 0,
-    }));
-  }, [data, selectedCategory]);
-
-
   return (
     <div className="w-full h-full space-y-4">
       {/* Category Selector */}
@@ -111,49 +76,49 @@ export function CombinedBarLineChartWithFilter({
       
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={processedData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="hsl(var(--border))" 
-            opacity={0.3}
-          />
-          <XAxis 
-            dataKey="mes" 
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-          />
-          <YAxis 
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="acumulado2024" 
-            stroke="hsl(var(--muted-foreground))" 
-            strokeWidth={2}
-            name="Acumulado 2024"
-            strokeDasharray="5 5"
-            dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
-          />
-          <Line 
-            type="monotone" 
-            dataKey="acumulado2025" 
-            stroke="hsl(var(--primary))" 
-            strokeWidth={2}
-            name="Acumulado 2025"
-            dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
-          />
-        </LineChart>
+          <LineChart
+            data={data}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="hsl(var(--border))" 
+              opacity={0.3}
+            />
+            <XAxis 
+              dataKey="mes" 
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+            />
+            <YAxis 
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line 
+              type="monotone" 
+              dataKey="acumulado2024" 
+              stroke="hsl(var(--muted-foreground))" 
+              strokeWidth={2}
+              name="Acumulado 2024"
+              strokeDasharray="5 5"
+              dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="acumulado2025" 
+              stroke="hsl(var(--primary))" 
+              strokeWidth={2}
+              name="Acumulado 2025"
+              dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
