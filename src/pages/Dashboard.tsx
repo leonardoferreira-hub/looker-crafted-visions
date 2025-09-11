@@ -6,6 +6,7 @@ import { ChartCard } from "@/components/ChartCard";
 import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
 import { CombinedBarLineChartWithFilter } from '@/components/CombinedBarLineChartWithFilter';
+import { SimpleLineChartWithFilter } from '@/components/SimpleLineChartWithFilter';
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
@@ -40,25 +41,6 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
-  // Filtrar dados por categoria usando a mesma lógica original
-  const filteredChartData = React.useMemo(() => {
-    if (!chartData.operacoesPorMes || selectedCategory === 'Todas') {
-      return chartData.operacoesPorMes || [];
-    }
-    
-    // Se há função de filtro por categoria, usa ela
-    if (chartData.operacoesPorMesPorCategoria) {
-      try {
-        const result = chartData.operacoesPorMesPorCategoria(selectedCategory);
-        return result && Array.isArray(result) && result.length > 0 ? result : chartData.operacoesPorMes;
-      } catch (error) {
-        console.warn('Erro ao filtrar por categoria:', error);
-        return chartData.operacoesPorMes;
-      }
-    }
-    
-    return chartData.operacoesPorMes;
-  }, [chartData, selectedCategory]);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -324,10 +306,8 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
-                  <CombinedBarLineChartWithFilter 
-                    data={filteredChartData}
-                    endDate={defaultEndDate}
-                    comparisonEndDate={defaultComparisonEndDate}
+                  <SimpleLineChartWithFilter 
+                    data={chartData.operacoesPorMes || []}
                     categories={chartData.categories || []}
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
@@ -508,10 +488,8 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
-                  <CombinedBarLineChartWithFilter 
-                    data={filteredChartData}
-                    endDate={defaultEndDate}
-                    comparisonEndDate={defaultComparisonEndDate}
+                  <SimpleLineChartWithFilter 
+                    data={chartData.operacoesPorMes || []}
                     categories={chartData.categories || []}
                     selectedCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
