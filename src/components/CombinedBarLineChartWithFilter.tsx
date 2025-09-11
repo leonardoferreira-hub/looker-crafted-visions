@@ -52,18 +52,8 @@ export function CombinedBarLineChartWithFilter({
   onCategoryChange, 
   selectedCategory 
 }: CombinedBarLineChartWithFilterProps) {
-  // Debug para verificar dados recebidos
-  console.log('🔍 CombinedBarLineChartWithFilter dados:', {
-    data,
-    dataLength: data?.length,
-    firstItem: data?.[0],
-    categories,
-    selectedCategory
-  });
-
   // Verificação de segurança para dados
   if (!data || !Array.isArray(data) || data.length === 0) {
-    console.warn('❌ Dados inválidos ou vazios:', data);
     return (
       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
         <div className="text-center">
@@ -83,11 +73,31 @@ export function CombinedBarLineChartWithFilter({
     };
   });
 
-  console.log('✅ Dados processados:', processedData);
 
   return (
-    <div className="w-full h-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full h-full space-y-4">
+      {/* Category Selector */}
+      <div className="flex items-center space-x-2">
+        <Label htmlFor="category-select" className="text-sm font-medium">
+          Categoria:
+        </Label>
+        <Select value={selectedCategory} onValueChange={onCategoryChange}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Selecione uma categoria" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Todas">Todas as categorias</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={processedData}
           margin={{
@@ -131,7 +141,8 @@ export function CombinedBarLineChartWithFilter({
             dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
           />
         </LineChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
