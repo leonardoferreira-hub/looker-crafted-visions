@@ -14,6 +14,7 @@ import { DateFilter } from "@/components/DateFilter";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -329,19 +330,20 @@ export default function Dashboard() {
                 <div className="h-[250px] sm:h-[350px]">
                   <div className="w-full h-full flex flex-col">
                     <div className="flex items-center space-x-2 mb-4">
-                      <label className="text-sm font-medium">Categoria:</label>
-                      <select 
-                        value={selectedCategory} 
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="px-3 py-1 border rounded-md"
-                      >
-                        <option value="Todas">Todas as categorias</option>
-                        {(chartData.categories || []).map((category) => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                      </select>
+                      <label className="text-sm font-medium text-foreground">Categoria:</label>
+                      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                        <SelectTrigger className="w-48 bg-background border-border text-foreground">
+                          <SelectValue placeholder="Selecione uma categoria" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border-border">
+                          <SelectItem value="Todas" className="text-foreground hover:bg-accent">Todas as categorias</SelectItem>
+                          {(chartData.categories || []).map((category) => (
+                            <SelectItem key={category} value={category} className="text-foreground hover:bg-accent">
+                              {category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="flex-1">
                       <ResponsiveContainer width="100%" height="100%">
@@ -561,19 +563,20 @@ export default function Dashboard() {
                 <div className="h-[250px] sm:h-[350px]">
                   <div className="w-full h-full flex flex-col">
                     <div className="flex items-center space-x-2 mb-4">
-                      <label className="text-sm font-medium">Categoria:</label>
-                      <select 
-                        value={selectedCategory} 
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="px-3 py-1 border rounded-md"
-                      >
-                        <option value="Todas">Todas as categorias</option>
-                        {(chartData.categories || []).map((category) => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                      </select>
+                      <label className="text-sm font-medium text-foreground">Categoria:</label>
+                      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                        <SelectTrigger className="w-48 bg-background border-border text-foreground">
+                          <SelectValue placeholder="Selecione uma categoria" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border-border">
+                          <SelectItem value="Todas" className="text-foreground hover:bg-accent">Todas as categorias</SelectItem>
+                          {(chartData.categories || []).map((category) => (
+                            <SelectItem key={category} value={category} className="text-foreground hover:bg-accent">
+                              {category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="flex-1">
                       <ResponsiveContainer width="100%" height="100%">
