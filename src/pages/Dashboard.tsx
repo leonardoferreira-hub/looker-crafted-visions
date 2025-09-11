@@ -5,6 +5,7 @@ import { OperationsCard } from "@/components/OperationsCard";
 import { ChartCard } from "@/components/ChartCard";
 import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { CombinedBarLineChartWithFilter } from '@/components/CombinedBarLineChartWithFilter';
 import { SimpleLineChartWithFilter } from '@/components/SimpleLineChartWithFilter';
 import { ConnectionStatus } from "@/components/ConnectionStatus";
@@ -40,6 +41,26 @@ export default function Dashboard() {
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
 
   const navigate = useNavigate();
+
+  // Filtrar dados por categoria
+  const filteredChartData = React.useMemo(() => {
+    if (!chartData.operacoesPorMes || selectedCategory === 'Todas') {
+      return chartData.operacoesPorMes || [];
+    }
+    
+    // Se há função de filtro por categoria, usa ela
+    if (chartData.operacoesPorMesPorCategoria) {
+      try {
+        const result = chartData.operacoesPorMesPorCategoria(selectedCategory);
+        return result && Array.isArray(result) && result.length > 0 ? result : chartData.operacoesPorMes;
+      } catch (error) {
+        console.warn('Erro ao filtrar por categoria:', error);
+        return chartData.operacoesPorMes;
+      }
+    }
+    
+    return chartData.operacoesPorMes;
+  }, [chartData, selectedCategory]);
 
 
   useEffect(() => {
@@ -323,11 +344,43 @@ export default function Dashboard() {
                       </select>
                     </div>
                     <div className="flex-1">
-                      <CustomLineChart 
-                        data={chartData.operacoesPorMes || []}
-                        xKey="mes"
-                        yKey="acumulado2025"
-                      />
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={filteredChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
+                          <XAxis 
+                            dataKey="mes" 
+                            stroke="hsl(var(--muted-foreground))" 
+                            fontSize={12}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <YAxis 
+                            stroke="hsl(var(--muted-foreground))" 
+                            fontSize={12}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <Tooltip />
+                          <Legend />
+                          <Line 
+                            type="monotone" 
+                            dataKey="acumulado2024" 
+                            stroke="hsl(var(--muted-foreground))" 
+                            strokeWidth={2}
+                            name="Acumulado 2024"
+                            strokeDasharray="5 5"
+                            dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="acumulado2025" 
+                            stroke="hsl(var(--primary))" 
+                            strokeWidth={2}
+                            name="Acumulado 2025"
+                            dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
                 </div>
@@ -523,11 +576,43 @@ export default function Dashboard() {
                       </select>
                     </div>
                     <div className="flex-1">
-                      <CustomLineChart 
-                        data={chartData.operacoesPorMes || []}
-                        xKey="mes"
-                        yKey="acumulado2025"
-                      />
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={filteredChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
+                          <XAxis 
+                            dataKey="mes" 
+                            stroke="hsl(var(--muted-foreground))" 
+                            fontSize={12}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <YAxis 
+                            stroke="hsl(var(--muted-foreground))" 
+                            fontSize={12}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <Tooltip />
+                          <Legend />
+                          <Line 
+                            type="monotone" 
+                            dataKey="acumulado2024" 
+                            stroke="hsl(var(--muted-foreground))" 
+                            strokeWidth={2}
+                            name="Acumulado 2024"
+                            strokeDasharray="5 5"
+                            dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="acumulado2025" 
+                            stroke="hsl(var(--primary))" 
+                            strokeWidth={2}
+                            name="Acumulado 2025"
+                            dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
                 </div>
