@@ -52,6 +52,18 @@ export function CombinedBarLineChartWithFilter({
   onCategoryChange, 
   selectedCategory 
 }: CombinedBarLineChartWithFilterProps) {
+  // Verificação de segurança para dados
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+        <div className="text-center">
+          <p>Nenhum dado disponível para exibir o gráfico</p>
+          <p className="text-sm mt-1">Verifique a conexão com o Google Sheets</p>
+        </div>
+      </div>
+    );
+  }
+
   const filteredData = data.map((item) => {
     let filtered2024 = item.acumulado2024;
     let filtered2025 = item.acumulado2025;

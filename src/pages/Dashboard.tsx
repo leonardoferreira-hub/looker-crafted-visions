@@ -52,8 +52,22 @@ export default function Dashboard() {
 
   // Processa dados por categoria dinamicamente
   const chartDataWithCategory = React.useMemo(() => {
-    if (!chartData.operacoesPorMesPorCategoria) return chartData.operacoesPorMes;
-    return chartData.operacoesPorMesPorCategoria(selectedCategory);
+    if (!chartData.operacoesPorMesPorCategoria || !chartData.operacoesPorMes) {
+      return chartData.operacoesPorMes || [];
+    }
+    
+    try {
+      const result = chartData.operacoesPorMesPorCategoria(selectedCategory);
+      // Verifica se o resultado é válido e tem dados
+      if (result && Array.isArray(result) && result.length > 0) {
+        return result;
+      }
+    } catch (error) {
+      console.warn('Erro ao filtrar dados por categoria:', error);
+    }
+    
+    // Fallback para dados sem filtro de categoria
+    return chartData.operacoesPorMes || [];
   }, [chartData, selectedCategory]);
 
   if (authLoading) {
