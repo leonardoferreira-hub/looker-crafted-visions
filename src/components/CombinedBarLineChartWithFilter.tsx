@@ -52,8 +52,18 @@ export function CombinedBarLineChartWithFilter({
   onCategoryChange, 
   selectedCategory 
 }: CombinedBarLineChartWithFilterProps) {
+  // Debug para verificar dados recebidos
+  console.log('🔍 CombinedBarLineChartWithFilter dados:', {
+    data,
+    dataLength: data?.length,
+    firstItem: data?.[0],
+    categories,
+    selectedCategory
+  });
+
   // Verificação de segurança para dados
   if (!data || !Array.isArray(data) || data.length === 0) {
+    console.warn('❌ Dados inválidos ou vazios:', data);
     return (
       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
         <div className="text-center">
@@ -64,57 +74,22 @@ export function CombinedBarLineChartWithFilter({
     );
   }
 
-  const filteredData = data.map((item) => {
-    let filtered2024 = item.acumulado2024;
-    let filtered2025 = item.acumulado2025;
-    
-    if (endDate) {
-      const currentMonth = endDate.getMonth();
-      const itemMonth = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'].indexOf(item.mes);
-      if (itemMonth > currentMonth) {
-        filtered2025 = 0;
-      }
-    }
-    
-    if (comparisonEndDate) {
-      const comparisonMonth = comparisonEndDate.getMonth();
-      const itemMonth = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'].indexOf(item.mes);
-      if (itemMonth > comparisonMonth) {
-        filtered2024 = 0;
-      }
-    }
-    
+  // Processamento simples dos dados (sem filtro por enquanto)
+  const processedData = data.map((item) => {
     return {
-      ...item,
-      acumulado2024: filtered2024,
-      acumulado2025: filtered2025,
+      mes: item.mes || '',
+      acumulado2024: item.acumulado2024 || 0,
+      acumulado2025: item.acumulado2025 || 0,
     };
   });
 
+  console.log('✅ Dados processados:', processedData);
+
   return (
-    <div className="w-full space-y-4">
-      <div className="flex items-center space-x-2">
-        <Label htmlFor="category-select" className="text-sm font-medium">
-          Categoria:
-        </Label>
-        <Select value={selectedCategory} onValueChange={onCategoryChange}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Selecione uma categoria" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Todas">Todas as categorias</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
+    <div className="w-full h-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={filteredData}
+          data={processedData}
           margin={{
             top: 20,
             right: 30,

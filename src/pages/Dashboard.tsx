@@ -323,7 +323,7 @@ export default function Dashboard() {
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CombinedBarLineChartWithFilter 
-                    data={chartDataWithCategory}
+                    data={chartData.operacoesPorMes || []}
                     endDate={defaultEndDate}
                     comparisonEndDate={defaultComparisonEndDate}
                     categories={chartData.categories || []}
@@ -507,7 +507,7 @@ export default function Dashboard() {
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CombinedBarLineChartWithFilter 
-                    data={chartDataWithCategory}
+                    data={chartData.operacoesPorMes || []}
                     endDate={defaultEndDate}
                     comparisonEndDate={defaultComparisonEndDate}
                     categories={chartData.categories || []}
