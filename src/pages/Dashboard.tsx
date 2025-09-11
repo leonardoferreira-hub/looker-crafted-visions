@@ -432,39 +432,37 @@ export default function Dashboard() {
             {/* Liquidadas KPIs */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                <KPICard
-                  title="Operações Liquidadas"
-                  leftValue={kpis.operacoesLiquidadas.toString()}
-                  leftLabel="Operações"
-                  rightValue={`${kpis.volumeLiquidado} bi`}
-                  rightLabel="Volume"
-                  variant="primary"
-                  change={kpis.operacoesLiquidadasChange}
-                  tooltipInfo={{
-                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                    comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                    currentValue: `${kpis.operacoesLiquidadas} operações liquidadas`,
-                    comparisonValue: `${kpis.lastYearOperacoes || 0} operações no mesmo período de 2024`,
-                    calculation: "Total de operações já liquidadas no período atual comparado com o mesmo período do ano anterior"
-                  }}
-                />
-                <KPICard
-                  title="Fee Liquidado"
-                  value={`${kpis.feeLiquidado} mi`}
-                  leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                  leftLabel="Fee Colocação"
-                  rightValue={kpis.feeLiquidado}
-                  rightLabel="Fee Liquidado"
-                  variant="success"
-                  change={kpis.feeLiquidadoChange}
-                  requiresAdminAccess={true}
-                  tooltipInfo={{
-                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                    comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                    currentValue: `R$ ${kpis.feeLiquidado} milhões liquidado`,
-                    comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões no mesmo período de 2024`,
-                    calculation: "Total de fees de estruturação liquidados no período atual comparado com o mesmo período do ano anterior"
-                  }}
-                />
+                   title="Operações Liquidadas"
+                   leftValue={kpis.operacoesLiquidadas.toString()}
+                   leftLabel="Operações"
+                   rightValue={`${kpis.volumeLiquidado} bi`}
+                   rightLabel="Volume"
+                   variant="primary"
+                   tooltipInfo={{
+                     currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                     comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                     currentValue: `${kpis.operacoesLiquidadas} operações liquidadas`,
+                     comparisonValue: `${kpis.lastYearOperacoes || 0} operações no mesmo período de 2024`,
+                     calculation: "Total de operações já liquidadas no período atual comparado com o mesmo período do ano anterior"
+                   }}
+                 />
+                 <KPICard
+                   title="Fee Liquidado"
+                   value={`${kpis.feeLiquidado} mi`}
+                   leftValue={`${Math.round(kpis.feeColocacaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                   leftLabel="Fee Colocação"
+                   rightValue={kpis.feeLiquidado}
+                   rightLabel="Fee Liquidado"
+                   variant="success"
+                   requiresAdminAccess={true}
+                   tooltipInfo={{
+                     currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                     comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                     currentValue: `R$ ${kpis.feeLiquidado} milhões liquidado`,
+                     comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões no mesmo período de 2024`,
+                     calculation: "Total de fees de estruturação liquidados no período atual comparado com o mesmo período do ano anterior"
+                   }}
+                 />
               <KPICard
                 title="Fee de Gestão"
                 value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
