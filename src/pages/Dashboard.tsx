@@ -337,31 +337,52 @@ export default function Dashboard() {
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <KPICard
-                title="Operações em Estruturação"
-                leftValue={kpis.operacoesEstruturacao.toString()}
-                leftLabel="Operações"
-                rightValue={`${kpis.volumeEstruturacao} bi`}
-                rightLabel="Volume"
-                variant="primary"
-              />
-              <KPICard
-                title="Fee Estruturação"
-                value={`${kpis.feeEstruturacao} mi`}
-                leftValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                leftLabel="Fee Colocação"
-                rightValue={kpis.feeEstruturacao}
-                rightLabel="Fee Estruturação"
-                variant="success"
-                requiresAdminAccess={true}
-              />
-              <KPICard
-                title="Fee de Gestão"
-                value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                variant="warning"
-                requiresAdminAccess={true}
-              />
+               <KPICard
+                 title="Operações em Estruturação"
+                 leftValue={kpis.operacoesEstruturacao.toString()}
+                 leftLabel="Operações"
+                 rightValue={`${kpis.volumeEstruturacao} bi`}
+                 rightLabel="Volume"
+                 variant="primary"
+                 tooltipInfo={{
+                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: "Dados atuais em estruturação",
+                   currentValue: `${kpis.operacoesEstruturacao} operações em estruturação`,
+                   comparisonValue: `Volume total: R$ ${kpis.volumeEstruturacao} bilhões`,
+                   calculation: "Operações e volume total das estruturações em andamento no pipeline atual"
+                 }}
+               />
+               <KPICard
+                 title="Fee Estruturação"
+                 value={`${kpis.feeEstruturacao} mi`}
+                 leftValue={`${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                 leftLabel="Fee Colocação"
+                 rightValue={kpis.feeEstruturacao}
+                 rightLabel="Fee Estruturação"
+                 variant="success"
+                 requiresAdminAccess={true}
+                 tooltipInfo={{
+                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: "Fees projetados em estruturação",
+                   currentValue: `R$ ${kpis.feeEstruturacao} milhões em estruturação`,
+                   comparisonValue: `Fee colocação: R$ ${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')} mil`,
+                   calculation: "Soma dos fees de estruturação e colocação projetados para as operações em pipeline"
+                 }}
+               />
+               <KPICard
+                 title="Fee de Gestão"
+                 value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
+                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                 variant="warning"
+                 requiresAdminAccess={true}
+                 tooltipInfo={{
+                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: "Fees de gestão projetados",
+                   currentValue: `R$ ${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')} mil em estruturação`,
+                   comparisonValue: `Fee médio 2025: ${kpis.feeMedio2025}`,
+                   calculation: "Fees de gestão projetados para as operações em estruturação, baseados no fee médio de 2025"
+                 }}
+               />
             </div>
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
