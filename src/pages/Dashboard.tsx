@@ -306,12 +306,30 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
-                  <SimpleLineChartWithFilter 
-                    data={chartData.operacoesPorMes || []}
-                    categories={chartData.categories || []}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                  />
+                  <div className="w-full h-full flex flex-col">
+                    <div className="flex items-center space-x-2 mb-4">
+                      <label className="text-sm font-medium">Categoria:</label>
+                      <select 
+                        value={selectedCategory} 
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="px-3 py-1 border rounded-md"
+                      >
+                        <option value="Todas">Todas as categorias</option>
+                        {(chartData.categories || []).map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex-1">
+                      <CustomLineChart 
+                        data={chartData.operacoesPorMes || []}
+                        xKey="mes"
+                        yKey="acumulado2025"
+                      />
+                    </div>
+                  </div>
                 </div>
               </ChartCard>
               
@@ -488,12 +506,30 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
-                  <SimpleLineChartWithFilter 
-                    data={chartData.operacoesPorMes || []}
-                    categories={chartData.categories || []}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                  />
+                  <div className="w-full h-full flex flex-col">
+                    <div className="flex items-center space-x-2 mb-4">
+                      <label className="text-sm font-medium">Categoria:</label>
+                      <select 
+                        value={selectedCategory} 
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="px-3 py-1 border rounded-md"
+                      >
+                        <option value="Todas">Todas as categorias</option>
+                        {(chartData.categories || []).map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex-1">
+                      <CustomLineChart 
+                        data={chartData.operacoesPorMes || []}
+                        xKey="mes"
+                        yKey="acumulado2025"
+                      />
+                    </div>
+                  </div>
                 </div>
               </ChartCard>
               

@@ -49,9 +49,9 @@ export function SimpleLineChartWithFilter({
   onCategoryChange 
 }: SimpleLineChartWithFilterProps) {
   return (
-    <div className="w-full h-full space-y-4">
+    <div className="w-full h-full flex flex-col">
       {/* Category Selector */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 mb-4">
         <Label htmlFor="category-select" className="text-sm font-medium">
           Categoria:
         </Label>
@@ -71,7 +71,7 @@ export function SimpleLineChartWithFilter({
       </div>
       
       {/* Chart */}
-      <div className="flex-1">
+      <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
