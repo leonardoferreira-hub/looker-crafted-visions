@@ -748,11 +748,18 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     };
   });
 
+  // Extrai categorias únicas dos dados históricos
+  const categories = extractUniqueCategories(liquidadas);
+  
   // Processa dados para gráficos usando dados filtrados por ano
   const graphData = {
     operacoesPorMes: chartData ? processMonthlyDataWithYears(chartData.filtered2024, chartData.filtered2025, estruturacao) : processMonthlyData(liquidadas, estruturacao),
+    operacoesPorMesPorCategoria: chartData ? 
+      (category: string) => processMonthlyDataWithYearsByCategory(chartData.filtered2024, chartData.filtered2025, category) :
+      (category: string) => processMonthlyDataByCategory(liquidadas, category),
     categorias: processCategoryData([...liquidadas, ...estruturacao]),
-    lastros: processLastroData(estruturacao)
+    lastros: processLastroData(estruturacao),
+    categories
   };
 
   return {
@@ -1076,6 +1083,165 @@ function processCategoryData(data: SheetData[]) {
     value: Math.round((count / data.length) * 100),
     count
   }));
+}
+
+function extractUniqueCategories(data: SheetData[]): string[] {
+  console.log('🏷️ extractUniqueCategories chamada com:', data.length, 'itens');
+  
+  const categories = new Set<string>();
+  
+  data.forEach(row => {
+    const categoria = String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || '').trim();
+    if (categoria && categoria !== '' && categoria !== 'null' && categoria !== 'undefined') {
+      categories.add(categoria);
+    }
+  });
+  
+  const uniqueCategories = Array.from(categories).sort();
+  console.log('Categorias únicas encontradas:', uniqueCategories);
+  
+  return uniqueCategories;
+}
+
+function processMonthlyDataWithYearsByCategory(filtered2024: SheetData[], filtered2025: SheetData[], selectedCategory: string) {
+  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  
+  console.log('=== DEBUG PROCESSMONTHLYDATA WITH YEARS BY CATEGORY ===');
+  console.log('Dados 2024 recebidos:', filtered2024.length);
+  console.log('Dados 2025 recebidos:', filtered2025.length);
+  console.log('Categoria selecionada:', selectedCategory);
+  
+  // Filtra por categoria se não for "Todas"
+  const filterByCategory = (data: SheetData[]) => {
+    if (selectedCategory === 'Todas') return data;
+    return data.filter(row => {
+      const categoria = String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || '').trim();
+      return categoria === selectedCategory;
+    });
+  };
+  
+  const categoryFiltered2024 = filterByCategory(filtered2024);
+  const categoryFiltered2025 = filterByCategory(filtered2025);
+  
+  console.log('Dados 2024 após filtro categoria:', categoryFiltered2024.length);
+  console.log('Dados 2025 após filtro categoria:', categoryFiltered2025.length);
+  
+  // Calcula dados mensais para cada ano
+  const monthlyData2024 = months.map((mes, index) => {
+    return categoryFiltered2024.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    }).length;
+  });
+
+  const monthlyData2025 = months.map((mes, index) => {
+    return categoryFiltered2025.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    }).length;
+  });
+
+  // Converte para soma acumulada (running total)
+  let acumulado2024 = 0;
+  let acumulado2025 = 0;
+  
+  const result = months.map((mes, index) => {
+    acumulado2024 += monthlyData2024[index];
+    acumulado2025 += monthlyData2025[index];
+    
+    return {
+      mes,
+      acumulado2024,
+      acumulado2025,
+      estruturacoes: 0
+    };
+  });
+  
+  console.log('=== DADOS ACUMULADOS FINAIS BY CATEGORY ===');
+  console.log('2024 final:', acumulado2024);
+  console.log('2025 final:', acumulado2025);
+  
+  return result;
+}
+
+function processMonthlyDataByCategory(liquidadas: SheetData[], selectedCategory: string) {
+  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  
+  console.log('=== DEBUG PROCESSMONTHLYDATA BY CATEGORY ===');
+  console.log('Total dados históricos recebidos:', liquidadas.length);
+  console.log('Categoria selecionada:', selectedCategory);
+  
+  // Filtra por categoria se não for "Todas"
+  const filterByCategory = (data: SheetData[]) => {
+    if (selectedCategory === 'Todas') return data;
+    return data.filter(row => {
+      const categoria = String(getCellValue(row, SHEETS_COLUMNS.HISTORICO.CATEGORIA) || '').trim();
+      return categoria === selectedCategory;
+    });
+  };
+  
+  const categoryFilteredData = filterByCategory(liquidadas);
+  console.log('Dados após filtro categoria:', categoryFilteredData.length);
+  
+  // Separar por ano
+  const data2024: SheetData[] = [];
+  const data2025: SheetData[] = [];
+  
+  categoryFilteredData.forEach(row => {
+    if (!isValidHistoricoRow(row)) return;
+    
+    const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+    if (!dataLiquidacao) return;
+    
+    const date = parseDate(dataLiquidacao);
+    if (!date) return;
+    
+    if (date.getFullYear() === 2024) data2024.push(row);
+    else if (date.getFullYear() === 2025) data2025.push(row);
+  });
+  
+  // Processa mensalmente
+  const monthlyData2024 = months.map((mes, index) => {
+    return data2024.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      const date = parseDate(dataLiquidacao);
+      return date && date.getMonth() === index;
+    }).length;
+  });
+
+  const monthlyData2025 = months.map((mes, index) => {
+    return data2025.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      const date = parseDate(dataLiquidacao);
+      return date && date.getMonth() === index;
+    }).length;
+  });
+
+  // Converte para soma acumulada
+  let acumulado2024 = 0;
+  let acumulado2025 = 0;
+  
+  return months.map((mes, index) => {
+    acumulado2024 += monthlyData2024[index];
+    acumulado2025 += monthlyData2025[index];
+    
+    return {
+      mes,
+      acumulado2024,
+      acumulado2025,
+      estruturacoes: 0
+    };
+  });
 }
 
 function processLastroData(data: SheetData[]) {

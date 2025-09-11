@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { KPICard } from "@/components/KPICard";
 import { OperationsCard } from "@/components/OperationsCard";
 import { ChartCard } from "@/components/ChartCard";
 import { DataTable } from "@/components/DataTable";
 import { CustomPieChart, CustomLineChart } from "@/components/CustomCharts";
-import { CombinedBarLineChart } from "@/components/CombinedBarLineChart";
+import { CombinedBarLineChartWithFilter } from '@/components/CombinedBarLineChartWithFilter';
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
@@ -30,6 +30,7 @@ import {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("resumo");
+  const [selectedCategory, setSelectedCategory] = useState<string>('Todas');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [comparisonStartDate, setComparisonStartDate] = useState<Date | null>(null);
@@ -48,6 +49,12 @@ export default function Dashboard() {
     await signOut();
     navigate('/auth');
   };
+
+  // Processa dados por categoria dinamicamente
+  const chartDataWithCategory = React.useMemo(() => {
+    if (!chartData.operacoesPorMesPorCategoria) return chartData.operacoesPorMes;
+    return chartData.operacoesPorMesPorCategoria(selectedCategory);
+  }, [chartData, selectedCategory]);
 
   if (authLoading) {
     return (
@@ -301,10 +308,13 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
-                  <CombinedBarLineChart 
-                    data={chartData.operacoesPorMes}
+                  <CombinedBarLineChartWithFilter 
+                    data={chartDataWithCategory}
                     endDate={defaultEndDate}
                     comparisonEndDate={defaultComparisonEndDate}
+                    categories={chartData.categories || []}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
                   />
                 </div>
               </ChartCard>
