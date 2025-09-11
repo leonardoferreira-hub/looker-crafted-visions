@@ -490,12 +490,15 @@ export default function Dashboard() {
             </div>
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-              <ChartCard title="Volume liquidado por mês" className="min-h-[300px] sm:min-h-[400px]">
+              <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
-                  <CustomLineChart 
-                    data={chartData.operacoesPorMes}
-                    xKey="mes"
-                    yKey="acumulado2025"
+                  <CombinedBarLineChartWithFilter 
+                    data={chartDataWithCategory}
+                    endDate={defaultEndDate}
+                    comparisonEndDate={defaultComparisonEndDate}
+                    categories={chartData.categories || []}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
                   />
                 </div>
               </ChartCard>
