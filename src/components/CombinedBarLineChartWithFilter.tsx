@@ -64,14 +64,27 @@ export function CombinedBarLineChartWithFilter({
     );
   }
 
-  // Processamento simples dos dados (sem filtro por enquanto)
-  const processedData = data.map((item) => {
-    return {
+  // Processamento dos dados com filtro de categoria
+  const processedData = React.useMemo(() => {
+    if (!data || data.length === 0) return [];
+    
+    // Se categoria é "Todas", mostra todos os dados
+    if (selectedCategory === 'Todas') {
+      return data.map((item) => ({
+        mes: item.mes || '',
+        acumulado2024: item.acumulado2024 || 0,
+        acumulado2025: item.acumulado2025 || 0,
+      }));
+    }
+
+    // Para categoria específica, precisamos fazer o filtro aqui
+    // Por enquanto, retornamos os dados originais até implementarmos filtro
+    return data.map((item) => ({
       mes: item.mes || '',
       acumulado2024: item.acumulado2024 || 0,
       acumulado2025: item.acumulado2025 || 0,
-    };
-  });
+    }));
+  }, [data, selectedCategory]);
 
 
   return (

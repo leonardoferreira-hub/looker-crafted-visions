@@ -50,34 +50,6 @@ export default function Dashboard() {
     navigate('/auth');
   };
 
-  // Processa dados por categoria dinamicamente
-  const chartDataWithCategory = React.useMemo(() => {
-    // Se não há dados básicos, retorna array vazio
-    if (!chartData.operacoesPorMes || chartData.operacoesPorMes.length === 0) {
-      return [];
-    }
-    
-    // Se categoria é "Todas" ou não há função de filtro, usa dados originais
-    if (selectedCategory === 'Todas' || !chartData.operacoesPorMesPorCategoria) {
-      return chartData.operacoesPorMes;
-    }
-    
-    try {
-      const result = chartData.operacoesPorMesPorCategoria(selectedCategory);
-      
-      // Verifica se o resultado é válido e tem dados
-      if (result && Array.isArray(result) && result.length > 0) {
-        return result;
-      } else {
-        // Se filtro retornou dados vazios, usa dados originais
-        return chartData.operacoesPorMes;
-      }
-    } catch (error) {
-      console.warn('Erro ao filtrar dados por categoria:', error);
-      // Fallback para dados sem filtro de categoria
-      return chartData.operacoesPorMes;
-    }
-  }, [chartData, selectedCategory]);
 
   if (authLoading) {
     return (
@@ -332,7 +304,7 @@ export default function Dashboard() {
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CombinedBarLineChartWithFilter 
-                    data={chartDataWithCategory}
+                    data={chartData.operacoesPorMes || []}
                     endDate={defaultEndDate}
                     comparisonEndDate={defaultComparisonEndDate}
                     categories={chartData.categories || []}
@@ -516,7 +488,7 @@ export default function Dashboard() {
               <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CombinedBarLineChartWithFilter 
-                    data={chartDataWithCategory}
+                    data={chartData.operacoesPorMes || []}
                     endDate={defaultEndDate}
                     comparisonEndDate={defaultComparisonEndDate}
                     categories={chartData.categories || []}
