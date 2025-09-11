@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { KPICard } from "@/components/KPICard";
 import { OperationsCard } from "@/components/OperationsCard";
@@ -51,7 +51,7 @@ export default function Dashboard() {
   };
 
   // Processa dados por categoria dinamicamente
-  const chartDataWithCategory = React.useMemo(() => {
+  const chartDataWithCategory = useMemo(() => {
     if (!chartData.operacoesPorMesPorCategoria) return chartData.operacoesPorMes;
     return chartData.operacoesPorMesPorCategoria(selectedCategory);
   }, [chartData, selectedCategory]);
@@ -306,19 +306,6 @@ export default function Dashboard() {
 
             {/* Charts Row */}
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-              <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
-                <div className="h-[250px] sm:h-[350px]">
-                  <CombinedBarLineChartWithFilter 
-                    data={chartDataWithCategory}
-                    endDate={defaultEndDate}
-                    comparisonEndDate={defaultComparisonEndDate}
-                    categories={chartData.categories || []}
-                    selectedCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                  />
-                </div>
-              </ChartCard>
-              
               <ChartCard title="Distribuição por categoria" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <CustomPieChart 
@@ -490,12 +477,15 @@ export default function Dashboard() {
             </div>
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-              <ChartCard title="Volume liquidado por mês" className="min-h-[300px] sm:min-h-[400px]">
+              <ChartCard title="Operações liquidadas por mês" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
-                  <CustomLineChart 
-                    data={chartData.operacoesPorMes}
-                    xKey="mes"
-                    yKey="acumulado2025"
+                  <CombinedBarLineChartWithFilter 
+                    data={chartDataWithCategory}
+                    endDate={defaultEndDate}
+                    comparisonEndDate={defaultComparisonEndDate}
+                    categories={chartData.categories || []}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
                   />
                 </div>
               </ChartCard>
