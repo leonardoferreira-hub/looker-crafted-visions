@@ -140,32 +140,28 @@ export default function Dashboard() {
     const currentMonth = new Date().getMonth(); // 0 = Janeiro, 8 = Setembro
     
     return filteredChartData.map((item, index) => {
-      // Realizado: janeiro até setembro (mês atual) + outubro para conexão
-      // Projetado: outubro em diante (mês seguinte)
-      const isRealizado = index <= currentMonth || index === currentMonth + 1; // 0-8 + 9 = Jan-Out
-      const isProjetado = index >= currentMonth + 1; // 9-11 = Out-Dez
+      // Realizado: janeiro até setembro (mês atual)
+      // Projetado: setembro em diante (ponto de conexão + projeções)
+      const isRealizado = index <= currentMonth; // 0-8 = Jan-Set
+      const isProjetado = index >= currentMonth; // 8-11 = Set-Dez (setembro é ponto de conexão)
       
-      // Linha realizada: vai até setembro + outubro para conexão
+      // Linha realizada: vai até setembro
       let realizedValue = null;
       if (isRealizado) {
-        if (index <= currentMonth) {
-          // Meses de janeiro a setembro: usar dados reais
-          realizedValue = item.acumulado2025 || 0;
-        } else if (index === currentMonth + 1) {
-          // Outubro: usar valor de setembro para conexão
-          const setembroValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
-          realizedValue = setembroValue;
-        }
+        // Meses de janeiro a setembro: usar dados reais
+        realizedValue = item.acumulado2025 || 0;
       }
       
-      // Linha projetada: outubro em diante
+      // Linha projetada: setembro em diante (setembro = ponto de conexão)
       let projectedValue = null;
       if (isProjetado) {
         // Começar com o valor acumulado até setembro (mês atual)
         const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
         
-        // Deslocar projeções: mês de previsão -> aparece no mês seguinte
-        if (index === currentMonth + 1) {
+        if (index === currentMonth) {
+          // Setembro: ponto de conexão (mesmo valor da linha realizada)
+          projectedValue = baseValue;
+        } else if (index === currentMonth + 1) {
           // Outubro: valor de setembro + operações previstas para setembro (15)
           projectedValue = baseValue + (calculatePipeProjections[8] || 0); // setembro = índice 8
         } else if (index === currentMonth + 2) {
