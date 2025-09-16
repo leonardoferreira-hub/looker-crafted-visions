@@ -85,6 +85,12 @@ export default function Dashboard() {
     return ensureFullYear;
   }, [chartData, selectedCategory]);
 
+  // Helper function to get cell value (same as in useDashboardData)
+  const getCellValue = (row: any, columnIndex: number): any => {
+    const key = `col_${columnIndex}`;
+    return row && row[key] !== undefined ? row[key] : null;
+  };
+
   // Função para calcular projeções de liquidação baseadas no pipe por categoria
   const calculatePipeProjections = React.useMemo(() => {
     if (!rawPipeData || rawPipeData.length === 0) return {};
@@ -99,10 +105,10 @@ export default function Dashboard() {
     let liquidadas = 0;
     
     rawPipeData.forEach((row, index) => {
-      // Get previsao liquidacao from pipe data (column E = index 4)
-      const previsaoLiquidacao = row[`col_4`]; 
-      const categoria = String(row[`col_2`] || '').trim(); // CATEGORIA column (column C = index 2)
-      const operacao = String(row[`col_3`] || '').trim(); // OPERACAO column (column D = index 3)
+      // Use the same column mapping as useDashboardData.ts
+      const previsaoLiquidacao = getCellValue(row, 4); // PREVISAO_LIQUIDACAO column (E = index 4)
+      const categoria = String(getCellValue(row, 2) || '').trim(); // CATEGORIA column (C = index 2)
+      const operacao = String(getCellValue(row, 3) || '').trim(); // OPERACAO column (D = index 3)
       
       // Log TODAS as operações para debug
       console.log(`${index + 1}. "${operacao}" | Cat: "${categoria}" | Previsão: "${previsaoLiquidacao}"`);
