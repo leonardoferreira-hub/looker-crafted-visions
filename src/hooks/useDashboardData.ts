@@ -20,14 +20,14 @@ const SHEETS_COLUMNS = {
     VEICULO: 5,                // Coluna F (índice 5)
     EMISSAO: 6,                // Coluna G (índice 6)
     SERIES: 7,                 // Coluna H (índice 7)
-    ESTRUTURACAO: 8,           // Coluna I (índice 8)
-    GESTAO: 9,                 // Coluna J (índice 9)
-    ORIGINACAO: 10,            // Coluna K (índice 10)
-    VOLUME: 11,                // Coluna L (índice 11)
-    REMUNERACAO: 12,           // Coluna M (índice 12)
-    LASTRO: 13,                // Coluna N (índice 13)
-    TIPO_OPERACAO: 14,         // Coluna O (índice 14) - Tipo Operação
-    COMPLIANCE: 15,            // Coluna P (índice 15) - Compliance
+    COMPLIANCE: 8,             // Coluna I (índice 8) - Compliance
+    ESTRUTURACAO: 9,           // Coluna J (índice 9)
+    GESTAO: 10,                // Coluna K (índice 10)
+    ORIGINACAO: 11,            // Coluna L (índice 11)
+    VOLUME: 12,                // Coluna M (índice 12)
+    REMUNERACAO: 13,           // Coluna N (índice 13)
+    LASTRO: 14,                // Coluna O (índice 14)
+    TIPO_OPERACAO: 15,         // Coluna P (índice 15) - Tipo Operação
     BOLETAGEM: 16,             // Coluna Q (índice 16)
     BANCO: 17,                 // Coluna R (índice 17)
     AGENCIA: 18,               // Coluna S (índice 18)
@@ -60,14 +60,14 @@ const SHEETS_COLUMNS = {
     VEICULO: 5,                // Coluna F (índice 5)
     EMISSAO: 6,                // Coluna G (índice 6)
     SERIES: 7,                 // Coluna H (índice 7)
-    ESTRUTURACAO: 8,           // Coluna I (índice 8)
-    GESTAO: 9,                 // Coluna J (índice 9)
-    ORIGINACAO: 10,            // Coluna K (índice 10)
-    VOLUME: 11,                // Coluna L (índice 11)
-    REMUNERACAO: 12,           // Coluna M (índice 12)
-    LASTRO: 13,                // Coluna N (índice 13)
-    TIPO_OPERACAO: 14,         // Coluna O (índice 14) - Tipo Operação  
-    COMPLIANCE: 15,            // Coluna P (índice 15) - Compliance
+    COMPLIANCE: 8,             // Coluna I (índice 8) - Compliance
+    ESTRUTURACAO: 9,           // Coluna J (índice 9)
+    GESTAO: 10,                // Coluna K (índice 10)
+    ORIGINACAO: 11,            // Coluna L (índice 11)
+    VOLUME: 12,                // Coluna M (índice 12)
+    REMUNERACAO: 13,           // Coluna N (índice 13)
+    LASTRO: 14,                // Coluna O (índice 14)
+    TIPO_OPERACAO: 15,         // Coluna P (índice 15) - Tipo Operação  
     BOLETAGEM: 16,             // Coluna Q (índice 16)
     BANCO: 17,                 // Coluna R (índice 17)
     AGENCIA: 18,               // Coluna S (índice 18)
