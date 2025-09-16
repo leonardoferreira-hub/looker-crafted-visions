@@ -763,6 +763,13 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     operacoesPorMesPorCategoria: chartData ? 
       (category: string) => processMonthlyDataWithYearsByCategory(chartData.filtered2024, chartData.filtered2025, category) :
       (category: string) => processMonthlyDataByCategory(liquidadas, category),
+    feesPorMes: chartData ? processMonthlyFeeData(chartData.filtered2024, chartData.filtered2025) : processMonthlyFeeData(liquidadas.filter(row => {
+      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
+      return date && date.getFullYear() === 2024;
+    }), liquidadas.filter(row => {
+      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
+      return date && date.getFullYear() === 2025;
+    })),
     categorias: processCategoryData([...liquidadas, ...estruturacao]),
     lastros: processLastroData(estruturacao),
     categories
@@ -1271,6 +1278,87 @@ function processLastroData(data: SheetData[]) {
     name,
     value
   }));
+}
+
+function processMonthlyFeeData(filtered2024: SheetData[], filtered2025: SheetData[]) {
+  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  
+  console.log('=== DEBUG PROCESSMONTHLY FEE DATA ===');
+  console.log('Dados 2024 recebidos:', filtered2024.length);
+  console.log('Dados 2025 recebidos:', filtered2025.length);
+  
+  // Calcula fees mensais para cada ano
+  const monthlyFees2024 = months.map((mes, index) => {
+    const monthOperations = filtered2024.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    });
+    
+    // Calcula a soma dos fees de estruturação do mês
+    const monthlyFee = monthOperations.reduce((total, row) => {
+      const feeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+      if (!feeValue) return total;
+      
+      const numValue = typeof feeValue === 'number' ? feeValue : 
+                      parseFloat(String(feeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+      
+      return total + numValue;
+    }, 0);
+    
+    return monthlyFee / 1000000; // Converter para milhões
+  });
+
+  const monthlyFees2025 = months.map((mes, index) => {
+    const monthOperations = filtered2025.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    });
+    
+    // Calcula a soma dos fees de estruturação do mês
+    const monthlyFee = monthOperations.reduce((total, row) => {
+      const feeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+      if (!feeValue) return total;
+      
+      const numValue = typeof feeValue === 'number' ? feeValue : 
+                      parseFloat(String(feeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+      
+      return total + numValue;
+    }, 0);
+    
+    return monthlyFee / 1000000; // Converter para milhões
+  });
+
+  console.log('=== FEES MENSAIS 2024 ===');
+  monthlyFees2024.forEach((fee, index) => {
+    if (fee > 0) console.log(`${months[index]}/2024: R$ ${fee.toFixed(1)} mi`);
+  });
+  
+  console.log('=== FEES MENSAIS 2025 ===');
+  monthlyFees2025.forEach((fee, index) => {
+    if (fee > 0) console.log(`${months[index]}/2025: R$ ${fee.toFixed(1)} mi`);
+  });
+
+  // Cria dados para o gráfico com valores não-acumulativos (mensais)
+  const result = months.map((mes, index) => ({
+    mes,
+    fees2024: monthlyFees2024[index],
+    fees2025: monthlyFees2025[index]
+  }));
+  
+  console.log('=== DADOS FEES FINAIS ===');
+  console.log('Resultado do gráfico fees:', result);
+  
+  return result;
 }
 
 function parseDate(dateStr: any): Date | null {
