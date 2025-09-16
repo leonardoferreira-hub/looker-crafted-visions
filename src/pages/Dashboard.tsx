@@ -89,21 +89,40 @@ export default function Dashboard() {
   const calculatePipeProjections = React.useMemo(() => {
     if (!rawPipeData || rawPipeData.length === 0) return {};
     
-    const projectionsByMonth: Record<number, number> = {};
+    console.log('=== DEBUG PIPE PROJECTIONS ===');
+    console.log('Total operações no pipe:', rawPipeData.length);
     
-    rawPipeData.forEach(row => {
+    const projectionsByMonth: Record<number, number> = {};
+    let validProjections2025 = 0;
+    let otherYears = 0;
+    let invalidDates = 0;
+    let liquidadas = 0;
+    
+    rawPipeData.forEach((row, index) => {
       // Get previsao liquidacao from pipe data (column E = index 4)
       const previsaoLiquidacao = row[`col_4`]; 
       const categoria = String(row[`col_2`] || '').trim(); // CATEGORIA column (column C = index 2)
+      const operacao = String(row[`col_3`] || '').trim(); // OPERACAO column (column D = index 3)
+      
+      if (index < 5) {
+        console.log(`${index + 1}. ${operacao}: previsão = "${previsaoLiquidacao}"`);
+      }
       
       if (!previsaoLiquidacao) return;
+      
+      // Check for "Liquidada"
+      const dateStr = String(previsaoLiquidacao).trim();
+      if (dateStr.toLowerCase() === 'liquidada') {
+        liquidadas++;
+        if (index < 5) console.log(`  ✅ Já liquidada`);
+        return;
+      }
       
       // Filter by selected category if not "Todas"
       if (selectedCategory !== 'Todas' && categoria !== selectedCategory) return;
       
       // Simple date parsing - try multiple approaches
       let date: Date | null = null;
-      const dateStr = String(previsaoLiquidacao).trim();
       
       // Try direct parsing first
       date = new Date(dateStr);
@@ -115,14 +134,40 @@ export default function Dashboard() {
         }
       }
       
-      if (!date || isNaN(date.getTime())) return;
+      if (!date || isNaN(date.getTime())) {
+        invalidDates++;
+        if (index < 5) console.log(`  ❌ Data inválida: "${dateStr}"`);
+        return;
+      }
+      
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      
+      if (index < 5) {
+        console.log(`  📅 Data: ${date.toISOString().split('T')[0]} (ano: ${year}, mês: ${month})`);
+      }
       
       // Only consider 2025 projections
-      if (date.getFullYear() !== 2025) return;
+      if (year !== 2025) {
+        otherYears++;
+        if (index < 5) console.log(`  ❌ Ano ${year} != 2025`);
+        return;
+      }
       
-      const month = date.getMonth();
       projectionsByMonth[month] = (projectionsByMonth[month] || 0) + 1;
+      validProjections2025++;
+      
+      if (index < 5) {
+        console.log(`  ✅ Válida para 2025, mês ${month} (total: ${projectionsByMonth[month]})`);
+      }
     });
+    
+    console.log('=== RESUMO PROJEÇÕES ===');
+    console.log('Operações já liquidadas:', liquidadas);
+    console.log('Projeções válidas para 2025:', validProjections2025);
+    console.log('Projeções para outros anos:', otherYears);
+    console.log('Datas inválidas:', invalidDates);
+    console.log('Projeções por mês 2025:', projectionsByMonth);
     
     return projectionsByMonth;
   }, [rawPipeData, selectedCategory]);
