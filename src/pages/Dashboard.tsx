@@ -132,7 +132,13 @@ export default function Dashboard() {
   const processedChartData = React.useMemo(() => {
     if (!filteredChartData || filteredChartData.length === 0) return [];
     
+    console.log('=== DEBUG SETEMBRO ===');
+    console.log('filteredChartData length:', filteredChartData.length);
+    console.log('Setembro (índice 8):', filteredChartData[8]);
+    console.log('Todos os meses:', filteredChartData.map((d, i) => `${i}: ${d.mes} - acum2025: ${d.acumulado2025}`));
+    
     const currentMonth = new Date().getMonth(); // 0 = Janeiro, 8 = Setembro
+    console.log('Mês atual (currentMonth):', currentMonth);
     
     return filteredChartData.map((item, index) => {
       // Realizado: janeiro até setembro (mês atual)
@@ -143,7 +149,15 @@ export default function Dashboard() {
       // Linha realizada: sempre mostra dados até o mês atual
       let realizedValue = null;
       if (isRealizado) {
-        realizedValue = item.acumulado2025 || 0;
+        if (item.acumulado2025 !== undefined && item.acumulado2025 !== null && item.acumulado2025 > 0) {
+          realizedValue = item.acumulado2025;
+        } else if (index > 0) {
+          // Se o mês atual não tem dados válidos, usar o valor do mês anterior
+          const previousItem = filteredChartData[index - 1];
+          realizedValue = previousItem?.acumulado2025 || 0;
+        } else {
+          realizedValue = 0;
+        }
       }
       
       // Linha projetada: só funciona a partir do mês seguinte (outubro)
@@ -166,6 +180,17 @@ export default function Dashboard() {
         acumulado2025_realizado: realizedValue,
         acumulado2025_projetado: projectedValue,
       };
+      
+      // Debug específico para setembro
+      if (index === 8) {
+        console.log('=== RESULTADO SETEMBRO (índice 8) ===');
+        console.log('item original:', item);
+        console.log('isRealizado:', isRealizado);
+        console.log('isProjetado:', isProjetado);
+        console.log('realizedValue:', realizedValue);
+        console.log('projectedValue:', projectedValue);
+        console.log('resultado final:', result);
+      }
       
       return result;
     });
