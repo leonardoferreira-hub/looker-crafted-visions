@@ -65,28 +65,29 @@ const SHEETS_COLUMNS = {
     VOLUME: 11,                // Coluna L (índice 11)
     REMUNERACAO: 12,           // Coluna M (índice 12)
     LASTRO: 13,                // Coluna N (índice 13)
-    BOLETAGEM: 14,             // Coluna O (índice 14)
-    BANCO: 15,                 // Coluna P (índice 15)
-    AGENCIA: 16,               // Coluna Q (índice 16)
-    CONTA_BANCARIA: 17,        // Coluna R (índice 17)
-    MAJORACAO: 18,             // Coluna S (índice 18)
-    DATA_ENTRADA_PIPE: 19,     // Coluna T (índice 19)
-    PROXIMOS_PASSOS: 20,       // Coluna U (índice 20)
-    ALERTAS: 21,               // Coluna V (índice 21)
-    STATUS: 22,                // Coluna W (índice 22)
-    RESUMO: 23,                // Coluna X (índice 23)
-    ANALISTA_GESTAO: 24,       // Coluna Y (índice 24)
-    INVESTIDORES: 25,          // Coluna Z (índice 25)
-    DATA_LIQUIDACAO: 26,       // Coluna AA (índice 26)
-    PRIMEIRA_DATA_PAGAMENTO: 27, // Coluna AB (índice 27)
-    MAPA_LIQUIDACAO: 28,       // Coluna AC (índice 28)
-    MAPA_REGISTROS: 29,        // Coluna AD (índice 29)
-    LO: 30,                    // Coluna AE (índice 30)
-    DD: 31,                    // Coluna AF (índice 31)
-    EMAIL_PRESTADORES: 32,     // Coluna AG (índice 32)
-    PASSAGEM_BASTAO: 33,       // Coluna AH (índice 33)
-    KICK_OFF: 34,              // Coluna AI (índice 34)
-    DIAS: 35                   // Coluna AJ (índice 35)
+    TIPO_OPERACAO: 14,         // Coluna O (índice 14) - Tipo Operação  
+    BOLETAGEM: 15,             // Coluna P (índice 15)
+    BANCO: 16,                 // Coluna Q (índice 16)
+    AGENCIA: 17,               // Coluna R (índice 17)
+    CONTA_BANCARIA: 18,        // Coluna S (índice 18)
+    MAJORACAO: 19,             // Coluna T (índice 19)
+    DATA_ENTRADA_PIPE: 20,     // Coluna U (índice 20)
+    PROXIMOS_PASSOS: 21,       // Coluna V (índice 21)
+    ALERTAS: 22,               // Coluna W (índice 22)
+    STATUS: 23,                // Coluna X (índice 23)
+    RESUMO: 24,                // Coluna Y (índice 24)
+    ANALISTA_GESTAO: 25,       // Coluna Z (índice 25)
+    INVESTIDORES: 26,          // Coluna AA (índice 26)
+    DATA_LIQUIDACAO: 27,       // Coluna AB (índice 27)
+    PRIMEIRA_DATA_PAGAMENTO: 28, // Coluna AC (índice 28)
+    MAPA_LIQUIDACAO: 29,       // Coluna AD (índice 29)
+    MAPA_REGISTROS: 30,        // Coluna AE (índice 30)
+    LO: 31,                    // Coluna AF (índice 31)
+    DD: 32,                    // Coluna AG (índice 32)
+    EMAIL_PRESTADORES: 33,     // Coluna AH (índice 33)
+    PASSAGEM_BASTAO: 34,       // Coluna AI (índice 34)
+    KICK_OFF: 35,              // Coluna AJ (índice 35)
+    DIAS: 36                   // Coluna AK (índice 36)
   }
 };
 
@@ -1251,21 +1252,21 @@ function processMonthlyDataByCategory(liquidadas: SheetData[], selectedCategory:
 function processLastroData(data: SheetData[]) {
   console.log('🎯 processLastroData chamada com:', data.length, 'itens');
   
-  const lastros: { [key: string]: number } = {};
+  const tiposOperacao: { [key: string]: number } = {};
   
   data.forEach(row => {
-    // Usar mapeamento de colunas para lastro da aba PIPE
-    const lastro = String(getCellValue(row, SHEETS_COLUMNS.PIPE.LASTRO) || 'Não informado').trim();
+    // Usar mapeamento de colunas para Tipo Operação da aba PIPE
+    const tipoOperacao = String(getCellValue(row, SHEETS_COLUMNS.PIPE.TIPO_OPERACAO) || 'Não informado').trim();
     
-    // Se o lastro está vazio, classifica como "Não informado"
-    const lastroKey = lastro === '' || lastro === 'null' || lastro === 'undefined' ? 'Não informado' : lastro;
+    // Se o tipo de operação está vazio, classifica como "Não informado"
+    const tipoKey = tipoOperacao === '' || tipoOperacao === 'null' || tipoOperacao === 'undefined' ? 'Não informado' : tipoOperacao;
     
-    lastros[lastroKey] = (lastros[lastroKey] || 0) + 1;
+    tiposOperacao[tipoKey] = (tiposOperacao[tipoKey] || 0) + 1;
   });
   
-  console.log('Lastros processados:', lastros);
+  console.log('Tipos de Operação processados:', tiposOperacao);
   
-  return Object.entries(lastros).map(([name, value]) => ({
+  return Object.entries(tiposOperacao).map(([name, value]) => ({
     name,
     value
   }));
