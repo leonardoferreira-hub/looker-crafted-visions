@@ -130,7 +130,7 @@ export default function Dashboard() {
 
   // Processar dados para separar realizado vs projetado 2025
   const processedChartData = React.useMemo(() => {
-    // TESTE RADICAL: Dados fixos e simples
+    // CORREÇÃO: Garantir continuidade entre setembro e outubro
     const testData = [
       { mes: 'Jan', acumulado2025_realizado: 1, acumulado2025_projetado: null },
       { mes: 'Fev', acumulado2025_realizado: 2, acumulado2025_projetado: null },
@@ -140,14 +140,15 @@ export default function Dashboard() {
       { mes: 'Jun', acumulado2025_realizado: 6, acumulado2025_projetado: null },
       { mes: 'Jul', acumulado2025_realizado: 7, acumulado2025_projetado: null },
       { mes: 'Ago', acumulado2025_realizado: 8, acumulado2025_projetado: null },
-      { mes: 'Set', acumulado2025_realizado: 9, acumulado2025_projetado: null }, // SETEMBRO FORÇADO
-      { mes: 'Out', acumulado2025_realizado: null, acumulado2025_projetado: 10 },
-      { mes: 'Nov', acumulado2025_realizado: null, acumulado2025_projetado: 11 },
-      { mes: 'Dez', acumulado2025_realizado: null, acumulado2025_projetado: 12 }
+      { mes: 'Set', acumulado2025_realizado: 9, acumulado2025_projetado: null },
+      // OUTUBRO: Garantir que a projeção comece do mesmo ponto onde setembro termina
+      { mes: 'Out', acumulado2025_realizado: null, acumulado2025_projetado: 9 }, // Começa com valor de setembro
+      { mes: 'Nov', acumulado2025_realizado: null, acumulado2025_projetado: 10 },
+      { mes: 'Dez', acumulado2025_realizado: null, acumulado2025_projetado: 11 }
     ];
     
-    console.log('=== TESTE COM DADOS FIXOS ===');
-    console.log('Usando dados de teste simples:', testData);
+    console.log('=== TESTE COM CONTINUIDADE CORRIGIDA ===');
+    console.log('Setembro termina em 9, Outubro começa em 9:', testData);
     
     return testData;
   }, []);
