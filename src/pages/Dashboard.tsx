@@ -104,22 +104,27 @@ export default function Dashboard() {
       const categoria = String(row[`col_2`] || '').trim(); // CATEGORIA column (column C = index 2)
       const operacao = String(row[`col_3`] || '').trim(); // OPERACAO column (column D = index 3)
       
-      if (index < 5) {
-        console.log(`${index + 1}. ${operacao}: previsão = "${previsaoLiquidacao}"`);
-      }
+      // Log TODAS as operações para debug
+      console.log(`${index + 1}. "${operacao}" | Cat: "${categoria}" | Previsão: "${previsaoLiquidacao}"`);
       
-      if (!previsaoLiquidacao) return;
+      if (!previsaoLiquidacao) {
+        console.log(`  ❌ Sem previsão de liquidação`);
+        return;
+      }
       
       // Check for "Liquidada"
       const dateStr = String(previsaoLiquidacao).trim();
       if (dateStr.toLowerCase() === 'liquidada') {
         liquidadas++;
-        if (index < 5) console.log(`  ✅ Já liquidada`);
+        console.log(`  ✅ Já liquidada`);
         return;
       }
       
       // Filter by selected category if not "Todas"
-      if (selectedCategory !== 'Todas' && categoria !== selectedCategory) return;
+      if (selectedCategory !== 'Todas' && categoria !== selectedCategory) {
+        console.log(`  ❌ Filtrada por categoria: "${categoria}" != "${selectedCategory}"`);
+        return;
+      }
       
       // Simple date parsing - try multiple approaches
       let date: Date | null = null;
@@ -136,30 +141,26 @@ export default function Dashboard() {
       
       if (!date || isNaN(date.getTime())) {
         invalidDates++;
-        if (index < 5) console.log(`  ❌ Data inválida: "${dateStr}"`);
+        console.log(`  ❌ Data inválida: "${dateStr}"`);
         return;
       }
       
       const year = date.getFullYear();
       const month = date.getMonth();
       
-      if (index < 5) {
-        console.log(`  📅 Data: ${date.toISOString().split('T')[0]} (ano: ${year}, mês: ${month})`);
-      }
+      console.log(`  📅 Data parseada: ${date.toISOString().split('T')[0]} (ano: ${year}, mês: ${month})`);
       
       // Only consider 2025 projections
       if (year !== 2025) {
         otherYears++;
-        if (index < 5) console.log(`  ❌ Ano ${year} != 2025`);
+        console.log(`  ❌ Ano ${year} != 2025`);
         return;
       }
       
       projectionsByMonth[month] = (projectionsByMonth[month] || 0) + 1;
       validProjections2025++;
       
-      if (index < 5) {
-        console.log(`  ✅ Válida para 2025, mês ${month} (total: ${projectionsByMonth[month]})`);
-      }
+      console.log(`  ✅ VÁLIDA para 2025, mês ${month} (total do mês: ${projectionsByMonth[month]})`);
     });
     
     console.log('=== RESUMO PROJEÇÕES ===');
