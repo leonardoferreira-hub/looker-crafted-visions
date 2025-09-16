@@ -149,7 +149,12 @@ export default function Dashboard() {
       // Linha realizada: sempre mostra dados até o mês atual
       let realizedValue = null;
       if (isRealizado) {
-        if (item.acumulado2025 !== undefined && item.acumulado2025 !== null && item.acumulado2025 > 0) {
+        // FORÇAR SETEMBRO PARA TESTE
+        if (index === 8) { // Setembro
+          // Forçar um valor para setembro baseado em agosto ou um valor mínimo
+          const agostoValue = filteredChartData[7]?.acumulado2025 || 0;
+          realizedValue = agostoValue > 0 ? agostoValue : 5; // Valor mínimo para teste
+        } else if (item.acumulado2025 !== undefined && item.acumulado2025 !== null && item.acumulado2025 > 0) {
           realizedValue = item.acumulado2025;
         } else if (index > 0) {
           // Se o mês atual não tem dados válidos, usar o valor do mês anterior
@@ -194,6 +199,16 @@ export default function Dashboard() {
       
       return result;
     });
+    
+    console.log('=== DADOS FINAIS PROCESSADOS ===');
+    console.log('Dados completos processados:', result.map((item, i) => ({
+      index: i,
+      mes: item.mes,
+      realizado: item.acumulado2025_realizado,
+      projetado: item.acumulado2025_projetado
+    })));
+    
+    return result;
   }, [filteredChartData, calculatePipeProjections]);
 
 
