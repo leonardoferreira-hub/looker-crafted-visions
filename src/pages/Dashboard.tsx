@@ -95,50 +95,25 @@ export default function Dashboard() {
   const calculatePipeProjections = React.useMemo(() => {
     if (!rawPipeData || rawPipeData.length === 0) return {};
     
-    console.log('=== DEBUG PIPE PROJECTIONS ===');
-    console.log('Total operações no pipe:', rawPipeData.length);
-    
     const projectionsByMonth: Record<number, number> = {};
-    let validProjections2025 = 0;
-    let otherYears = 0;
-    let invalidDates = 0;
-    let liquidadas = 0;
     
-    rawPipeData.forEach((row, index) => {
+    rawPipeData.forEach((row) => {
       // Use the same column mapping as useDashboardData.ts
       const previsaoLiquidacao = getCellValue(row, 4); // PREVISAO_LIQUIDACAO column (E = index 4)
       const categoria = String(getCellValue(row, 2) || '').trim(); // CATEGORIA column (C = index 2)
-      const operacao = String(getCellValue(row, 3) || '').trim(); // OPERACAO column (D = index 3)
       
-      // Log TODAS as operações para debug
-      console.log(`${index + 1}. "${operacao}" | Cat: "${categoria}" | Previsão: "${previsaoLiquidacao}"`);
-      
-      if (!previsaoLiquidacao) {
-        console.log(`  ❌ Sem previsão de liquidação`);
-        return;
-      }
+      if (!previsaoLiquidacao) return;
       
       // Check for "Liquidada"
       const dateStr = String(previsaoLiquidacao).trim();
-      if (dateStr.toLowerCase() === 'liquidada') {
-        liquidadas++;
-        console.log(`  ✅ Já liquidada`);
-        return;
-      }
+      if (dateStr.toLowerCase() === 'liquidada') return;
       
       // Filter by selected category if not "Todas"
-      if (selectedCategory !== 'Todas' && categoria !== selectedCategory) {
-        console.log(`  ❌ Filtrada por categoria: "${categoria}" != "${selectedCategory}"`);
-        return;
-      }
+      if (selectedCategory !== 'Todas' && categoria !== selectedCategory) return;
       
       // Only accept DD/MM/YYYY format specifically
       const ddmmyyyy = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (!ddmmyyyy) {
-        invalidDates++;
-        console.log(`  ❌ Não é formato DD/MM/YYYY: "${dateStr}"`);
-        return;
-      }
+      if (!ddmmyyyy) return;
       
       // Parse DD/MM/YYYY format
       const day = parseInt(ddmmyyyy[1]);
@@ -146,34 +121,14 @@ export default function Dashboard() {
       const year = parseInt(ddmmyyyy[3]);
       const date = new Date(year, month, day);
       
-      if (isNaN(date.getTime())) {
-        invalidDates++;
-        console.log(`  ❌ Data DD/MM/YYYY inválida: "${dateStr}"`);
-        return;
-      }
-      
-      console.log(`  📅 Data DD/MM/YYYY parseada: ${date.toISOString().split('T')[0]} (ano: ${year}, mês: ${month})`);
+      if (isNaN(date.getTime())) return;
       
       // Apply year filter (only 2025)
-      if (year !== 2025) {
-        otherYears++;
-        console.log(`  ❌ Ano ${year} != 2025`);
-        return;
-      }
+      if (year !== 2025) return;
       
       const monthIndex = date.getMonth();
       projectionsByMonth[monthIndex] = (projectionsByMonth[monthIndex] || 0) + 1;
-      validProjections2025++;
-      
-      console.log(`  ✅ VÁLIDA para 2025, mês ${monthIndex} (total do mês: ${projectionsByMonth[monthIndex]})`);
     });
-    
-    console.log('=== RESUMO PROJEÇÕES ===');
-    console.log('Operações já liquidadas:', liquidadas);
-    console.log('Projeções válidas para 2025:', validProjections2025);
-    console.log('Projeções para outros anos:', otherYears);
-    console.log('Datas inválidas:', invalidDates);
-    console.log('Projeções por mês 2025:', projectionsByMonth);
     
     return projectionsByMonth;
   }, [rawPipeData, selectedCategory]);
@@ -206,15 +161,17 @@ export default function Dashboard() {
       // Linha projetada: outubro em diante
       let projectedValue = null;
       if (isProjetado) {
+        // Começar com o valor acumulado até setembro (mês atual)
+        const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
+        
+        // Somar APENAS as projeções do mês atual para o mês de interesse
         if (index === currentMonth + 1) {
-          // Outubro: começar com valor de setembro
-          const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
-          projectedValue = baseValue;
+          // Outubro: valor de setembro + projeções específicas de setembro (15 operações)
+          projectedValue = baseValue + (calculatePipeProjections[8] || 0); // setembro = índice 8
         } else {
-          // Novembro em diante: aplicar projeções
-          const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
+          // Novembro em diante: valor base + todas as projeções até este mês
           let accumulatedProjections = 0;
-          for (let i = currentMonth + 1; i <= index; i++) {
+          for (let i = 8; i <= index; i++) { // começar do setembro (8) até o mês atual
             accumulatedProjections += calculatePipeProjections[i] || 0;
           }
           projectedValue = baseValue + accumulatedProjections;
