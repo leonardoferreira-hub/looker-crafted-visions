@@ -132,49 +132,39 @@ export default function Dashboard() {
   const processedChartData = React.useMemo(() => {
     if (!filteredChartData || filteredChartData.length === 0) return [];
     
-    console.log('=== DEBUG FILTEREDCHARTDATA ===');
-    console.log('Length:', filteredChartData.length);
-    console.log('Data structure:', filteredChartData.map((item, i) => ({ index: i, mes: item.mes, acumulado2025: item.acumulado2025 })));
-    
     const currentMonth = new Date().getMonth(); // 0 = Janeiro, 8 = Setembro
     
     return filteredChartData.map((item, index) => {
-      const isRealizado = index <= currentMonth; // Jan-Set = realizado
+      // Realizado: janeiro até setembro (mês atual)
+      // Projetado: outubro em diante (mês seguinte)
+      const isRealizado = index <= currentMonth; // 0-8 = Jan-Set = realizado
+      const isProjetado = index > currentMonth;   // 9-11 = Out-Dez = projetado
       
-      // Para meses futuros, usar projeções do pipe em vez dos dados históricos
+      // Linha realizada: sempre mostra dados até o mês atual
+      let realizedValue = null;
+      if (isRealizado) {
+        realizedValue = item.acumulado2025 || 0;
+      }
+      
+      // Linha projetada: só funciona a partir do mês seguinte (outubro)
       let projectedValue = null;
-      if (!isRealizado) {
-        const monthProjections = calculatePipeProjections[index] || 0;
-        // Somar projeções às operações já realizadas para obter o acumulado projetado
-        const realizedSoFar = index > 0 ? (filteredChartData[currentMonth]?.acumulado2025 || 0) : 0;
+      if (isProjetado) {
+        // Começar com o valor acumulado até setembro
+        const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
         
-        // Calcular acumulado de projeções até este mês
+        // Adicionar projeções do pipe para os meses futuros
         let accumulatedProjections = 0;
         for (let i = currentMonth + 1; i <= index; i++) {
           accumulatedProjections += calculatePipeProjections[i] || 0;
         }
         
-        projectedValue = realizedSoFar + accumulatedProjections;
-      }
-      
-      // Garantir continuidade da linha realizada até o mês atual
-      let realizedValue = null;
-      if (isRealizado) {
-        if (item.acumulado2025 !== undefined && item.acumulado2025 !== null) {
-          realizedValue = item.acumulado2025;
-        } else if (index > 0) {
-          // Se o mês atual não tem dados, usa o valor do mês anterior
-          const previousItem = filteredChartData[index - 1];
-          realizedValue = previousItem?.acumulado2025 || 0;
-        } else {
-          realizedValue = 0;
-        }
+        projectedValue = baseValue + accumulatedProjections;
       }
       
       const result = {
         ...item,
         acumulado2025_realizado: realizedValue,
-        acumulado2025_projetado: !isRealizado ? projectedValue : null,
+        acumulado2025_projetado: projectedValue,
       };
       
       return result;
