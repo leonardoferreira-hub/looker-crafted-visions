@@ -133,7 +133,7 @@ export default function Dashboard() {
       
       return {
         ...item,
-        acumulado2025_realizado: isRealizado ? item.acumulado2025 : null,
+        acumulado2025_realizado: isRealizado ? (item.acumulado2025 || 0) : null,
         acumulado2025_projetado: !isRealizado ? projectedValue : null,
       };
     });
