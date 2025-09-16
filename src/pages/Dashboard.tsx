@@ -131,11 +131,27 @@ export default function Dashboard() {
         projectedValue = realizedSoFar + accumulatedProjections;
       }
       
-      return {
+      // Garantir continuidade da linha realizada até o mês atual
+      let realizedValue = null;
+      if (isRealizado) {
+        if (item.acumulado2025 !== undefined && item.acumulado2025 !== null) {
+          realizedValue = item.acumulado2025;
+        } else if (index > 0) {
+          // Se o mês atual não tem dados, usa o valor do mês anterior
+          const previousItem = filteredChartData[index - 1];
+          realizedValue = previousItem?.acumulado2025 || 0;
+        } else {
+          realizedValue = 0;
+        }
+      }
+      
+      const result = {
         ...item,
-        acumulado2025_realizado: isRealizado ? (item.acumulado2025 || 0) : null,
+        acumulado2025_realizado: realizedValue,
         acumulado2025_projetado: !isRealizado ? projectedValue : null,
       };
+      
+      return result;
     });
   }, [filteredChartData, calculatePipeProjections]);
 
@@ -455,7 +471,7 @@ export default function Dashboard() {
                             strokeWidth={2}
                             name="2025 Realizado"
                             dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
-                            connectNulls={false}
+                            connectNulls={true}
                           />
                           <Line 
                             type="monotone" 
@@ -465,7 +481,7 @@ export default function Dashboard() {
                             strokeDasharray="5 5"
                             name="2025 Projetado"
                             dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
-                            connectNulls={false}
+                            connectNulls={true}
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -698,7 +714,7 @@ export default function Dashboard() {
                             strokeWidth={2}
                             name="2025 Realizado"
                             dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
-                            connectNulls={false}
+                            connectNulls={true}
                           />
                           <Line 
                             type="monotone" 
@@ -708,7 +724,7 @@ export default function Dashboard() {
                             strokeDasharray="5 5"
                             name="2025 Projetado"
                             dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
-                            connectNulls={false}
+                            connectNulls={true}
                           />
                         </LineChart>
                       </ResponsiveContainer>
