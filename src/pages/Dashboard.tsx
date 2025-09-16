@@ -132,41 +132,40 @@ export default function Dashboard() {
         return;
       }
       
-      // Simple date parsing - try multiple approaches
-      let date: Date | null = null;
-      
-      // Try direct parsing first
-      date = new Date(dateStr);
-      if (isNaN(date.getTime())) {
-        // Try DD/MM/YYYY format
-        const ddmmyyyy = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-        if (ddmmyyyy) {
-          date = new Date(parseInt(ddmmyyyy[3]), parseInt(ddmmyyyy[2]) - 1, parseInt(ddmmyyyy[1]));
-        }
-      }
-      
-      if (!date || isNaN(date.getTime())) {
+      // Only accept DD/MM/YYYY format specifically
+      const ddmmyyyy = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (!ddmmyyyy) {
         invalidDates++;
-        console.log(`  ❌ Data inválida: "${dateStr}"`);
+        console.log(`  ❌ Não é formato DD/MM/YYYY: "${dateStr}"`);
         return;
       }
       
-      const year = date.getFullYear();
-      const month = date.getMonth();
+      // Parse DD/MM/YYYY format
+      const day = parseInt(ddmmyyyy[1]);
+      const month = parseInt(ddmmyyyy[2]) - 1; // month is 0-based
+      const year = parseInt(ddmmyyyy[3]);
+      const date = new Date(year, month, day);
       
-      console.log(`  📅 Data parseada: ${date.toISOString().split('T')[0]} (ano: ${year}, mês: ${month})`);
+      if (isNaN(date.getTime())) {
+        invalidDates++;
+        console.log(`  ❌ Data DD/MM/YYYY inválida: "${dateStr}"`);
+        return;
+      }
       
-      // Only consider 2025 projections
+      console.log(`  📅 Data DD/MM/YYYY parseada: ${date.toISOString().split('T')[0]} (ano: ${year}, mês: ${month})`);
+      
+      // Apply year filter (only 2025)
       if (year !== 2025) {
         otherYears++;
         console.log(`  ❌ Ano ${year} != 2025`);
         return;
       }
       
-      projectionsByMonth[month] = (projectionsByMonth[month] || 0) + 1;
+      const monthIndex = date.getMonth();
+      projectionsByMonth[monthIndex] = (projectionsByMonth[monthIndex] || 0) + 1;
       validProjections2025++;
       
-      console.log(`  ✅ VÁLIDA para 2025, mês ${month} (total do mês: ${projectionsByMonth[month]})`);
+      console.log(`  ✅ VÁLIDA para 2025, mês ${monthIndex} (total do mês: ${projectionsByMonth[monthIndex]})`);
     });
     
     console.log('=== RESUMO PROJEÇÕES ===');
