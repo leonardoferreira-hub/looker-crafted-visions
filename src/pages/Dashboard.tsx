@@ -45,22 +45,44 @@ export default function Dashboard() {
 
   // Filtrar dados por categoria
   const filteredChartData = React.useMemo(() => {
-    if (!chartData.operacoesPorMes || selectedCategory === 'Todas') {
-      return chartData.operacoesPorMes || [];
-    }
+    let baseData = [];
     
-    // Se há função de filtro por categoria, usa ela
-    if (chartData.operacoesPorMesPorCategoria) {
-      try {
-        const result = chartData.operacoesPorMesPorCategoria(selectedCategory);
-        return result && Array.isArray(result) && result.length > 0 ? result : chartData.operacoesPorMes;
-      } catch (error) {
-        console.warn('Erro ao filtrar por categoria:', error);
-        return chartData.operacoesPorMes;
+    if (!chartData.operacoesPorMes || selectedCategory === 'Todas') {
+      baseData = chartData.operacoesPorMes || [];
+    } else {
+      // Se há função de filtro por categoria, usa ela
+      if (chartData.operacoesPorMesPorCategoria) {
+        try {
+          const result = chartData.operacoesPorMesPorCategoria(selectedCategory);
+          baseData = result && Array.isArray(result) && result.length > 0 ? result : chartData.operacoesPorMes;
+        } catch (error) {
+          console.warn('Erro ao filtrar por categoria:', error);
+          baseData = chartData.operacoesPorMes;
+        }
+      } else {
+        baseData = chartData.operacoesPorMes;
       }
     }
     
-    return chartData.operacoesPorMes;
+    // Garantir que sempre temos 12 meses (Jan-Dez)
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const ensureFullYear = months.map((mes, index) => {
+      const existingData = baseData.find(item => item.mes === mes);
+      if (existingData) {
+        return existingData;
+      }
+      
+      // Se não existe, criar com valores baseados no mês anterior (para manter acumulado)
+      const previousData = index > 0 ? ensureFullYear[index - 1] : null;
+      return {
+        mes,
+        acumulado2024: previousData?.acumulado2024 || 0,
+        acumulado2025: previousData?.acumulado2025 || 0,
+        estruturacoes: 0
+      };
+    });
+    
+    return ensureFullYear;
   }, [chartData, selectedCategory]);
 
   // Função para calcular projeções de liquidação baseadas no pipe por categoria
@@ -109,6 +131,10 @@ export default function Dashboard() {
   // Processar dados para separar realizado vs projetado 2025
   const processedChartData = React.useMemo(() => {
     if (!filteredChartData || filteredChartData.length === 0) return [];
+    
+    console.log('=== DEBUG FILTEREDCHARTDATA ===');
+    console.log('Length:', filteredChartData.length);
+    console.log('Data structure:', filteredChartData.map((item, i) => ({ index: i, mes: item.mes, acumulado2025: item.acumulado2025 })));
     
     const currentMonth = new Date().getMonth(); // 0 = Janeiro, 8 = Setembro
     
