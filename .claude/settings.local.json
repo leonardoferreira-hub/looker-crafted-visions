@@ -11,6 +11,7 @@
       "Bash(git commit:*)",
       "Bash(git revert:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

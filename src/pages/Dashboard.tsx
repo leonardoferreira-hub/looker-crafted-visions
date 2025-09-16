@@ -443,11 +443,10 @@ export default function Dashboard() {
                           <Line 
                             type="monotone" 
                             dataKey="acumulado2024" 
-                            stroke="hsl(var(--muted-foreground))" 
+                            stroke="#22c55e" 
                             strokeWidth={2}
                             name="Acumulado 2024"
-                            strokeDasharray="5 5"
-                            dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
+                            dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
                           />
                           <Line 
                             type="monotone" 
@@ -687,11 +686,10 @@ export default function Dashboard() {
                           <Line 
                             type="monotone" 
                             dataKey="acumulado2024" 
-                            stroke="hsl(var(--muted-foreground))" 
+                            stroke="#22c55e" 
                             strokeWidth={2}
                             name="Acumulado 2024"
-                            strokeDasharray="5 5"
-                            dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
+                            dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
                           />
                           <Line 
                             type="monotone" 
