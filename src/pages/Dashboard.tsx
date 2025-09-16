@@ -765,7 +765,7 @@ export default function Dashboard() {
                 </div>
               </ChartCard>
               
-              <ChartCard title="Fee de estruturação liquidado por mês" className="min-h-[300px] sm:min-h-[400px]">
+              <ChartCard title="Fee de estruturação acumulado (milhões)" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData.feesPorMes} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -787,7 +787,7 @@ export default function Dashboard() {
                       <Tooltip 
                         formatter={(value: any, name: string) => [
                           `R$ ${Number(value).toFixed(1)} mi`, 
-                          name === 'fees2024' ? 'Fee 2024' : 'Fee 2025'
+                          name === 'fees2024' ? 'Acumulado 2024' : 'Acumulado 2025'
                         ]}
                         labelFormatter={(label) => `Mês: ${label}`}
                       />
@@ -797,7 +797,7 @@ export default function Dashboard() {
                         dataKey="fees2024" 
                         stroke="#22c55e" 
                         strokeWidth={2}
-                        name="Fee Estruturação 2024"
+                        name="Fee Acumulado 2024"
                         dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
                       />
                       <Line 
@@ -805,7 +805,7 @@ export default function Dashboard() {
                         dataKey="fees2025" 
                         stroke="#2563eb"
                         strokeWidth={2}
-                        name="Fee Estruturação 2025"
+                        name="Fee Acumulado 2025"
                         dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
                       />
                     </LineChart>

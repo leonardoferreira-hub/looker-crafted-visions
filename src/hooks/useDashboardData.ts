@@ -1348,12 +1348,20 @@ function processMonthlyFeeData(filtered2024: SheetData[], filtered2025: SheetDat
     if (fee > 0) console.log(`${months[index]}/2025: R$ ${fee.toFixed(1)} mi`);
   });
 
-  // Cria dados para o gráfico com valores não-acumulativos (mensais)
-  const result = months.map((mes, index) => ({
-    mes,
-    fees2024: monthlyFees2024[index],
-    fees2025: monthlyFees2025[index]
-  }));
+  // Converte para soma acumulada (running total)
+  let acumulado2024 = 0;
+  let acumulado2025 = 0;
+  
+  const result = months.map((mes, index) => {
+    acumulado2024 += monthlyFees2024[index];
+    acumulado2025 += monthlyFees2025[index];
+    
+    return {
+      mes,
+      fees2024: acumulado2024,
+      fees2025: acumulado2025
+    };
+  });
   
   console.log('=== DADOS FEES FINAIS ===');
   console.log('Resultado do gráfico fees:', result);
