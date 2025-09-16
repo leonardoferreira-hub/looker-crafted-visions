@@ -130,86 +130,27 @@ export default function Dashboard() {
 
   // Processar dados para separar realizado vs projetado 2025
   const processedChartData = React.useMemo(() => {
-    if (!filteredChartData || filteredChartData.length === 0) return [];
+    // TESTE RADICAL: Dados fixos e simples
+    const testData = [
+      { mes: 'Jan', acumulado2025_realizado: 1, acumulado2025_projetado: null },
+      { mes: 'Fev', acumulado2025_realizado: 2, acumulado2025_projetado: null },
+      { mes: 'Mar', acumulado2025_realizado: 3, acumulado2025_projetado: null },
+      { mes: 'Abr', acumulado2025_realizado: 4, acumulado2025_projetado: null },
+      { mes: 'Mai', acumulado2025_realizado: 5, acumulado2025_projetado: null },
+      { mes: 'Jun', acumulado2025_realizado: 6, acumulado2025_projetado: null },
+      { mes: 'Jul', acumulado2025_realizado: 7, acumulado2025_projetado: null },
+      { mes: 'Ago', acumulado2025_realizado: 8, acumulado2025_projetado: null },
+      { mes: 'Set', acumulado2025_realizado: 9, acumulado2025_projetado: null }, // SETEMBRO FORÇADO
+      { mes: 'Out', acumulado2025_realizado: null, acumulado2025_projetado: 10 },
+      { mes: 'Nov', acumulado2025_realizado: null, acumulado2025_projetado: 11 },
+      { mes: 'Dez', acumulado2025_realizado: null, acumulado2025_projetado: 12 }
+    ];
     
-    console.log('=== DEBUG SETEMBRO ===');
-    console.log('filteredChartData length:', filteredChartData.length);
-    console.log('Setembro (índice 8):', filteredChartData[8]);
-    console.log('Todos os meses:', filteredChartData.map((d, i) => `${i}: ${d.mes} - acum2025: ${d.acumulado2025}`));
+    console.log('=== TESTE COM DADOS FIXOS ===');
+    console.log('Usando dados de teste simples:', testData);
     
-    const currentMonth = new Date().getMonth(); // 0 = Janeiro, 8 = Setembro
-    console.log('Mês atual (currentMonth):', currentMonth);
-    
-    return filteredChartData.map((item, index) => {
-      // Realizado: janeiro até setembro (mês atual)
-      // Projetado: outubro em diante (mês seguinte)
-      const isRealizado = index <= currentMonth; // 0-8 = Jan-Set = realizado
-      const isProjetado = index > currentMonth;   // 9-11 = Out-Dez = projetado
-      
-      // Linha realizada: sempre mostra dados até o mês atual
-      let realizedValue = null;
-      if (isRealizado) {
-        // FORÇAR SETEMBRO PARA TESTE
-        if (index === 8) { // Setembro
-          // Forçar um valor para setembro baseado em agosto ou um valor mínimo
-          const agostoValue = filteredChartData[7]?.acumulado2025 || 0;
-          realizedValue = agostoValue > 0 ? agostoValue : 5; // Valor mínimo para teste
-        } else if (item.acumulado2025 !== undefined && item.acumulado2025 !== null && item.acumulado2025 > 0) {
-          realizedValue = item.acumulado2025;
-        } else if (index > 0) {
-          // Se o mês atual não tem dados válidos, usar o valor do mês anterior
-          const previousItem = filteredChartData[index - 1];
-          realizedValue = previousItem?.acumulado2025 || 0;
-        } else {
-          realizedValue = 0;
-        }
-      }
-      
-      // Linha projetada: só funciona a partir do mês seguinte (outubro)
-      let projectedValue = null;
-      if (isProjetado) {
-        // Começar com o valor acumulado até setembro
-        const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
-        
-        // Adicionar projeções do pipe para os meses futuros
-        let accumulatedProjections = 0;
-        for (let i = currentMonth + 1; i <= index; i++) {
-          accumulatedProjections += calculatePipeProjections[i] || 0;
-        }
-        
-        projectedValue = baseValue + accumulatedProjections;
-      }
-      
-      const result = {
-        ...item,
-        acumulado2025_realizado: realizedValue,
-        acumulado2025_projetado: projectedValue,
-      };
-      
-      // Debug específico para setembro
-      if (index === 8) {
-        console.log('=== RESULTADO SETEMBRO (índice 8) ===');
-        console.log('item original:', item);
-        console.log('isRealizado:', isRealizado);
-        console.log('isProjetado:', isProjetado);
-        console.log('realizedValue:', realizedValue);
-        console.log('projectedValue:', projectedValue);
-        console.log('resultado final:', result);
-      }
-      
-      return result;
-    });
-    
-    console.log('=== DADOS FINAIS PROCESSADOS ===');
-    console.log('Dados completos processados:', result.map((item, i) => ({
-      index: i,
-      mes: item.mes,
-      realizado: item.acumulado2025_realizado,
-      projetado: item.acumulado2025_projetado
-    })));
-    
-    return result;
-  }, [filteredChartData, calculatePipeProjections]);
+    return testData;
+  }, []);
 
 
   useEffect(() => {
