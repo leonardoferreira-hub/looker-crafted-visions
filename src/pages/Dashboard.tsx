@@ -787,7 +787,7 @@ export default function Dashboard() {
                       <Tooltip 
                         formatter={(value: any, name: string) => [
                           `R$ ${Number(value).toFixed(1)} mi`, 
-                          name === 'fees2024' ? 'Acumulado 2024' : 'Acumulado 2025'
+                          name === 'fees2024' ? 'Fee Acumulado 2024' : 'Fee Acumulado 2025'
                         ]}
                         labelFormatter={(label) => `Mês: ${label}`}
                       />
