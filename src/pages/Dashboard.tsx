@@ -164,14 +164,19 @@ export default function Dashboard() {
         // Começar com o valor acumulado até setembro (mês atual)
         const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
         
-        // Somar APENAS as projeções do mês atual para o mês de interesse
+        // Deslocar projeções: mês de previsão -> aparece no mês seguinte
         if (index === currentMonth + 1) {
-          // Outubro: valor de setembro + projeções específicas de setembro (15 operações)
+          // Outubro: valor de setembro + operações previstas para setembro (15)
           projectedValue = baseValue + (calculatePipeProjections[8] || 0); // setembro = índice 8
+        } else if (index === currentMonth + 2) {
+          // Novembro: valor base + operações de setembro (15) + operações de outubro (5)
+          const setembroProjections = calculatePipeProjections[8] || 0; // 15 ops
+          const outubroProjections = calculatePipeProjections[9] || 0; // 5 ops
+          projectedValue = baseValue + setembroProjections + outubroProjections;
         } else {
-          // Novembro em diante: valor base + todas as projeções até este mês
+          // Dezembro em diante: valor base + todas as projeções acumuladas
           let accumulatedProjections = 0;
-          for (let i = 8; i <= index; i++) { // começar do setembro (8) até o mês atual
+          for (let i = 8; i <= index - 1; i++) { // projeções até o mês anterior (shifted logic)
             accumulatedProjections += calculatePipeProjections[i] || 0;
           }
           projectedValue = baseValue + accumulatedProjections;
