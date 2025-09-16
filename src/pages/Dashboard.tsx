@@ -124,36 +124,59 @@ export default function Dashboard() {
       projectionsByMonth[month] = (projectionsByMonth[month] || 0) + 1;
     });
     
-    console.log('Pipe projections by month:', projectionsByMonth);
     return projectionsByMonth;
   }, [rawPipeData, selectedCategory]);
 
   // Processar dados para separar realizado vs projetado 2025
   const processedChartData = React.useMemo(() => {
-    // SOLUÇÃO: Criar sobreposição entre setembro e outubro para conectar as linhas
-    const testData = [
-      { mes: 'Jan', acumulado2025_realizado: 1, acumulado2025_projetado: null },
-      { mes: 'Fev', acumulado2025_realizado: 2, acumulado2025_projetado: null },
-      { mes: 'Mar', acumulado2025_realizado: 3, acumulado2025_projetado: null },
-      { mes: 'Abr', acumulado2025_realizado: 4, acumulado2025_projetado: null },
-      { mes: 'Mai', acumulado2025_realizado: 5, acumulado2025_projetado: null },
-      { mes: 'Jun', acumulado2025_realizado: 6, acumulado2025_projetado: null },
-      { mes: 'Jul', acumulado2025_realizado: 7, acumulado2025_projetado: null },
-      { mes: 'Ago', acumulado2025_realizado: 8, acumulado2025_projetado: null },
-      // SETEMBRO: Realizada chega até aqui
-      { mes: 'Set', acumulado2025_realizado: 9, acumulado2025_projetado: null },
-      // OUTUBRO: Ambas as linhas passam por aqui (ponto de conexão)
-      { mes: 'Out', acumulado2025_realizado: 9, acumulado2025_projetado: 9 },
-      // NOVEMBRO em diante: só projetado
-      { mes: 'Nov', acumulado2025_realizado: null, acumulado2025_projetado: 10 },
-      { mes: 'Dez', acumulado2025_realizado: null, acumulado2025_projetado: 11 }
-    ];
+    if (!filteredChartData || filteredChartData.length === 0) return [];
     
-    console.log('=== SOBREPOSIÇÃO EM OUTUBRO ===');
-    console.log('Outubro: realizado=9, projetado=9 (ponto de conexão):', testData);
+    const currentMonth = new Date().getMonth(); // 0 = Janeiro, 8 = Setembro
     
-    return testData;
-  }, []);
+    return filteredChartData.map((item, index) => {
+      // Realizado: janeiro até setembro (mês atual) + outubro para conexão
+      // Projetado: outubro em diante (mês seguinte)
+      const isRealizado = index <= currentMonth || index === currentMonth + 1; // 0-8 + 9 = Jan-Out
+      const isProjetado = index >= currentMonth + 1; // 9-11 = Out-Dez
+      
+      // Linha realizada: vai até setembro + outubro para conexão
+      let realizedValue = null;
+      if (isRealizado) {
+        if (index <= currentMonth) {
+          // Meses de janeiro a setembro: usar dados reais
+          realizedValue = item.acumulado2025 || 0;
+        } else if (index === currentMonth + 1) {
+          // Outubro: usar valor de setembro para conexão
+          const setembroValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
+          realizedValue = setembroValue;
+        }
+      }
+      
+      // Linha projetada: outubro em diante
+      let projectedValue = null;
+      if (isProjetado) {
+        if (index === currentMonth + 1) {
+          // Outubro: começar com valor de setembro
+          const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
+          projectedValue = baseValue;
+        } else {
+          // Novembro em diante: aplicar projeções
+          const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
+          let accumulatedProjections = 0;
+          for (let i = currentMonth + 1; i <= index; i++) {
+            accumulatedProjections += calculatePipeProjections[i] || 0;
+          }
+          projectedValue = baseValue + accumulatedProjections;
+        }
+      }
+      
+      return {
+        ...item,
+        acumulado2025_realizado: realizedValue,
+        acumulado2025_projetado: projectedValue,
+      };
+    });
+  }, [filteredChartData, calculatePipeProjections]);
 
 
   useEffect(() => {
