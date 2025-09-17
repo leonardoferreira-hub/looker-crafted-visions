@@ -92,18 +92,22 @@ export function KPICard({
 
   const canAccess = !requiresAdminAccess || hasPermission('admin');
 
-  // Debug logs
-  console.log(`🔍 KPICard "${title}":`, {
-    requiresAdminAccess,
-    hasPermission: hasPermission('admin'),
-    canAccess,
-    willRender: canAccess
-  });
+  // Debug crítico - forçar logs sempre
+  if (requiresAdminAccess) {
+    console.log(`🚨 CARD "${title}" - DECISÃO FINAL:`, {
+      requiresAdminAccess,
+      hasPermission: hasPermission('admin'),
+      canAccess,
+      willReturn: canAccess ? 'RENDER' : 'NULL'
+    });
+  }
 
   if (!canAccess) {
+    console.log(`❌ RETORNANDO NULL para "${title}"`);
     return null;
   }
 
+  console.log(`✅ RENDERIZANDO "${title}"`);
   return (
     <TooltipProvider>
       <Tooltip>

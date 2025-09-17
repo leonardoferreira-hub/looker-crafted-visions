@@ -20,14 +20,15 @@ export const useUserRole = () => {
   const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
-  // Debug useEffect para rastrear mudanças de estado
+  // Monitor isDevelopmentMode changes
   useEffect(() => {
-    console.log('🔄 useUserRole estado atualizado:', {
-      userRole,
-      isDevelopmentMode,
-      isAuthenticated
-    });
-  }, [userRole, isDevelopmentMode, isAuthenticated]);
+    console.log('🔧 isDevelopmentMode changed:', isDevelopmentMode);
+  }, [isDevelopmentMode]);
+
+  // Monitor userRole changes
+  useEffect(() => {
+    console.log('👤 userRole changed:', userRole);
+  }, [userRole]);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -73,30 +74,26 @@ export const useUserRole = () => {
 
 
   const hasPermission = useCallback((requiredRole: UserRole) => {
-    const permission = requiredRole === 'viewer' ? true : userRole === 'admin';
-    console.log(`🔐 hasPermission('${requiredRole}'):`, {
-      userRole,
-      requiredRole,
-      permission,
-      isDevelopmentMode
-    });
-    return permission;
-  }, [userRole, isDevelopmentMode]);
+    const result = requiredRole === 'viewer' ? true : userRole === 'admin';
+    console.log(`🔑 hasPermission("${requiredRole}") - userRole: ${userRole} - result: ${result}`);
+    return result;
+  }, [userRole]);
 
   // Função temporária para desenvolvimento - permite alternar entre roles
   const toggleDevelopmentRole = () => {
+    console.log('🔄 toggleDevelopmentRole called', { isDevelopmentMode, currentRole: userRole });
     if (isDevelopmentMode) {
       const newRole: UserRole = userRole === 'admin' ? 'viewer' : 'admin';
-      console.log('🔄 Alternando role:', userRole, '→', newRole);
+      console.log('🔄 Alternando role:', { from: userRole, to: newRole });
       setUserRole(newRole);
+    } else {
+      console.log('❌ toggleDevelopmentRole: isDevelopmentMode is false');
     }
   };
 
   const enableDevelopmentMode = () => {
-    console.log('🟢 enableDevelopmentMode chamado');
-    console.log('🟢 Estado antes:', { isDevelopmentMode, userRole });
+    console.log('🛠️ Ativando modo desenvolvimento');
     setIsDevelopmentMode(true);
-    console.log('🟢 setIsDevelopmentMode(true) executado');
   };
 
   const disableDevelopmentMode = () => {

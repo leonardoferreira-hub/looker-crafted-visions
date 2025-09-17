@@ -46,12 +46,6 @@ export default function Dashboard() {
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
   const { userRole, isDevelopmentMode, toggleDevelopmentRole, enableDevelopmentMode, disableDevelopmentMode } = useUserRole();
 
-  // Debug logs
-  console.log('🎯 Dashboard state:', {
-    userRole,
-    isDevelopmentMode,
-    isAuthenticated
-  });
 
   const navigate = useNavigate();
 
@@ -284,7 +278,7 @@ export default function Dashboard() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    console.log('🟢 Clicou em ativar modo desenvolvimento');
+                    console.log('🖱️ Botão Dev clicado - ativando modo desenvolvimento');
                     enableDevelopmentMode();
                   }}
                   className="opacity-80 hover:opacity-100"
@@ -299,7 +293,7 @@ export default function Dashboard() {
                     variant={userRole === 'admin' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => {
-                      console.log('🟡 Clicou para alternar role');
+                      console.log('🖱️ Botão clicado - estado atual:', { userRole, isDevelopmentMode });
                       toggleDevelopmentRole();
                     }}
                     className={`flex items-center gap-1 ${
