@@ -92,13 +92,9 @@ export function KPICard({
 
   const canAccess = !requiresAdminAccess || hasPermission('admin');
 
-  // Helper para mostrar valores apenas se tiver permissão
-  const displayValue = (value: string | undefined) => {
-    if (!requiresAdminAccess || canAccess) {
-      return value;
-    }
-    return "•••";
-  };
+  if (!canAccess) {
+    return null;
+  }
 
   return (
     <TooltipProvider>
@@ -120,7 +116,7 @@ export function KPICard({
               {value && (
                 <div className="text-center">
                   <div className="text-5xl font-black tracking-tight text-white">
-                    {displayValue(value)}
+                    {value}
                   </div>
                 </div>
               )}
@@ -129,18 +125,18 @@ export function KPICard({
               {(leftValue && rightValue && leftLabel && rightLabel) ? (
                 <div className="flex justify-between items-center text-white/90">
                   <div className="text-center flex-1">
-                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{displayValue(leftValue)}</div>
+                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{leftValue}</div>
                     <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{leftLabel}</div>
                   </div>
                   <div className={`w-px bg-white/30 mx-4 ${!value ? 'h-12' : 'h-8'}`}></div>
                   <div className="text-center flex-1">
-                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{displayValue(rightValue)}</div>
+                    <div className={`${!value ? 'text-5xl mb-2' : 'text-2xl'} font-bold`}>{rightValue}</div>
                     <div className={`text-xs uppercase tracking-wide opacity-80 ${!value ? 'text-sm' : ''}`}>{rightLabel}</div>
                   </div>
                 </div>
               ) : subtitle && (
                 <div className="text-center text-white/90">
-                  <div className="text-sm uppercase tracking-wide opacity-80">{displayValue(subtitle)}</div>
+                  <div className="text-sm uppercase tracking-wide opacity-80">{subtitle}</div>
                 </div>
               )}
               
@@ -168,13 +164,6 @@ export function KPICard({
           <TooltipContent side="top" className="max-w-sm p-4 bg-background/95 backdrop-blur-sm border shadow-lg">
             <div className="space-y-2">
               <div className="font-semibold text-sm border-b pb-2 mb-3">{title} - Detalhes</div>
-
-              {requiresAdminAccess && !canAccess && (
-                <div className="text-xs bg-yellow-100 border border-yellow-300 p-2 rounded">
-                  <span className="font-medium text-yellow-800">⚠️ Valores financeiros ocultos</span>
-                  <div className="text-yellow-700">Acesso restrito a administradores</div>
-                </div>
-              )}
               
               {tooltipInfo.currentPeriod && (
                 <div className="text-xs">
