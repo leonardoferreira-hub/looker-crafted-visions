@@ -37,19 +37,20 @@ const SHEETS_COLUMNS = {
     PROXIMOS_PASSOS: 22,       // Coluna W (índice 22)
     ALERTAS: 23,               // Coluna X (índice 23)
     STATUS: 24,                // Coluna Y (índice 24)
-    RESUMO: 25,                // Coluna Z (índice 25)
-    ANALISTA_GESTAO: 26,       // Coluna AA (índice 26)
-    INVESTIDORES: 27,          // Coluna AB (índice 27)
-    DATA_LIQUIDACAO: 28,       // Coluna AC (índice 28) - CHAVE PARA GRÁFICO
-    PRIMEIRA_DATA_PAGAMENTO: 29, // Coluna AD (índice 29)
-    MAPA_LIQUIDACAO: 30,       // Coluna AE (índice 30)
-    MAPA_REGISTROS: 31,        // Coluna AF (índice 31)
-    LO: 32,                    // Coluna AG (índice 32)
-    DD: 33,                    // Coluna AH (índice 33)
-    EMAIL_PRESTADORES: 34,     // Coluna AI (índice 34)
-    PASSAGEM_BASTAO: 35,       // Coluna AJ (índice 35)
-    KICK_OFF: 36,              // Coluna AK (índice 36)
-    HISTORICO: 37              // Coluna AL (índice 37)
+    TECH: 25,                  // Coluna Z (índice 25) - Tech
+    RESUMO: 26,                // Coluna AA (índice 26)
+    ANALISTA_GESTAO: 27,       // Coluna AB (índice 27)
+    INVESTIDORES: 28,          // Coluna AC (índice 28)
+    DATA_LIQUIDACAO: 29,       // Coluna AD (índice 29) - CHAVE PARA GRÁFICO
+    PRIMEIRA_DATA_PAGAMENTO: 30, // Coluna AE (índice 30)
+    MAPA_LIQUIDACAO: 31,       // Coluna AF (índice 31)
+    MAPA_REGISTROS: 32,        // Coluna AG (índice 32)
+    LO: 33,                    // Coluna AH (índice 33)
+    DD: 34,                    // Coluna AI (índice 34)
+    EMAIL_PRESTADORES: 35,     // Coluna AJ (índice 35)
+    PASSAGEM_BASTAO: 36,       // Coluna AK (índice 36)
+    KICK_OFF: 37,              // Coluna AL (índice 37)
+    HISTORICO: 38              // Coluna AM (índice 38)
   },
   // Colunas da aba Pipe (operações em estruturação)
   PIPE: {
@@ -67,7 +68,7 @@ const SHEETS_COLUMNS = {
     VOLUME: 12,                // Coluna M (índice 12)
     REMUNERACAO: 13,           // Coluna N (índice 13)
     LASTRO: 14,                // Coluna O (índice 14)
-    TIPO_OPERACAO: 15,         // Coluna P (índice 15) - Tipo Operação  
+    TIPO_OPERACAO: 15,         // Coluna P (índice 15) - Tipo Operação
     BOLETAGEM: 16,             // Coluna Q (índice 16)
     BANCO: 17,                 // Coluna R (índice 17)
     AGENCIA: 18,               // Coluna S (índice 18)
@@ -77,19 +78,20 @@ const SHEETS_COLUMNS = {
     PROXIMOS_PASSOS: 22,       // Coluna W (índice 22)
     ALERTAS: 23,               // Coluna X (índice 23)
     STATUS: 24,                // Coluna Y (índice 24)
-    RESUMO: 25,                // Coluna Z (índice 25)
-    ANALISTA_GESTAO: 26,       // Coluna AA (índice 26)
-    INVESTIDORES: 27,          // Coluna AB (índice 27)
-    DATA_LIQUIDACAO: 28,       // Coluna AC (índice 28)
-    PRIMEIRA_DATA_PAGAMENTO: 29, // Coluna AD (índice 29)
-    MAPA_LIQUIDACAO: 30,       // Coluna AE (índice 30)
-    MAPA_REGISTROS: 31,        // Coluna AF (índice 31)
-    LO: 32,                    // Coluna AG (índice 32)
-    DD: 33,                    // Coluna AH (índice 33)
-    EMAIL_PRESTADORES: 34,     // Coluna AI (índice 34)
-    PASSAGEM_BASTAO: 35,       // Coluna AJ (índice 35)
-    KICK_OFF: 36,              // Coluna AK (índice 36)
-    DIAS: 37                   // Coluna AL (índice 37)
+    TECH: 25,                  // Coluna Z (índice 25) - Tech
+    RESUMO: 26,                // Coluna AA (índice 26)
+    ANALISTA_GESTAO: 27,       // Coluna AB (índice 27)
+    INVESTIDORES: 28,          // Coluna AC (índice 28)
+    DATA_LIQUIDACAO: 29,       // Coluna AD (índice 29)
+    PRIMEIRA_DATA_PAGAMENTO: 30, // Coluna AE (índice 30)
+    MAPA_LIQUIDACAO: 31,       // Coluna AF (índice 31)
+    MAPA_REGISTROS: 32,        // Coluna AG (índice 32)
+    LO: 33,                    // Coluna AH (índice 33)
+    DD: 34,                    // Coluna AI (índice 34)
+    EMAIL_PRESTADORES: 35,     // Coluna AJ (índice 35)
+    PASSAGEM_BASTAO: 36,       // Coluna AK (índice 36)
+    KICK_OFF: 37,              // Coluna AL (índice 37)
+    DIAS: 38                   // Coluna AM (índice 38)
   }
 };
 
@@ -200,21 +202,21 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
   console.log('=== ANÁLISE DETALHADA DO HISTÓRICO ===');
   console.log('Verificando estrutura dos dados...');
   
-  // Analisa quantas linhas têm col_26
-  let linhasComCol26 = 0;
-  let linhasSemCol26 = 0;
-  
+  // Analisa quantas linhas têm col_29 (DATA_LIQUIDACAO)
+  let linhasComCol29 = 0;
+  let linhasSemCol29 = 0;
+
   historicoData.forEach((row, index) => {
-    if ('col_26' in row && row['col_26']) {
-      linhasComCol26++;
+    if ('col_29' in row && row['col_29']) {
+      linhasComCol29++;
     } else {
-      linhasSemCol26++;
+      linhasSemCol29++;
     }
   });
-  
+
   console.log('📊 ESTATÍSTICAS DAS COLUNAS:');
-  console.log(`Linhas COM col_26: ${linhasComCol26}`);
-  console.log(`Linhas SEM col_26: ${linhasSemCol26}`);
+  console.log(`Linhas COM col_29: ${linhasComCol29}`);
+  console.log(`Linhas SEM col_29: ${linhasSemCol29}`);
   console.log(`Total de linhas: ${historicoData.length}`);
   
   historicoData.forEach((row, index) => {
@@ -225,9 +227,9 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
     if (operacao && operacao.toLowerCase().includes('squarelife')) {
       console.log('🔍 SQUARELIFE - PROCESSAMENTO FINAL:');
       console.log('Operação:', operacao);
-      console.log('col_26 valor:', row['col_26']);
-      console.log('col_26 tipo:', typeof row['col_26']);
-      console.log('getCellValue(col_26):', dataLiquidacao);
+      console.log('col_29 valor:', row['col_29']);
+      console.log('col_29 tipo:', typeof row['col_29']);
+      console.log('getCellValue(col_29):', dataLiquidacao);
       console.log('isValidHistoricoRow:', isValidHistoricoRow(row));
       console.log('=====================================');
     }
@@ -250,25 +252,25 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
     const hasData = dataLiquidacao && String(dataLiquidacao).trim() !== '' && String(dataLiquidacao) !== 'null';
     const isValid = isValidHistoricoRow(row);
     
-    // Debug específico para linhas que têm operação mas não têm data na col_26
+    // Debug específico para linhas que têm operação mas não têm data na col_29
     if (hasOperacao && !hasData) {
-      console.log(`🔍 DEBUG LINHA ${index + 1} (${operacao}): Data não encontrada na col_26`);
-      console.log(`col_26 existe?`, 'col_26' in row);
-      console.log(`col_26 valor:`, row['col_26']);
-      console.log(`col_26 tipo:`, typeof row['col_26']);
-      
-      // Verifica especificamente se há data na col_26
-      if (row['col_26']) {
-        const strValue = String(row['col_26']).trim();
-        console.log(`col_26 como string: "${strValue}"`);
+      console.log(`🔍 DEBUG LINHA ${index + 1} (${operacao}): Data não encontrada na col_29`);
+      console.log(`col_29 existe?`, 'col_29' in row);
+      console.log(`col_29 valor:`, row['col_29']);
+      console.log(`col_29 tipo:`, typeof row['col_29']);
+
+      // Verifica especificamente se há data na col_29
+      if (row['col_29']) {
+        const strValue = String(row['col_29']).trim();
+        console.log(`col_29 como string: "${strValue}"`);
         console.log(`É data válida?`, strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) !== null);
       }
-      
+
       // Mostra onde realmente estão as datas (apenas para comparação)
       Object.entries(row).forEach(([key, value]) => {
         const strValue = String(value);
         if (strValue.match(/\d{1,2}\/\d{1,2}\/\d{4}/) || strValue.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-          console.log(`📅 DATA EM ${key}: "${value}" (mas queremos col_26)`);
+          console.log(`📅 DATA EM ${key}: "${value}" (mas queremos col_29)`);
         }
       });
     }
@@ -315,7 +317,7 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
 
   // Log detalhado das operações que serão consideradas no KPI
   console.log('=== OPERAÇÕES LIQUIDADAS (HISTÓRICO) ===');
-  console.log('Critério: OPERACAO preenchida E DATA_LIQUIDACAO preenchida (col_26)');
+  console.log('Critério: OPERACAO preenchida E DATA_LIQUIDACAO preenchida (col_29)');
   filteredHistorico.forEach((row, index) => {
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
     const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
@@ -483,7 +485,7 @@ function isValidHistoricoRow(row: SheetData): boolean {
   // Verifica se tem operação preenchida
   const hasOperacao = operacao && String(operacao).trim() !== '';
   
-  // Verifica se tem data de liquidação válida na col_26
+  // Verifica se tem data de liquidação válida na col_29
   const dataStr = dataLiquidacao ? String(dataLiquidacao).trim() : '';
   const hasDataLiquidacao = dataStr !== '' && dataStr !== 'null' && dataStr !== 'undefined';
   
@@ -719,7 +721,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     
     console.log(`=== PROXIMAS LIQUIDACOES ROW ${index} ===`);
     console.log('Operacao:', operacao);
-    console.log('Resumo raw (col_23):', row['col_23']);
+    console.log('Resumo raw (col_26):', row['col_26']);
     console.log('Resumo getCellValue:', resumo);
     console.log('Resumo final:', String(resumo || ''));
     
@@ -741,7 +743,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     
     console.log(`=== ULTIMAS LIQUIDACOES ROW ${index} ===`);
     console.log('Operacao:', operacao);
-    console.log('Resumo raw (col_23):', row['col_23']);
+    console.log('Resumo raw (col_26):', row['col_26']);
     console.log('Resumo getCellValue:', resumo);
     console.log('Resumo final:', String(resumo || ''));
     

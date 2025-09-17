@@ -182,7 +182,7 @@ export function useMultipleSheets({ sheetId, sheets }: UseMultipleSheetsProps) {
           console.log('Número de colunas encontradas:', values.length);
           console.log('Values originais do CSV:', values);
           console.log('Row criado com', Object.keys(row).length, 'colunas');
-          console.log('Valor na col_26:', row['col_26']);
+          console.log('Valor na col_29:', row['col_29']);
           console.log('Últimas 5 colunas:', values.slice(-5));
         }
         
