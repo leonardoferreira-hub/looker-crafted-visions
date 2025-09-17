@@ -13,22 +13,26 @@ import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { 
-  BarChart3, 
-  TrendingUp, 
-  DollarSign, 
+import {
+  BarChart3,
+  TrendingUp,
+  DollarSign,
   Clock,
   Filter,
   Download,
   RefreshCw,
   Settings,
   LogOut,
-  User
+  User,
+  Shield,
+  Eye,
+  Code
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -40,6 +44,7 @@ export default function Dashboard() {
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
   const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
+  const { userRole, isDevelopmentMode, toggleDevelopmentRole, enableDevelopmentMode, disableDevelopmentMode } = useUserRole();
 
   const navigate = useNavigate();
 
@@ -264,7 +269,55 @@ export default function Dashboard() {
               error={error}
               onRefresh={refetch}
             />
-            
+
+            {/* Botão de modo desenvolvimento */}
+            <div className="flex items-center space-x-2">
+              {!isDevelopmentMode ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={enableDevelopmentMode}
+                  className="opacity-80 hover:opacity-100"
+                  title="Ativar modo desenvolvimento"
+                >
+                  <Code className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Dev</span>
+                </Button>
+              ) : (
+                <div className="flex items-center space-x-1">
+                  <Button
+                    variant={userRole === 'admin' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={toggleDevelopmentRole}
+                    className={`flex items-center gap-1 ${
+                      userRole === 'admin'
+                        ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                        : 'border-orange-500 text-orange-500 hover:bg-orange-50'
+                    }`}
+                    title={`Modo atual: ${userRole === 'admin' ? 'Admin' : 'Viewer'} - Clique para alternar`}
+                  >
+                    {userRole === 'admin' ? (
+                      <Shield className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                    <span className="hidden sm:inline">
+                      {userRole === 'admin' ? 'Admin' : 'Viewer'}
+                    </span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={disableDevelopmentMode}
+                    className="text-muted-foreground hover:text-foreground"
+                    title="Desativar modo desenvolvimento"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center space-x-2 flex-1 sm:flex-none">
               <Popover>
                 <PopoverTrigger asChild>

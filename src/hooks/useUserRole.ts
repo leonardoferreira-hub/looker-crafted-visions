@@ -17,6 +17,7 @@ export const useUserRole = () => {
   const [userRole, setUserRole] = useState<UserRole>('viewer');
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -67,6 +68,43 @@ export const useUserRole = () => {
     return userRole === 'admin';
   };
 
+  // Função temporária para desenvolvimento - permite alternar entre roles
+  const toggleDevelopmentRole = () => {
+    if (isDevelopmentMode) {
+      const newRole: UserRole = userRole === 'admin' ? 'viewer' : 'admin';
+      setUserRole(newRole);
+    }
+  };
+
+  const enableDevelopmentMode = () => {
+    setIsDevelopmentMode(true);
+  };
+
+  const disableDevelopmentMode = () => {
+    setIsDevelopmentMode(false);
+    // Recarrega o role real do usuário
+    if (isAuthenticated && user) {
+      const fetchUserProfile = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          if (error) {
+            setUserRole('viewer');
+          } else if (data) {
+            setUserRole(data.role as UserRole);
+          }
+        } catch (error) {
+          setUserRole('viewer');
+        }
+      };
+      fetchUserProfile();
+    }
+  };
+
   return {
     userRole,
     hasPermission,
@@ -74,6 +112,11 @@ export const useUserRole = () => {
     isAdmin: userRole === 'admin',
     isViewer: userRole === 'viewer',
     profile,
-    isAuthenticated
+    isAuthenticated,
+    // Funções de desenvolvimento
+    isDevelopmentMode,
+    toggleDevelopmentRole,
+    enableDevelopmentMode,
+    disableDevelopmentMode
   };
 };
