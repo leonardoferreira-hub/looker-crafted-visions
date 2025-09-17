@@ -283,7 +283,10 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={enableDevelopmentMode}
+                  onClick={() => {
+                    console.log('🟢 Clicou em ativar modo desenvolvimento');
+                    enableDevelopmentMode();
+                  }}
                   className="opacity-80 hover:opacity-100"
                   title="Ativar modo desenvolvimento"
                 >
@@ -295,7 +298,10 @@ export default function Dashboard() {
                   <Button
                     variant={userRole === 'admin' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={toggleDevelopmentRole}
+                    onClick={() => {
+                      console.log('🟡 Clicou para alternar role');
+                      toggleDevelopmentRole();
+                    }}
                     className={`flex items-center gap-1 ${
                       userRole === 'admin'
                         ? 'bg-orange-500 hover:bg-orange-600 text-white'

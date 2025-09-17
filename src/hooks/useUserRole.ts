@@ -84,7 +84,9 @@ export const useUserRole = () => {
   };
 
   const enableDevelopmentMode = () => {
+    console.log('🟢 enableDevelopmentMode chamado');
     setIsDevelopmentMode(true);
+    console.log('🟢 isDevelopmentMode definido como true');
   };
 
   const disableDevelopmentMode = () => {
