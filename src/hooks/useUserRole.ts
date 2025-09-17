@@ -37,6 +37,13 @@ export const useUserRole = () => {
       return;
     }
 
+    // Se estiver em modo desenvolvimento, não sobrescrever o role
+    if (isDevelopmentMode) {
+      console.log('🔧 Modo desenvolvimento ativo - não buscar role do banco');
+      setIsLoading(false);
+      return;
+    }
+
     // Se estiver autenticado, busca o role do Supabase
     const fetchUserProfile = async () => {
       try {
@@ -70,7 +77,7 @@ export const useUserRole = () => {
     };
 
     fetchUserProfile();
-  }, [user, isAuthenticated]);
+  }, [user, isAuthenticated, isDevelopmentMode]);
 
 
   const hasPermission = useCallback((requiredRole: UserRole) => {
