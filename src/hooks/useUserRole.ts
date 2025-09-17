@@ -20,6 +20,15 @@ export const useUserRole = () => {
   const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
+  // Debug useEffect para rastrear mudanças de estado
+  useEffect(() => {
+    console.log('🔄 useUserRole estado atualizado:', {
+      userRole,
+      isDevelopmentMode,
+      isAuthenticated
+    });
+  }, [userRole, isDevelopmentMode, isAuthenticated]);
+
   useEffect(() => {
     if (!isAuthenticated || !user) {
       setUserRole('viewer');
@@ -85,8 +94,9 @@ export const useUserRole = () => {
 
   const enableDevelopmentMode = () => {
     console.log('🟢 enableDevelopmentMode chamado');
+    console.log('🟢 Estado antes:', { isDevelopmentMode, userRole });
     setIsDevelopmentMode(true);
-    console.log('🟢 isDevelopmentMode definido como true');
+    console.log('🟢 setIsDevelopmentMode(true) executado');
   };
 
   const disableDevelopmentMode = () => {
