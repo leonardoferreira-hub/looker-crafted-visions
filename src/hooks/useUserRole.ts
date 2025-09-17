@@ -72,6 +72,7 @@ export const useUserRole = () => {
   const toggleDevelopmentRole = () => {
     if (isDevelopmentMode) {
       const newRole: UserRole = userRole === 'admin' ? 'viewer' : 'admin';
+      console.log('🔄 Alternando role:', userRole, '→', newRole);
       setUserRole(newRole);
     }
   };

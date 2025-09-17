@@ -46,6 +46,13 @@ export default function Dashboard() {
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
   const { userRole, isDevelopmentMode, toggleDevelopmentRole, enableDevelopmentMode, disableDevelopmentMode } = useUserRole();
 
+  // Debug logs
+  console.log('🎯 Dashboard state:', {
+    userRole,
+    isDevelopmentMode,
+    isAuthenticated
+  });
+
   const navigate = useNavigate();
 
   // Filtrar dados por categoria

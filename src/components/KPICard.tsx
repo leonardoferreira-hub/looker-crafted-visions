@@ -92,6 +92,14 @@ export function KPICard({
 
   const canAccess = !requiresAdminAccess || hasPermission('admin');
 
+  // Debug logs
+  console.log(`🔍 KPICard "${title}":`, {
+    requiresAdminAccess,
+    hasPermission: hasPermission('admin'),
+    canAccess,
+    willRender: canAccess
+  });
+
   if (!canAccess) {
     return null;
   }
