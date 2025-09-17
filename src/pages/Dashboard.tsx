@@ -44,7 +44,7 @@ export default function Dashboard() {
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
   const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
-  const { userRole, isDevelopmentMode, toggleDevelopmentRole, enableDevelopmentMode, disableDevelopmentMode } = useUserRole();
+  const { userRole, toggleRole } = useUserRole();
 
 
   const navigate = useNavigate();
@@ -271,59 +271,27 @@ export default function Dashboard() {
               onRefresh={refetch}
             />
 
-            {/* Botão de modo desenvolvimento */}
-            <div className="flex items-center space-x-2">
-              {!isDevelopmentMode ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    console.log('🖱️ Botão Dev clicado - ativando modo desenvolvimento');
-                    enableDevelopmentMode();
-                  }}
-                  className="opacity-80 hover:opacity-100"
-                  title="Ativar modo desenvolvimento"
-                >
-                  <Code className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Dev</span>
-                </Button>
+            {/* Botão de alternância de role */}
+            <Button
+              variant={userRole === 'admin' ? 'default' : 'outline'}
+              size="sm"
+              onClick={toggleRole}
+              className={`flex items-center gap-1 ${
+                userRole === 'admin'
+                  ? 'bg-orange-500 hover:bg-orange-600 text-white'
+                  : 'border-orange-500 text-orange-500 hover:bg-orange-50'
+              }`}
+              title={`Modo atual: ${userRole === 'admin' ? 'Admin' : 'Viewer'} - Clique para alternar`}
+            >
+              {userRole === 'admin' ? (
+                <Shield className="h-4 w-4" />
               ) : (
-                <div className="flex items-center space-x-1">
-                  <Button
-                    variant={userRole === 'admin' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => {
-                      console.log('🖱️ Botão clicado - estado atual:', { userRole, isDevelopmentMode });
-                      toggleDevelopmentRole();
-                    }}
-                    className={`flex items-center gap-1 ${
-                      userRole === 'admin'
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                        : 'border-orange-500 text-orange-500 hover:bg-orange-50'
-                    }`}
-                    title={`Modo atual: ${userRole === 'admin' ? 'Admin' : 'Viewer'} - Clique para alternar`}
-                  >
-                    {userRole === 'admin' ? (
-                      <Shield className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                    <span className="hidden sm:inline">
-                      {userRole === 'admin' ? 'Admin' : 'Viewer'}
-                    </span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={disableDevelopmentMode}
-                    className="text-muted-foreground hover:text-foreground"
-                    title="Desativar modo desenvolvimento"
-                  >
-                    ✕
-                  </Button>
-                </div>
+                <Eye className="h-4 w-4" />
               )}
-            </div>
+              <span className="hidden sm:inline">
+                {userRole === 'admin' ? 'Admin' : 'Viewer'}
+              </span>
+            </Button>
 
             <div className="flex items-center space-x-2 flex-1 sm:flex-none">
               <Popover>
@@ -452,7 +420,7 @@ export default function Dashboard() {
             </div>
 
             {/* Bottom Row - 3 Fee Cards */}
-            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto" key={`fee-cards-${userRole}-${isDevelopmentMode}`}>
+            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
                 <KPICard
                  title="Fee de Estruturação"
                  value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
@@ -611,7 +579,7 @@ export default function Dashboard() {
 
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" key={`estruturacao-cards-${userRole}-${isDevelopmentMode}`}>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                <KPICard
                  title="Operações em Estruturação"
                  leftValue={kpis.operacoesEstruturacao.toString()}
@@ -703,7 +671,7 @@ export default function Dashboard() {
 
           <TabsContent value="liquidadas" className="space-y-6">
             {/* Liquidadas KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" key={`liquidadas-cards-${userRole}-${isDevelopmentMode}`}>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                <KPICard
                    title="Operações Liquidadas"
                    leftValue={kpis.operacoesLiquidadas.toString()}

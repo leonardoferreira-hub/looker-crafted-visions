@@ -20,15 +20,6 @@ export const useUserRole = () => {
   const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
-  // Monitor isDevelopmentMode changes
-  useEffect(() => {
-    console.log('🔧 isDevelopmentMode changed:', isDevelopmentMode);
-  }, [isDevelopmentMode]);
-
-  // Monitor userRole changes
-  useEffect(() => {
-    console.log('👤 userRole changed:', userRole);
-  }, [userRole]);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -37,12 +28,6 @@ export const useUserRole = () => {
       return;
     }
 
-    // Se estiver em modo desenvolvimento, não sobrescrever o role
-    if (isDevelopmentMode) {
-      console.log('🔧 Modo desenvolvimento ativo - não buscar role do banco');
-      setIsLoading(false);
-      return;
-    }
 
     // Se estiver autenticado, busca o role do Supabase
     const fetchUserProfile = async () => {
@@ -77,55 +62,17 @@ export const useUserRole = () => {
     };
 
     fetchUserProfile();
-  }, [user, isAuthenticated, isDevelopmentMode]);
+  }, [user, isAuthenticated]);
 
 
   const hasPermission = useCallback((requiredRole: UserRole) => {
-    const result = requiredRole === 'viewer' ? true : userRole === 'admin';
-    console.log(`🔑 hasPermission("${requiredRole}") - userRole: ${userRole} - result: ${result}`);
-    return result;
+    return requiredRole === 'viewer' ? true : userRole === 'admin';
   }, [userRole]);
 
-  // Função temporária para desenvolvimento - permite alternar entre roles
-  const toggleDevelopmentRole = () => {
-    console.log('🔄 toggleDevelopmentRole called', { isDevelopmentMode, currentRole: userRole });
-    if (isDevelopmentMode) {
-      const newRole: UserRole = userRole === 'admin' ? 'viewer' : 'admin';
-      console.log('🔄 Alternando role:', { from: userRole, to: newRole });
-      setUserRole(newRole);
-    } else {
-      console.log('❌ toggleDevelopmentRole: isDevelopmentMode is false');
-    }
-  };
-
-  const enableDevelopmentMode = () => {
-    console.log('🛠️ Ativando modo desenvolvimento');
-    setIsDevelopmentMode(true);
-  };
-
-  const disableDevelopmentMode = () => {
-    setIsDevelopmentMode(false);
-    // Recarrega o role real do usuário
-    if (isAuthenticated && user) {
-      const fetchUserProfile = async () => {
-        try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', user.id)
-            .maybeSingle();
-
-          if (error) {
-            setUserRole('viewer');
-          } else if (data) {
-            setUserRole(data.role as UserRole);
-          }
-        } catch (error) {
-          setUserRole('viewer');
-        }
-      };
-      fetchUserProfile();
-    }
+  // Função simples para alternar role
+  const toggleRole = () => {
+    const newRole: UserRole = userRole === 'admin' ? 'viewer' : 'admin';
+    setUserRole(newRole);
   };
 
   return {
@@ -136,10 +83,6 @@ export const useUserRole = () => {
     isViewer: userRole === 'viewer',
     profile,
     isAuthenticated,
-    // Funções de desenvolvimento
-    isDevelopmentMode,
-    toggleDevelopmentRole,
-    enableDevelopmentMode,
-    disableDevelopmentMode
+    toggleRole
   };
 };
