@@ -27,7 +27,7 @@ export const useUserRole = () => {
     }
 
     // Verificar se é admin por email
-    const adminEmails = ['leonardo.ferreira@grupotravessia.com'];
+    const adminEmails = []; // Nenhum admin por enquanto
     const isAdmin = adminEmails.includes(user.email || '');
 
     setUserRole(isAdmin ? 'admin' : 'viewer');
