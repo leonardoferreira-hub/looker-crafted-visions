@@ -458,7 +458,7 @@ export default function Dashboard() {
             </div>
 
             {/* Bottom Row - 3 Fee Cards */}
-            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto" key={`fee-cards-${userRole}-${isDevelopmentMode}`}>
                 <KPICard
                  title="Fee de Estruturação"
                  value={`${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi`}
@@ -617,7 +617,7 @@ export default function Dashboard() {
 
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" key={`estruturacao-cards-${userRole}-${isDevelopmentMode}`}>
                <KPICard
                  title="Operações em Estruturação"
                  leftValue={kpis.operacoesEstruturacao.toString()}
@@ -709,7 +709,7 @@ export default function Dashboard() {
 
           <TabsContent value="liquidadas" className="space-y-6">
             {/* Liquidadas KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" key={`liquidadas-cards-${userRole}-${isDevelopmentMode}`}>
                <KPICard
                    title="Operações Liquidadas"
                    leftValue={kpis.operacoesLiquidadas.toString()}
