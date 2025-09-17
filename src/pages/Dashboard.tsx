@@ -44,7 +44,7 @@ export default function Dashboard() {
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
   const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
-  const { userRole, toggleRole } = useUserRole();
+  const { userRole } = useUserRole();
 
 
   const navigate = useNavigate();
@@ -271,27 +271,6 @@ export default function Dashboard() {
               onRefresh={refetch}
             />
 
-            {/* Botão de alternância de role */}
-            <Button
-              variant={userRole === 'admin' ? 'default' : 'outline'}
-              size="sm"
-              onClick={toggleRole}
-              className={`flex items-center gap-1 ${
-                userRole === 'admin'
-                  ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                  : 'border-orange-500 text-orange-500 hover:bg-orange-50'
-              }`}
-              title={`Modo atual: ${userRole === 'admin' ? 'Admin' : 'Viewer'} - Clique para alternar`}
-            >
-              {userRole === 'admin' ? (
-                <Shield className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-              <span className="hidden sm:inline">
-                {userRole === 'admin' ? 'Admin' : 'Viewer'}
-              </span>
-            </Button>
 
             <div className="flex items-center space-x-2 flex-1 sm:flex-none">
               <Popover>

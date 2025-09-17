@@ -17,10 +17,7 @@ export const useUserRole = () => {
   const [userRole, setUserRole] = useState<UserRole>('viewer');
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
-  const [manualOverride, setManualOverride] = useState(false);
   const { user, isAuthenticated } = useAuth();
-
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -29,58 +26,17 @@ export const useUserRole = () => {
       return;
     }
 
-    // Se o usuário alterou manualmente, não buscar do banco
-    if (manualOverride) {
-      setIsLoading(false);
-      return;
-    }
+    // Verificar se é admin por email
+    const adminEmails = ['leonardo.ferreira@grupotravessia.com'];
+    const isAdmin = adminEmails.includes(user.email || '');
 
-    // Se estiver autenticado, busca o role do Supabase
-    const fetchUserProfile = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching user profile:', error);
-          setUserRole('viewer');
-        } else if (data) {
-          const profileData: Profile = {
-            id: data.id,
-            user_id: data.user_id,
-            display_name: data.display_name,
-            role: data.role as UserRole,
-            created_at: data.created_at,
-            updated_at: data.updated_at
-          };
-          setProfile(profileData);
-          setUserRole(data.role as UserRole);
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-        setUserRole('viewer');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, [user, isAuthenticated, manualOverride]);
-
+    setUserRole(isAdmin ? 'admin' : 'viewer');
+    setIsLoading(false);
+  }, [user, isAuthenticated]);
 
   const hasPermission = useCallback((requiredRole: UserRole) => {
     return requiredRole === 'viewer' ? true : userRole === 'admin';
   }, [userRole]);
-
-  // Função simples para alternar role
-  const toggleRole = () => {
-    const newRole: UserRole = userRole === 'admin' ? 'viewer' : 'admin';
-    setUserRole(newRole);
-    setManualOverride(true); // Marca que o usuário alterou manualmente
-  };
 
   return {
     userRole,
@@ -89,7 +45,6 @@ export const useUserRole = () => {
     isAdmin: userRole === 'admin',
     isViewer: userRole === 'viewer',
     profile,
-    isAuthenticated,
-    toggleRole
+    isAuthenticated
   };
 };
