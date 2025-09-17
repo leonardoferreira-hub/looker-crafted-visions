@@ -18,6 +18,7 @@ export const useUserRole = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
+  const [manualOverride, setManualOverride] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
 
@@ -28,6 +29,11 @@ export const useUserRole = () => {
       return;
     }
 
+    // Se o usuário alterou manualmente, não buscar do banco
+    if (manualOverride) {
+      setIsLoading(false);
+      return;
+    }
 
     // Se estiver autenticado, busca o role do Supabase
     const fetchUserProfile = async () => {
@@ -62,7 +68,7 @@ export const useUserRole = () => {
     };
 
     fetchUserProfile();
-  }, [user, isAuthenticated]);
+  }, [user, isAuthenticated, manualOverride]);
 
 
   const hasPermission = useCallback((requiredRole: UserRole) => {
@@ -73,6 +79,7 @@ export const useUserRole = () => {
   const toggleRole = () => {
     const newRole: UserRole = userRole === 'admin' ? 'viewer' : 'admin';
     setUserRole(newRole);
+    setManualOverride(true); // Marca que o usuário alterou manualmente
   };
 
   return {
