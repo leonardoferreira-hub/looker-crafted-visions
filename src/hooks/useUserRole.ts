@@ -26,12 +26,36 @@ export const useUserRole = () => {
       return;
     }
 
-    // Verificar se é admin por email
-    const adminEmails = []; // Nenhum admin por enquanto
-    const isAdmin = adminEmails.includes(user.email || '');
+    const fetchUserProfile = async () => {
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
 
-    setUserRole(isAdmin ? 'admin' : 'viewer');
-    setIsLoading(false);
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching user profile:', error);
+          setUserRole('viewer');
+          setIsLoading(false);
+          return;
+        }
+
+        if (profile) {
+          setProfile(profile as Profile);
+          setUserRole(profile.role as UserRole);
+        } else {
+          setUserRole('viewer');
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        setUserRole('viewer');
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
   }, [user, isAuthenticated]);
 
   const hasPermission = useCallback((requiredRole: UserRole) => {
