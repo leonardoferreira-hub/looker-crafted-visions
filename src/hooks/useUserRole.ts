@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
@@ -63,10 +63,16 @@ export const useUserRole = () => {
   }, [user, isAuthenticated]);
 
 
-  const hasPermission = (requiredRole: UserRole) => {
-    if (requiredRole === 'viewer') return true;
-    return userRole === 'admin';
-  };
+  const hasPermission = useCallback((requiredRole: UserRole) => {
+    const permission = requiredRole === 'viewer' ? true : userRole === 'admin';
+    console.log(`🔐 hasPermission('${requiredRole}'):`, {
+      userRole,
+      requiredRole,
+      permission,
+      isDevelopmentMode
+    });
+    return permission;
+  }, [userRole, isDevelopmentMode]);
 
   // Função temporária para desenvolvimento - permite alternar entre roles
   const toggleDevelopmentRole = () => {
