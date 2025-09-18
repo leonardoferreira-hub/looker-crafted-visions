@@ -558,7 +558,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
 
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
+            <div className={`grid gap-4 ${isAdmin ? 'md:grid-cols-2 lg:grid-cols-3 max-w-4xl' : 'max-w-md'} mx-auto`}>
                <KPICard
                  title="Operações em Estruturação"
                  leftValue={kpis.operacoesEstruturacao.toString()}
@@ -650,7 +650,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
 
           <TabsContent value="liquidadas" className="space-y-6">
             {/* Liquidadas KPIs */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
+            <div className={`grid gap-4 ${isAdmin ? 'md:grid-cols-2 lg:grid-cols-3 max-w-4xl' : 'max-w-md'} mx-auto`}>
                <KPICard
                    title="Operações Liquidadas"
                    leftValue={kpis.operacoesLiquidadas.toString()}
