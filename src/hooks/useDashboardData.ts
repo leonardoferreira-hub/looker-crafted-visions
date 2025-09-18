@@ -773,6 +773,13 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
       const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
       return date && date.getFullYear() === 2025;
     })),
+    volumePorMes: chartData ? processMonthlyVolumeData(chartData.filtered2024, chartData.filtered2025) : processMonthlyVolumeData(liquidadas.filter(row => {
+      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
+      return date && date.getFullYear() === 2024;
+    }), liquidadas.filter(row => {
+      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
+      return date && date.getFullYear() === 2025;
+    })),
     categorias: processCategoryData([...liquidadas, ...estruturacao]),
     lastros: processLastroData(estruturacao),
     categories
@@ -1368,6 +1375,95 @@ function processMonthlyFeeData(filtered2024: SheetData[], filtered2025: SheetDat
   
   console.log('=== DADOS FEES FINAIS ===');
   console.log('Resultado do gráfico fees:', result);
+  
+  return result;
+}
+
+function processMonthlyVolumeData(filtered2024: SheetData[], filtered2025: SheetData[]) {
+  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  
+  console.log('=== DEBUG PROCESSMONTHLY VOLUME DATA ===');
+  console.log('Dados 2024 recebidos:', filtered2024.length);
+  console.log('Dados 2025 recebidos:', filtered2025.length);
+  
+  // Calcula volume mensal para cada ano
+  const monthlyVolumes2024 = months.map((mes, index) => {
+    const monthOperations = filtered2024.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    });
+    
+    // Calcula a soma dos volumes de emissão do mês
+    const monthlyVolume = monthOperations.reduce((total, row) => {
+      const volumeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.VOLUME);
+      if (!volumeValue) return total;
+      
+      const numValue = typeof volumeValue === 'number' ? volumeValue : 
+                      parseFloat(String(volumeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+      
+      return total + numValue;
+    }, 0);
+    
+    return monthlyVolume / 1000000000; // Converter para bilhões
+  });
+
+  const monthlyVolumes2025 = months.map((mes, index) => {
+    const monthOperations = filtered2025.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    });
+    
+    // Calcula a soma dos volumes de emissão do mês
+    const monthlyVolume = monthOperations.reduce((total, row) => {
+      const volumeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.VOLUME);
+      if (!volumeValue) return total;
+      
+      const numValue = typeof volumeValue === 'number' ? volumeValue : 
+                      parseFloat(String(volumeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+      
+      return total + numValue;
+    }, 0);
+    
+    return monthlyVolume / 1000000000; // Converter para bilhões
+  });
+
+  console.log('=== VOLUMES MENSAIS 2024 ===');
+  monthlyVolumes2024.forEach((volume, index) => {
+    if (volume > 0) console.log(`${months[index]}/2024: R$ ${volume.toFixed(1)} bi`);
+  });
+  
+  console.log('=== VOLUMES MENSAIS 2025 ===');
+  monthlyVolumes2025.forEach((volume, index) => {
+    if (volume > 0) console.log(`${months[index]}/2025: R$ ${volume.toFixed(1)} bi`);
+  });
+
+  // Converte para soma acumulada (running total)
+  let acumulado2024 = 0;
+  let acumulado2025 = 0;
+  
+  const result = months.map((mes, index) => {
+    acumulado2024 += monthlyVolumes2024[index];
+    acumulado2025 += monthlyVolumes2025[index];
+    
+    return {
+      mes,
+      volume2024: acumulado2024,
+      volume2025: acumulado2025
+    };
+  });
+  
+  console.log('=== DADOS VOLUME FINAIS ===');
+  console.log('Resultado do gráfico volume:', result);
   
   return result;
 }

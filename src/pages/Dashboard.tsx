@@ -42,9 +42,9 @@ export default function Dashboard() {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [comparisonStartDate, setComparisonStartDate] = useState<Date | null>(null);
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
-  const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
+const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
   const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
-  const { userRole } = useUserRole();
+  const { userRole, isAdmin } = useUserRole();
 
 
   const navigate = useNavigate();
@@ -772,10 +772,13 @@ export default function Dashboard() {
                 </div>
               </ChartCard>
               
-              <ChartCard title="Fee de estruturação acumulado (milhões)" className="min-h-[300px] sm:min-h-[400px]">
+              <ChartCard title={isAdmin ? "Fee de estruturação acumulado (milhões)" : "Volume de emissão liquidado acumulado (bilhões)"} className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData.feesPorMes} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <LineChart 
+                      data={isAdmin ? chartData.feesPorMes : chartData.volumePorMes} 
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
                       <XAxis 
                         dataKey="mes" 
@@ -789,30 +792,44 @@ export default function Dashboard() {
                         fontSize={12}
                         axisLine={false}
                         tickLine={false}
-                        label={{ value: 'Milhões (R$)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: '10px' } }}
+                        label={{ 
+                          value: isAdmin ? 'Milhões (R$)' : 'Bilhões (R$)', 
+                          angle: -90, 
+                          position: 'insideLeft', 
+                          style: { textAnchor: 'middle', fontSize: '10px' } 
+                        }}
                       />
                       <Tooltip 
-                        formatter={(value: any, name: string) => [
-                          `R$ ${Number(value).toFixed(1)} mi`, 
-                          name === 'fees2024' ? 'Fee Acumulado 2024' : 'Fee Acumulado 2025'
-                        ]}
+                        formatter={(value: any, name: string) => {
+                          if (isAdmin) {
+                            return [
+                              `R$ ${Number(value).toFixed(1)} mi`, 
+                              name === 'fees2024' ? 'Fee Acumulado 2024' : 'Fee Acumulado 2025'
+                            ];
+                          } else {
+                            return [
+                              `R$ ${Number(value).toFixed(1)} bi`, 
+                              name === 'volume2024' ? 'Volume Acumulado 2024' : 'Volume Acumulado 2025'
+                            ];
+                          }
+                        }}
                         labelFormatter={(label) => `Mês: ${label}`}
                       />
                       <Legend />
                       <Line 
                         type="monotone" 
-                        dataKey="fees2024" 
+                        dataKey={isAdmin ? "fees2024" : "volume2024"} 
                         stroke="#22c55e" 
                         strokeWidth={2}
-                        name="Fee Acumulado 2024"
+                        name={isAdmin ? "Fee Acumulado 2024" : "Volume Acumulado 2024"}
                         dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
                       />
                       <Line 
                         type="monotone" 
-                        dataKey="fees2025" 
+                        dataKey={isAdmin ? "fees2025" : "volume2025"} 
                         stroke="#2563eb"
                         strokeWidth={2}
-                        name="Fee Acumulado 2025"
+                        name={isAdmin ? "Fee Acumulado 2025" : "Volume Acumulado 2025"}
                         dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
                       />
                     </LineChart>
