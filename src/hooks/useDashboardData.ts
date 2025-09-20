@@ -122,6 +122,7 @@ export interface DashboardKPIs {
   volumeLiquidadoChange?: { value: string; type: 'positive' | 'negative' };
   feeLiquidadoChange?: { value: string; type: 'positive' | 'negative' };
   feeGestaoEstruturacaoChange?: { value: string; type: 'positive' | 'negative' };
+  feeGestaoLiquidadoChange?: { value: string; type: 'positive' | 'negative' };
 }
 
 export function useDashboardData(startDate?: Date | null, endDate?: Date | null, comparisonStartDate?: Date | null, comparisonEndDate?: Date | null) {
@@ -690,7 +691,8 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
     volumeLiquidadoChange: getPercentChange(currentVolumeHistorico, lastYearVolumeHistorico), // Compara volume liquidado 2025 vs volume liquidado 2024
     feeLiquidadoChange: getPercentChange(feeEstruturacaoHistorico, lastYearFeeHistorico), // Compara fee liquidado 2025 vs fee liquidado 2024
-    feeGestaoEstruturacaoChange: getPercentChange(feeGestaoPipe, lastYearFeeGestaoHistorico) // Compara fee gestão estruturação 2025 vs fee gestão 2024
+    feeGestaoEstruturacaoChange: getPercentChange(feeGestaoPipe, lastYearFeeGestaoHistorico), // Compara fee gestão estruturação 2025 vs fee gestão 2024
+    feeGestaoLiquidadoChange: getPercentChange(feeGestaoHistorico, lastYearFeeGestaoHistorico) // Compara fee gestão liquidado 2025 vs fee gestão liquidado 2024
   };
 
 

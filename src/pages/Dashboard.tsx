@@ -688,14 +688,15 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  title="Fee de Gestão"
                  value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
                  subtitle={`Fee médio gestão: ${kpis.feeMedioGestao}`}
-                  variant="warning" showComparison={false}
+                 change={kpis.feeGestaoLiquidadoChange}
+                 variant="warning" showComparison={!!kpis.feeGestaoLiquidadoChange}
                  requiresAdminAccess={true}
                  tooltipInfo={{
                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                   comparisonPeriod: "Fees de gestão liquidados",
+                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
                    currentValue: `R$ ${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')} mil liquidado`,
-                   comparisonValue: `Fee médio gestão: ${kpis.feeMedioGestao}`,
-                   calculation: "Fees de gestão já liquidados das operações finalizadas, baseados no fee médio de gestão"
+                   comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil no mesmo período de 2024`,
+                   calculation: "Fees de gestão já liquidados das operações finalizadas comparado com o mesmo período do ano anterior"
                  }}
                />
             </div>
