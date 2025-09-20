@@ -443,14 +443,16 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                  rightLabel="Estruturação"
                  subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                 change={kpis.feeGestaoTotalChange}
                  variant="warning"
+                 showComparison={!!kpis.feeGestaoTotalChange}
                  requiresAdminAccess={true}
                  tooltipInfo={{
                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                   comparisonPeriod: "Dados históricos não disponíveis",
-                   currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
-                   comparisonValue: `Dados de gestão não disponíveis para comparação histórica`,
-                   calculation: "Soma dos fees de gestão da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
+                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                   currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} mil total`,
+                   comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil no mesmo período de 2024`,
+                   calculation: "Comparação dos fees de gestão total (liquidado + estruturação) no período atual vs fees de gestão no mesmo período do ano anterior"
                  }}
                />
             </div>
