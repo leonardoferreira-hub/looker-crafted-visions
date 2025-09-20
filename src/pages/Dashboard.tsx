@@ -597,15 +597,14 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  title="Fee de Gestão"
                  value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                  subtitle={`Fee médio gestão: ${kpis.feeMedioGestaoEstruturacao}`}
-                 change={kpis.feeGestaoEstruturacaoChange}
-                 variant="warning" showComparison={true}
+                 variant="warning" showComparison={false}
                 requiresAdminAccess={true}
                 tooltipInfo={{
                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                  comparisonPeriod: "Fee médio de gestão em estruturação",
                   currentValue: `R$ ${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')} mil em estruturação`,
-                  comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil no mesmo período de 2024`,
-                  calculation: "Fees de gestão projetados para as operações em estruturação comparado com o mesmo período do ano anterior"
+                  comparisonValue: `Fee médio gestão estruturação: ${kpis.feeMedioGestaoEstruturacao}`,
+                  calculation: "Fees de gestão projetados para as operações em estruturação, baseados no fee médio de gestão das operações no pipe"
                 }}
               />
             </div>
