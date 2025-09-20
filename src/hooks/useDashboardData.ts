@@ -111,7 +111,8 @@ export interface DashboardKPIs {
   feeColocacaoLiquidadoRaw: number;
   feeColocacaoEstruturacaoRaw: number;
   feeMedio2025: string;
-  feeMedioGestao: string;
+  feeMedioGestaoEstruturacao: string; // Fee médio baseado no pipe
+  feeMedioGestaoLiquidadas: string;   // Fee médio baseado no histórico
   // Valores de comparação (mesmo período do ano anterior)
   lastYearOperacoes?: number;
   lastYearVolume?: number;
@@ -681,7 +682,8 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeColocacaoLiquidadoRaw: feeColocacaoHistorico,
     feeColocacaoEstruturacaoRaw: feeColocacaoPipe,
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
-    feeMedioGestao: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.GESTAO), // Gestão média
+    feeMedioGestaoEstruturacao: calculateAverageByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.GESTAO), // Gestão média baseada no pipe
+    feeMedioGestaoLiquidadas: calculateAverageByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO), // Gestão média baseada no histórico
     // Valores de comparação (mesmo período do ano anterior)
     lastYearOperacoes: lastYearLiquidadas,
     lastYearVolume: lastYearVolumeHistorico,

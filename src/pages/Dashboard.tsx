@@ -594,7 +594,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                <KPICard
                  title="Fee de Gestão"
                  value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                 subtitle={`Fee médio gestão: ${kpis.feeMedioGestao}`}
+                 subtitle={`Fee médio gestão: ${kpis.feeMedioGestaoEstruturacao}`}
                  change={kpis.feeGestaoEstruturacaoChange}
                  variant="warning" showComparison={true}
                 requiresAdminAccess={true}
@@ -687,7 +687,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                <KPICard
                  title="Fee de Gestão"
                  value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                 subtitle={`Fee médio gestão: ${kpis.feeMedioGestao}`}
+                 subtitle={`Fee médio gestão: ${kpis.feeMedioGestaoLiquidadas}`}
                  change={kpis.feeGestaoLiquidadoChange}
                  variant="warning" showComparison={!!kpis.feeGestaoLiquidadoChange}
                  requiresAdminAccess={true}
