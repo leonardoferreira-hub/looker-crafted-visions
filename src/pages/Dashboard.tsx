@@ -594,17 +594,18 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                <KPICard
                  title="Fee de Gestão"
                  value={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
-                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                  variant="warning" showComparison={false}
-                 requiresAdminAccess={true}
-                 tooltipInfo={{
-                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                   comparisonPeriod: "Fees de gestão projetados",
-                   currentValue: `R$ ${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')} mil em estruturação`,
-                   comparisonValue: `Fee médio 2025: ${kpis.feeMedio2025}`,
-                   calculation: "Fees de gestão projetados para as operações em estruturação, baseados no fee médio de 2025"
-                 }}
-               />
+                 subtitle={`Fee médio gestão: ${kpis.feeMedioGestao}`}
+                 change={kpis.feeGestaoEstruturacaoChange}
+                 variant="warning" showComparison={true}
+                requiresAdminAccess={true}
+                tooltipInfo={{
+                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                  currentValue: `R$ ${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')} mil em estruturação`,
+                  comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil no mesmo período de 2024`,
+                  calculation: "Fees de gestão projetados para as operações em estruturação comparado com o mesmo período do ano anterior"
+                }}
+              />
             </div>
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
@@ -683,20 +684,20 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                      calculation: "Total de fees de estruturação liquidados no período atual comparado com o mesmo período do ano anterior"
                    }}
                  />
-              <KPICard
-                title="Fee de Gestão"
-                value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
-                subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
-                 variant="warning" showComparison={false}
-                requiresAdminAccess={true}
-                tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: "Fees de gestão liquidados",
-                  currentValue: `R$ ${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')} mil liquidado`,
-                  comparisonValue: `Fee médio 2025: ${kpis.feeMedio2025}`,
-                  calculation: "Fees de gestão já liquidados das operações finalizadas, baseados no fee médio de 2025"
-                }}
-              />
+               <KPICard
+                 title="Fee de Gestão"
+                 value={`${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')}`}
+                 subtitle={`Fee médio gestão: ${kpis.feeMedioGestao}`}
+                  variant="warning" showComparison={false}
+                 requiresAdminAccess={true}
+                 tooltipInfo={{
+                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: "Fees de gestão liquidados",
+                   currentValue: `R$ ${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')} mil liquidado`,
+                   comparisonValue: `Fee médio gestão: ${kpis.feeMedioGestao}`,
+                   calculation: "Fees de gestão já liquidados das operações finalizadas, baseados no fee médio de gestão"
+                 }}
+               />
             </div>
 
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">

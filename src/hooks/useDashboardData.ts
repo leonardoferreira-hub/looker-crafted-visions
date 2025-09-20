@@ -111,14 +111,17 @@ export interface DashboardKPIs {
   feeColocacaoLiquidadoRaw: number;
   feeColocacaoEstruturacaoRaw: number;
   feeMedio2025: string;
+  feeMedioGestao: string;
   // Valores de comparação (mesmo período do ano anterior)
   lastYearOperacoes?: number;
   lastYearVolume?: number;
   lastYearFee?: number;
+  lastYearFeeGestao?: number;
   // Comparações com ano anterior
   operacoesLiquidadasChange?: { value: string; type: 'positive' | 'negative' };
   volumeLiquidadoChange?: { value: string; type: 'positive' | 'negative' };
   feeLiquidadoChange?: { value: string; type: 'positive' | 'negative' };
+  feeGestaoEstruturacaoChange?: { value: string; type: 'positive' | 'negative' };
 }
 
 export function useDashboardData(startDate?: Date | null, endDate?: Date | null, comparisonStartDate?: Date | null, comparisonEndDate?: Date | null) {
@@ -537,6 +540,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   // Mas como pipe tem datas de previsão, não de liquidação, vamos usar apenas histórico para comparação justa
   const lastYearVolumeHistorico = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.VOLUME);
   const lastYearFeeHistorico = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+  const lastYearFeeGestaoHistorico = calculateSumByColumnIndex(lastYearData, SHEETS_COLUMNS.HISTORICO.GESTAO);
 
   const currentLiquidadas = liquidadas.length;
   const currentVolumeHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.VOLUME);
@@ -676,14 +680,17 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeColocacaoLiquidadoRaw: feeColocacaoHistorico,
     feeColocacaoEstruturacaoRaw: feeColocacaoPipe,
     feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
+    feeMedioGestao: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.GESTAO), // Gestão média
     // Valores de comparação (mesmo período do ano anterior)
     lastYearOperacoes: lastYearLiquidadas,
     lastYearVolume: lastYearVolumeHistorico,
     lastYearFee: lastYearFeeHistorico,
+    lastYearFeeGestao: lastYearFeeGestaoHistorico,
     // Comparações com ano anterior (mesmo período relativo)
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
     volumeLiquidadoChange: getPercentChange(currentVolumeHistorico, lastYearVolumeHistorico), // Compara volume liquidado 2025 vs volume liquidado 2024
-    feeLiquidadoChange: getPercentChange(feeEstruturacaoHistorico, lastYearFeeHistorico) // Compara fee liquidado 2025 vs fee liquidado 2024
+    feeLiquidadoChange: getPercentChange(feeEstruturacaoHistorico, lastYearFeeHistorico), // Compara fee liquidado 2025 vs fee liquidado 2024
+    feeGestaoEstruturacaoChange: getPercentChange(feeGestaoPipe, lastYearFeeGestaoHistorico) // Compara fee gestão estruturação 2025 vs fee gestão 2024
   };
 
 
