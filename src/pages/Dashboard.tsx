@@ -450,9 +450,9 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  tooltipInfo={{
                    currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
                    comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
-                   currentValue: `R$ ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} mil total`,
-                   comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil no mesmo período de 2024`,
-                   calculation: "Comparação dos fees de gestão total (liquidado + estruturação) no período atual vs fees de gestão no mesmo período do ano anterior"
+                   currentValue: `R$ ${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')} mil liquidado (do total ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} mil)`,
+                   comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil liquidado no mesmo período de 2024`,
+                   calculation: "Comparação justa: fees de gestão liquidados no período atual vs fees de gestão liquidados no mesmo período do ano anterior"
                  }}
                />
             </div>

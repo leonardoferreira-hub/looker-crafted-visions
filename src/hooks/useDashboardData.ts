@@ -696,7 +696,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeLiquidadoChange: getPercentChange(feeEstruturacaoHistorico, lastYearFeeHistorico), // Compara fee liquidado 2025 vs fee liquidado 2024
     feeGestaoEstruturacaoChange: getPercentChange(feeGestaoPipe, lastYearFeeGestaoHistorico), // Compara fee gestão estruturação 2025 vs fee gestão 2024
     feeGestaoLiquidadoChange: getPercentChange(feeGestaoHistorico, lastYearFeeGestaoHistorico), // Compara fee gestão liquidado 2025 vs fee gestão liquidado 2024
-    feeGestaoTotalChange: getPercentChange(feeGestaoHistorico + feeGestaoPipe, lastYearFeeGestaoHistorico) // Compara fee gestão total 2025 vs fee gestão 2024
+    feeGestaoTotalChange: getPercentChange(feeGestaoHistorico, lastYearFeeGestaoHistorico) // Compara fee gestão LIQUIDADO 2025 vs fee gestão liquidado 2024
   };
 
 
