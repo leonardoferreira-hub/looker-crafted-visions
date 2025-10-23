@@ -780,7 +780,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   // Processa dados para gráficos usando dados filtrados por ano
   const graphData = {
     operacoesPorMes: chartData ? processMonthlyDataWithYears(chartData.filtered2024, chartData.filtered2025, estruturacao) : processMonthlyData(liquidadas, estruturacao),
-    operacoesPorMesPorCategoria: chartData ? 
+    operacoesPorMesPorCategoria: chartData ?
       (category: string) => processMonthlyDataWithYearsByCategory(chartData.filtered2024, chartData.filtered2025, category) :
       (category: string) => processMonthlyDataByCategory(liquidadas, category),
     feesPorMes: chartData ? processMonthlyFeeData(chartData.filtered2024, chartData.filtered2025) : processMonthlyFeeData(liquidadas.filter(row => {
@@ -799,6 +799,8 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     })),
     categorias: processCategoryData([...liquidadas, ...estruturacao]),
     lastros: processLastroData(estruturacao),
+    investidores: processInvestidoresData(estruturacao),
+    prestadores: processPrestadoresData(estruturacao),
     categories
   };
 
@@ -1286,22 +1288,88 @@ function processMonthlyDataByCategory(liquidadas: SheetData[], selectedCategory:
 
 function processLastroData(data: SheetData[]) {
   console.log('🎯 processLastroData chamada com:', data.length, 'itens');
-  
+
   const tiposOperacao: { [key: string]: number } = {};
-  
+
   data.forEach(row => {
     // Usar mapeamento de colunas para Tipo Operação da aba PIPE
     const tipoOperacao = String(getCellValue(row, SHEETS_COLUMNS.PIPE.TIPO_OPERACAO) || 'Não informado').trim();
-    
+
     // Se o tipo de operação está vazio, classifica como "Não informado"
     const tipoKey = tipoOperacao === '' || tipoOperacao === 'null' || tipoOperacao === 'undefined' ? 'Não informado' : tipoOperacao;
-    
+
     tiposOperacao[tipoKey] = (tiposOperacao[tipoKey] || 0) + 1;
   });
-  
+
   console.log('Tipos de Operação processados:', tiposOperacao);
-  
+
   return Object.entries(tiposOperacao).map(([name, value]) => ({
+    name,
+    value
+  }));
+}
+
+function processInvestidoresData(data: SheetData[]) {
+  console.log('🎯 processInvestidoresData chamada com:', data.length, 'itens');
+
+  const investidoresCount: { [key: string]: number } = {};
+
+  data.forEach(row => {
+    // Usar mapeamento de colunas para Investidores da aba PIPE (coluna AE = índice 30)
+    const investidores = String(getCellValue(row, SHEETS_COLUMNS.PIPE.INVESTIDORES) || 'Não informado').trim();
+
+    // Divide por vírgula ou ponto-e-vírgula caso haja múltiplos investidores
+    const investidoresList = investidores.split(/[,;]/).map(inv => inv.trim()).filter(inv => inv !== '');
+
+    if (investidoresList.length === 0) {
+      investidoresCount['Não informado'] = (investidoresCount['Não informado'] || 0) + 1;
+    } else {
+      investidoresList.forEach(investidor => {
+        const key = investidor === '' || investidor === 'null' || investidor === 'undefined' ? 'Não informado' : investidor;
+        investidoresCount[key] = (investidoresCount[key] || 0) + 1;
+      });
+    }
+  });
+
+  console.log('Investidores processados:', investidoresCount);
+
+  return Object.entries(investidoresCount).map(([name, value]) => ({
+    name,
+    value
+  }));
+}
+
+function processPrestadoresData(data: SheetData[]) {
+  console.log('🎯 processPrestadoresData chamada com:', data.length, 'itens');
+
+  const prestadoresCount: { [key: string]: number } = {};
+
+  data.forEach(row => {
+    // Coletar prestadores de várias colunas (Compliance, Estruturação, Gestão, etc.)
+    const compliance = String(getCellValue(row, SHEETS_COLUMNS.PIPE.COMPLIANCE) || '').trim();
+    const estruturacao = String(getCellValue(row, SHEETS_COLUMNS.PIPE.ESTRUTURACAO) || '').trim();
+    const boletagem = String(getCellValue(row, SHEETS_COLUMNS.PIPE.BOLETAGEM) || '').trim();
+    const df = String(getCellValue(row, SHEETS_COLUMNS.PIPE.DF) || '').trim();
+    const banco = String(getCellValue(row, SHEETS_COLUMNS.PIPE.BANCO) || '').trim();
+
+    const prestadores = [compliance, boletagem, df, banco].filter(p => p !== '' && p !== 'null' && p !== 'undefined');
+
+    if (prestadores.length === 0) {
+      prestadoresCount['Não informado'] = (prestadoresCount['Não informado'] || 0) + 1;
+    } else {
+      prestadores.forEach(prestador => {
+        // Divide por vírgula caso haja múltiplos prestadores
+        const prestadoresList = prestador.split(/[,;]/).map(p => p.trim()).filter(p => p !== '');
+        prestadoresList.forEach(p => {
+          prestadoresCount[p] = (prestadoresCount[p] || 0) + 1;
+        });
+      });
+    }
+  });
+
+  console.log('Prestadores processados:', prestadoresCount);
+
+  return Object.entries(prestadoresCount).map(([name, value]) => ({
     name,
     value
   }));
