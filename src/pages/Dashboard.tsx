@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { KPICard } from "@/components/KPICard";
 import { OperationsCard } from "@/components/OperationsCard";
 import { ChartCard } from "@/components/ChartCard";
@@ -12,8 +11,6 @@ import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { DateFilter } from "@/components/DateFilter";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { useAuth } from "@/hooks/useAuth";
-import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,8 +25,6 @@ import {
   Download,
   RefreshCw,
   Settings,
-  LogOut,
-  User,
   Shield,
   Eye,
   Code
@@ -43,11 +38,6 @@ export default function Dashboard() {
   const [comparisonStartDate, setComparisonStartDate] = useState<Date | null>(null);
   const [comparisonEndDate, setComparisonEndDate] = useState<Date | null>(null);
 const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, loading, error, refetch, isConnected, defaultStartDate, defaultEndDate, defaultComparisonEndDate } = useDashboardData(startDate, endDate, comparisonStartDate, comparisonEndDate);
-  const { user, signOut, isAuthenticated, loading: authLoading } = useAuth();
-  const { userRole, isAdmin } = useUserRole();
-
-
-  const navigate = useNavigate();
 
   // Filtrar dados por categoria
   const filteredChartData = React.useMemo(() => {
@@ -194,32 +184,6 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
   }, [filteredChartData, calculatePipeProjections]);
 
 
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate('/auth');
-    }
-  }, [isAuthenticated, authLoading, navigate]);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
-
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null; // Will redirect to auth
-  }
 
   // Mostra o período sendo usado
 
@@ -257,10 +221,6 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
               {defaultStartDate.toLocaleDateString('pt-BR')} - {defaultEndDate.toLocaleDateString('pt-BR')}
-            </div>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-              <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              {user?.email}
             </div>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
@@ -305,16 +265,6 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
               <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                 <Download className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Exportar</span>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSignOut}
-                className="flex items-center gap-1 sm:gap-2 flex-1 sm:flex-none"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Sair</span>
               </Button>
               
               <Sheet>
@@ -560,7 +510,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
 
           <TabsContent value="estruturacao" className="space-y-6">
             {/* Estruturação KPIs */}
-            <div className={`grid gap-6 ${isAdmin ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 max-w-sm mx-auto'}`}>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                <KPICard
                  title="Operações em Estruturação"
                  leftValue={kpis.operacoesEstruturacao.toString()}
@@ -652,7 +602,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
 
           <TabsContent value="liquidadas" className="space-y-6">
             {/* Liquidadas KPIs */}
-            <div className={`grid gap-6 ${isAdmin ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 max-w-sm mx-auto'}`}>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                <KPICard
                    title="Operações Liquidadas"
                    leftValue={kpis.operacoesLiquidadas.toString()}
@@ -775,11 +725,11 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                 </div>
               </ChartCard>
               
-              <ChartCard title={isAdmin ? "Fee de estruturação acumulado (milhões)" : "Volume de emissão liquidado acumulado (bilhões)"} className="min-h-[300px] sm:min-h-[400px]">
+              <ChartCard title="Fee de estruturação acumulado (milhões)" className="min-h-[300px] sm:min-h-[400px]">
                 <div className="h-[250px] sm:h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart 
-                      data={isAdmin ? chartData.feesPorMes : chartData.volumePorMes} 
+                      data={chartData.feesPorMes} 
                       margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.6} />
@@ -796,7 +746,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                         axisLine={false}
                         tickLine={false}
                         label={{ 
-                          value: isAdmin ? 'Milhões (R$)' : 'Bilhões (R$)', 
+                          value: 'Milhões (R$)', 
                           angle: -90, 
                           position: 'insideLeft', 
                           style: { textAnchor: 'middle', fontSize: '10px' } 
@@ -804,35 +754,28 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                       />
                       <Tooltip 
                         formatter={(value: any, name: string) => {
-                          if (isAdmin) {
-                            return [
-                              `R$ ${Number(value).toFixed(1)} mi`, 
-                              name === 'fees2024' ? 'Fee Acumulado 2024' : 'Fee Acumulado 2025'
-                            ];
-                          } else {
-                            return [
-                              `R$ ${Number(value).toFixed(1)} bi`, 
-                              name === 'volume2024' ? 'Volume Acumulado 2024' : 'Volume Acumulado 2025'
-                            ];
-                          }
+                          return [
+                            `R$ ${Number(value).toFixed(1)} mi`, 
+                            name === 'fees2024' ? 'Fee Acumulado 2024' : 'Fee Acumulado 2025'
+                          ];
                         }}
                         labelFormatter={(label) => `Mês: ${label}`}
                       />
                       <Legend />
                       <Line 
                         type="monotone" 
-                        dataKey={isAdmin ? "fees2024" : "volume2024"} 
+                        dataKey="fees2024" 
                         stroke="#22c55e" 
                         strokeWidth={2}
-                        name={isAdmin ? "Fee Acumulado 2024" : "Volume Acumulado 2024"}
+                        name="Fee Acumulado 2024"
                         dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
                       />
                       <Line 
                         type="monotone" 
-                        dataKey={isAdmin ? "fees2025" : "volume2025"} 
+                        dataKey="fees2025" 
                         stroke="#2563eb"
                         strokeWidth={2}
-                        name={isAdmin ? "Fee Acumulado 2025" : "Volume Acumulado 2025"}
+                        name="Fee Acumulado 2025"
                         dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
                       />
                     </LineChart>

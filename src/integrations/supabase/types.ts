@@ -70,18 +70,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authorized_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      sync_profile_roles: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      is_admin: { Args: never; Returns: boolean }
+      is_authorized_user: { Args: never; Returns: boolean }
+      sync_profile_roles: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
