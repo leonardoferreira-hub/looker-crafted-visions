@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TrendingUp, TrendingDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useUserRole } from "@/hooks/useUserRole";
 
 interface KPICardProps {
   title: string;
@@ -44,8 +43,6 @@ export function KPICard({
   requiresAdminAccess = false,
   showComparison = true
 }: KPICardProps) {
-  const { hasPermission } = useUserRole();
-  
   // Sistema de cores padronizado: usa 'variant' quando fornecido; caso contrário, mapeia por título
   const getVariantStyles = () => {
     const variantStyles: Record<string, string> = {
@@ -89,12 +86,6 @@ export function KPICard({
     // Usar mapeamento baseado no título, ou cor padrão
     return colorMap[title] || "bg-gradient-to-br from-purple-500 to-purple-600 border-purple-400 shadow-xl shadow-purple-500/25";
   };
-
-  const canAccess = !requiresAdminAccess || hasPermission('admin');
-
-  if (!canAccess) {
-    return null;
-  }
 
   return (
     <TooltipProvider>
