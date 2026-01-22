@@ -103,19 +103,19 @@ export function CombinedBarLineChartWithFilter({
             <Legend />
             <Line 
               type="monotone" 
-              dataKey="acumulado2024" 
+              dataKey="acumulado2025" 
               stroke="hsl(var(--muted-foreground))" 
               strokeWidth={2}
-              name="Acumulado 2024"
+              name="Acumulado 2025"
               strokeDasharray="5 5"
               dot={{ fill: "hsl(var(--muted-foreground))", strokeWidth: 2, r: 4 }}
             />
             <Line 
               type="monotone" 
-              dataKey="acumulado2025" 
+              dataKey="acumulado2026" 
               stroke="hsl(var(--primary))" 
               strokeWidth={2}
-              name="Acumulado 2025"
+              name="Acumulado 2026"
               dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
             />
           </LineChart>

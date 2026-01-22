@@ -41,10 +41,10 @@ export function DateFilter({
   const [isCompEndOpen, setIsCompEndOpen] = useState(false);
 
   // Default dates
-  const defaultStartDate = new Date(2025, 0, 1); // 01/01/2025
+  const defaultStartDate = new Date(2026, 0, 1); // 01/01/2026
   const defaultEndDate = new Date(); // Today
-  const defaultCompStartDate = new Date(2024, 0, 1); // 01/01/2024
-  const defaultCompEndDate = new Date(2024, 11, 31); // 31/12/2024
+  const defaultCompStartDate = new Date(2025, 0, 1); // 01/01/2025
+  const defaultCompEndDate = new Date(2025, 11, 31); // 31/12/2025
 
   return (
     <div className="space-y-4">
