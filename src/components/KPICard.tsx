@@ -141,7 +141,7 @@ export function KPICard({
                       ) : (
                         <TrendingDown className="mr-1 h-4 w-4" />
                       )}
-                      <span>{change.value} vol. liquidado vs mesmo período 2024</span>
+                      <span>{change.value} vol. liquidado vs mesmo período 2025</span>
                     </>
                   ) : (
                     <span className="text-white/70 text-xs">Dados de comparação não disponíveis.</span>

@@ -119,8 +119,8 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
       
       if (isNaN(date.getTime())) return;
       
-      // Apply year filter (only 2025)
-      if (year !== 2025) return;
+      // Apply year filter (only 2026)
+      if (year !== 2026) return;
       
       const monthIndex = date.getMonth();
       projectionsByMonth[monthIndex] = (projectionsByMonth[monthIndex] || 0) + 1;
@@ -129,7 +129,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
     return projectionsByMonth;
   }, [rawPipeData, selectedCategory]);
 
-  // Processar dados para separar realizado vs projetado 2025
+  // Processar dados para separar realizado vs projetado 2026
   const processedChartData = React.useMemo(() => {
     if (!filteredChartData || filteredChartData.length === 0) return [];
     
@@ -145,14 +145,14 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
       let realizedValue = null;
       if (isRealizado) {
         // Meses de janeiro a setembro: usar dados reais
-        realizedValue = item.acumulado2025 || 0;
+        realizedValue = item.acumulado2026 || 0;
       }
       
       // Linha projetada: setembro em diante (setembro = ponto de conexão)
       let projectedValue = null;
       if (isProjetado) {
         // Começar com o valor acumulado até setembro (mês atual)
-        const baseValue = filteredChartData[currentMonth]?.acumulado2025 || 0;
+        const baseValue = filteredChartData[currentMonth]?.acumulado2026 || 0;
         
         if (index === currentMonth) {
           // Setembro: ponto de conexão (mesmo valor da linha realizada)
@@ -177,8 +177,8 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
       
       return {
         ...item,
-        acumulado2025_realizado: realizedValue,
-        acumulado2025_projetado: projectedValue,
+        acumulado2026_realizado: realizedValue,
+        acumulado2026_projetado: projectedValue,
       };
     });
   }, [filteredChartData, calculatePipeProjections]);
@@ -322,8 +322,8 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                 estruturacao={kpis.operacoesEstruturacao}
                 change={kpis.operacoesLiquidadasChange}
                 tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                  comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                  currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  comparisonPeriod: `01/01/2025 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2025`,
                   currentValue: `${kpis.operacoesLiquidadas} operações liquidadas`,
                   comparisonValue: `${kpis.lastYearOperacoes || 0} operações`,
                   calculation: "Comparação de operações liquidadas no período atual vs operações liquidadas no mesmo período do ano anterior"
@@ -339,10 +339,10 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                 variant="primary"
                 change={kpis.volumeLiquidadoChange}
                  tooltipInfo={{
-                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                   currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: `01/01/2025 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2025`,
                    currentValue: `R$ ${kpis.volumeLiquidado} bilhões liquidado (do total ${(parseFloat(kpis.volumeLiquidado) + parseFloat(kpis.volumeEstruturacao)).toFixed(1)} bi)`,
-                   comparisonValue: `R$ ${((kpis.lastYearVolume || 0) / 1000000000).toFixed(1)} bilhões liquidado em 2024`,
+                   comparisonValue: `R$ ${((kpis.lastYearVolume || 0) / 1000000000).toFixed(1)} bilhões liquidado em 2025`,
                    calculation: "Comparação do volume liquidado no período atual vs volume liquidado no mesmo período do ano anterior (comparação justa: liquidado vs liquidado)"
                  }}
               />
@@ -361,10 +361,10 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  change={kpis.feeLiquidadoChange}
                  requiresAdminAccess={true}
                  tooltipInfo={{
-                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                   currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: `01/01/2025 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2025`,
                    currentValue: `R$ ${kpis.feeLiquidado} milhões liquidado (do total ${(parseFloat(kpis.feeLiquidado) + parseFloat(kpis.feeEstruturacao)).toFixed(1)} mi)`,
-                   comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões liquidado em 2024`,
+                   comparisonValue: `R$ ${((kpis.lastYearFee || 0) / 1000000).toFixed(1)} milhões liquidado em 2025`,
                    calculation: "Comparação do fee de estruturação liquidado no período atual vs fee liquidado no mesmo período do ano anterior (comparação justa: liquidado vs liquidado)"
                  }}
                />
@@ -378,11 +378,11 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                   variant="secondary"
                   requiresAdminAccess={true}
                  tooltipInfo={{
-                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
                    comparisonPeriod: "Dados históricos não disponíveis",
                    currentValue: `R$ ${Math.round((kpis.feeColocacaoLiquidadoRaw || 0) + (kpis.feeColocacaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} (em milhares)`,
                    comparisonValue: `Dados de colocação não disponíveis para comparação histórica`,
-                   calculation: "Soma dos fees de colocação (originação) da aba Histórico (2025) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
+                   calculation: "Soma dos fees de colocação (originação) da aba Histórico (2026) + aba Pipe (em estruturação). Valores originalmente em R$ convertidos para milhares."
                  }}
                />
                 <KPICard
@@ -392,16 +392,16 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  leftLabel="Liquidado"
                  rightValue={`${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')}`}
                  rightLabel="Estruturação"
-                 subtitle={`Fee médio 2025: ${kpis.feeMedio2025}`}
+                 subtitle={`Fee médio 2026: ${kpis.feeMedio2026}`}
                  change={kpis.feeGestaoTotalChange}
                  variant="warning"
                  showComparison={!!kpis.feeGestaoTotalChange}
                  requiresAdminAccess={true}
                  tooltipInfo={{
-                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
-                   comparisonPeriod: `01/01/2024 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2024`,
+                   currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   comparisonPeriod: `01/01/2025 - ${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/2025`,
                    currentValue: `R$ ${Math.round(kpis.feeGestaoLiquidadoRaw || 0).toLocaleString('pt-BR')} mil liquidado (do total ${Math.round((kpis.feeGestaoLiquidadoRaw || 0) + (kpis.feeGestaoEstruturacaoRaw || 0)).toLocaleString('pt-BR')} mil)`,
-                   comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil liquidado no mesmo período de 2024`,
+                   comparisonValue: `R$ ${Math.round(kpis.lastYearFeeGestao || 0).toLocaleString('pt-BR')} mil liquidado no mesmo período de 2025`,
                    calculation: "Comparação justa: fees de gestão liquidados no período atual vs fees de gestão liquidados no mesmo período do ano anterior"
                  }}
                />
@@ -449,28 +449,28 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                           <Legend />
                           <Line 
                             type="monotone" 
-                            dataKey="acumulado2024" 
+                            dataKey="acumulado2025" 
                             stroke="#22c55e" 
                             strokeWidth={2}
-                            name="Acumulado 2024"
+                            name="Acumulado 2025"
                             dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
                           />
                           <Line 
                             type="monotone" 
-                            dataKey="acumulado2025_realizado" 
+                            dataKey="acumulado2026_realizado" 
                             stroke="#2563eb"
                             strokeWidth={2}
-                            name="2025 Realizado"
+                            name="2026 Realizado"
                             dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
                             connectNulls={true}
                           />
                           <Line 
                             type="monotone" 
-                            dataKey="acumulado2025_projetado" 
+                            dataKey="acumulado2026_projetado" 
                             stroke="#2563eb"
                             strokeWidth={2}
                             strokeDasharray="5 5"
-                            name="2025 Projetado"
+                            name="2026 Projetado"
                             dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
                             connectNulls={true}
                           />
@@ -519,7 +519,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  rightLabel="Volume"
                   variant="primary" showComparison={false}
                  tooltipInfo={{
-                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
                    comparisonPeriod: "Dados atuais em estruturação",
                    currentValue: `${kpis.operacoesEstruturacao} operações em estruturação`,
                    comparisonValue: `Volume total: R$ ${kpis.volumeEstruturacao} bilhões`,
@@ -536,7 +536,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                   variant="success" showComparison={false}
                  requiresAdminAccess={true}
                  tooltipInfo={{
-                   currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                   currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
                    comparisonPeriod: "Fees projetados em estruturação",
                    currentValue: `R$ ${kpis.feeEstruturacao} milhões em estruturação`,
                    comparisonValue: `Fee colocação: R$ ${Math.round(kpis.feeColocacaoEstruturacaoRaw || 0).toLocaleString('pt-BR')} mil`,
@@ -550,7 +550,7 @@ const { kpis, chartData, proximasLiquidacoes, ultimasLiquidacoes, rawPipeData, l
                  variant="warning" showComparison={false}
                 requiresAdminAccess={true}
                 tooltipInfo={{
-                  currentPeriod: `01/01/2025 - ${new Date().toLocaleDateString('pt-BR')}`,
+                  currentPeriod: `01/01/2026 - ${new Date().toLocaleDateString('pt-BR')}`,
                   comparisonPeriod: "Fee médio de gestão em estruturação",
                   currentValue: `R$ ${Math.round(kpis.feeGestaoEstruturacaoRaw || 0).toLocaleString('pt-BR')} mil em estruturação`,
                   comparisonValue: `Fee médio gestão estruturação: ${kpis.feeMedioGestaoEstruturacao}`,

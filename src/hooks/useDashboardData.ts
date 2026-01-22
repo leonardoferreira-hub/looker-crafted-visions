@@ -114,7 +114,7 @@ export interface DashboardKPIs {
   feeColocacaoEstruturacao: string;
   feeColocacaoLiquidadoRaw: number;
   feeColocacaoEstruturacaoRaw: number;
-  feeMedio2025: string;
+  feeMedio2026: string;
   feeMedioGestaoEstruturacao: string; // Fee médio baseado no pipe
   feeMedioGestaoLiquidadas: string;   // Fee médio baseado no histórico
   // Valores de comparação (mesmo período do ano anterior)
@@ -132,13 +132,13 @@ export interface DashboardKPIs {
 }
 
 export function useDashboardData(startDate?: Date | null, endDate?: Date | null, comparisonStartDate?: Date | null, comparisonEndDate?: Date | null) {
-  // Define período padrão: 1º de janeiro de 2025 até hoje
-  const defaultStartDate = startDate || new Date(2025, 0, 1);
+  // Define período padrão: 1º de janeiro de 2026 até hoje
+  const defaultStartDate = startDate || new Date(2026, 0, 1);
   const defaultEndDate = endDate || new Date();
   
-  // Define período de comparação padrão: 1º de janeiro de 2024 até 31 de dezembro de 2024
-  const defaultComparisonStartDate = comparisonStartDate || new Date(2024, 0, 1);
-  const defaultComparisonEndDate = comparisonEndDate || new Date(2024, 11, 31);
+  // Define período de comparação padrão: 1º de janeiro de 2025 até 31 de dezembro de 2025
+  const defaultComparisonStartDate = comparisonStartDate || new Date(2025, 0, 1);
+  const defaultComparisonEndDate = comparisonEndDate || new Date(2025, 11, 31);
   
   const { data, loading, error, refetch } = useMultipleSheets({
     sheetId: SHEETS_CONFIG.SHEET_ID,
@@ -376,12 +376,12 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
     const lastYearEnd = defaultComparisonEndDate;
     
     // Para comparação dos cards, usa o mesmo período relativo em 2024
-    const cardComparisonStart = new Date(2024, defaultStartDate.getMonth(), defaultStartDate.getDate());
-    const cardComparisonEnd = new Date(2024, defaultEndDate.getMonth(), defaultEndDate.getDate());
+    const cardComparisonStart = new Date(2025, defaultStartDate.getMonth(), defaultStartDate.getDate());
+    const cardComparisonEnd = new Date(2025, defaultEndDate.getMonth(), defaultEndDate.getDate());
     
     console.log('=== DEBUG COMPARAÇÃO DOS CARDS ===');
-    console.log('Período 2025:', defaultStartDate.toISOString().split('T')[0], 'até', defaultEndDate.toISOString().split('T')[0]);
-    console.log('Período 2024 equivalente:', cardComparisonStart.toISOString().split('T')[0], 'até', cardComparisonEnd.toISOString().split('T')[0]);
+    console.log('Período 2026:', defaultStartDate.toISOString().split('T')[0], 'até', defaultEndDate.toISOString().split('T')[0]);
+    console.log('Período 2025 equivalente:', cardComparisonStart.toISOString().split('T')[0], 'até', cardComparisonEnd.toISOString().split('T')[0]);
     
     const lastYearData = historicoData.filter(row => {
       // Primeiro verifica se é uma linha válida do histórico
@@ -397,9 +397,26 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
       return date >= cardComparisonStart && date <= cardComparisonEnd;
     });
     
-    console.log('Operações 2024 para comparação dos cards:', lastYearData.length);
+    console.log('Operações 2025 para comparação dos cards:', lastYearData.length);
 
-    // Para o gráfico, filtra dados de 2025 (período atual) e 2024 (período de comparação)
+    // Para o gráfico, filtra dados de 2026 (período atual) e 2025 (período de comparação)
+    const filtered2026 = historicoData.filter(row => {
+      if (!isValidHistoricoRow(row)) return false;
+      
+      const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      const date = parseDate(liquidationDate);
+      
+      if (!date) return false;
+      
+      // Filtra pelo período selecionado em 2026
+      if (date.getFullYear() !== 2026) return false;
+      
+      if (defaultStartDate && date < defaultStartDate) return false;
+      if (defaultEndDate && date > defaultEndDate) return false;
+      
+      return true;
+    });
+    
     const filtered2025 = historicoData.filter(row => {
       if (!isValidHistoricoRow(row)) return false;
       
@@ -408,25 +425,8 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
       
       if (!date) return false;
       
-      // Filtra pelo período selecionado em 2025
+      // Filtra pelo período de comparação em 2025
       if (date.getFullYear() !== 2025) return false;
-      
-      if (defaultStartDate && date < defaultStartDate) return false;
-      if (defaultEndDate && date > defaultEndDate) return false;
-      
-      return true;
-    });
-    
-    const filtered2024 = historicoData.filter(row => {
-      if (!isValidHistoricoRow(row)) return false;
-      
-      const liquidationDate = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      const date = parseDate(liquidationDate);
-      
-      if (!date) return false;
-      
-      // Filtra pelo período de comparação em 2024
-      if (date.getFullYear() !== 2024) return false;
       
       if (defaultComparisonStartDate && date < defaultComparisonStartDate) return false;
       if (defaultComparisonEndDate && date > defaultComparisonEndDate) return false;
@@ -436,11 +436,11 @@ export function useDashboardData(startDate?: Date | null, endDate?: Date | null,
     
     console.log('=== DEBUG DADOS PARA GRÁFICO ===');
     console.log('Dados históricos brutos:', historicoData.length);
+    console.log('Dados 2026 filtrados:', filtered2026.length);
     console.log('Dados 2025 filtrados:', filtered2025.length);
-    console.log('Dados 2024 filtrados:', filtered2024.length);
-    console.log('Dados KPIs (2025):', filteredHistorico.length);
+    console.log('Dados KPIs (2026):', filteredHistorico.length);
 
-    const result = processSheetData(filteredHistorico, filteredPipe, lastYearData, { filtered2024, filtered2025 });
+    const result = processSheetData(filteredHistorico, filteredPipe, lastYearData, { filtered2025, filtered2026 });
     return {
       ...result,
       rawPipeData: filteredPipe // Include raw pipe data for projections
@@ -528,7 +528,7 @@ function isValidPipeRow(row: SheetData): boolean {
   return hasOperacao && isValidDate;
 }
 
-function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = [], chartData?: { filtered2024: SheetData[], filtered2025: SheetData[] }) {
+function processSheetData(historicoData: SheetData[], pipeData: SheetData[], lastYearData: SheetData[] = [], chartData?: { filtered2025: SheetData[], filtered2026: SheetData[] }) {
   console.log('Processing sheet data...');
   console.log('Historico rows:', historicoData.length);
   console.log('Pipe rows:', pipeData.length);
@@ -554,10 +554,10 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   const currentFeeHistorico = calculateSumByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
   
   console.log('=== DEBUG COMPARAÇÃO CARDS ===');
-  console.log('Volume 2024 (histórico):', lastYearVolumeHistorico);
-  console.log('Volume 2025 (histórico):', currentVolumeHistorico);
-  console.log('Fee 2024 (histórico):', lastYearFeeHistorico);
-  console.log('Fee 2025 (histórico):', currentFeeHistorico);
+  console.log('Volume 2025 (histórico):', lastYearVolumeHistorico);
+  console.log('Volume 2026 (histórico):', currentVolumeHistorico);
+  console.log('Fee 2025 (histórico):', lastYearFeeHistorico);
+  console.log('Fee 2026 (histórico):', currentFeeHistorico);
 
   // Calcula percentuais de mudança
   const getPercentChange = (current: number, previous: number) => {
@@ -590,7 +590,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   
   const volumeTotal = volumeHistorico + volumePipe;
   console.log('Volume Total:', volumeTotal);
-  console.log('Volume Total 2025 (para comparação):', volumeTotal, '/ Volume Histórico 2024:', lastYearVolumeHistorico);
+  console.log('Volume Total 2026 (para comparação):', volumeTotal, '/ Volume Histórico 2025:', lastYearVolumeHistorico);
 
   // Calcula fee de estruturação das duas abas
   console.log('=== DEBUG FEE ESTRUTURACAO ===');
@@ -620,7 +620,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   
   const feeEstruturacaoTotal = feeEstruturacaoHistorico + feeEstruturacaoPipe;
   console.log('Fee Estruturação Total:', feeEstruturacaoTotal);
-  console.log('Fee Total 2025 (para comparação):', feeEstruturacaoTotal, '/ Fee Histórico 2024:', lastYearFeeHistorico);
+  console.log('Fee Total 2026 (para comparação):', feeEstruturacaoTotal, '/ Fee Histórico 2025:', lastYearFeeHistorico);
   console.log('Fee Liquidado 2025 (para comparação):', feeEstruturacaoHistorico, '/ Fee Histórico 2024:', lastYearFeeHistorico);
 
   // Calcula fee de gestão das duas abas
@@ -629,7 +629,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   console.log('Coluna GESTAO Pipe:', SHEETS_COLUMNS.PIPE.GESTAO);
   
   // Debug detalhado dos valores de gestão
-  console.log('=== VALORES GESTÃO HISTÓRICO (2025) ===');
+  console.log('=== VALORES GESTÃO HISTÓRICO (2026) ===');
   liquidadas.forEach((row, index) => {
     const gestaoValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.GESTAO);
     const operacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.OPERACAO);
@@ -653,7 +653,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   const feeGestaoPipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.GESTAO);
   const feeGestaoTotal = feeGestaoHistorico + feeGestaoPipe;
   
-  console.log('Fee Gestão Histórico (liquidadas 2025):', feeGestaoHistorico);
+  console.log('Fee Gestão Histórico (liquidadas 2026):', feeGestaoHistorico);
   console.log('Fee Gestão Pipe (em estruturação):', feeGestaoPipe);
   console.log('Fee Gestão Total:', feeGestaoTotal);
   
@@ -666,7 +666,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   const feeColocacaoPipe = calculateSumByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.ORIGINACAO);
   const feeColocacaoTotal = feeColocacaoHistorico + feeColocacaoPipe;
   
-  console.log('Fee Colocação Histórico (liquidadas 2025):', feeColocacaoHistorico);
+  console.log('Fee Colocação Histórico (liquidadas 2026):', feeColocacaoHistorico);
   console.log('Fee Colocação Pipe (em estruturação):', feeColocacaoPipe);
   console.log('Fee Colocação Total:', feeColocacaoTotal);
 
@@ -686,7 +686,7 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     feeColocacaoEstruturacao: formatFee(feeColocacaoPipe), // Fee colocação apenas estruturação
     feeColocacaoLiquidadoRaw: feeColocacaoHistorico,
     feeColocacaoEstruturacaoRaw: feeColocacaoPipe,
-    feeMedio2025: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
+    feeMedio2026: calculateAverageByColumnIndex([...liquidadas, ...estruturacao], SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO), // Estruturação média
     feeMedioGestaoEstruturacao: calculateAverageByColumnIndex(estruturacao, SHEETS_COLUMNS.PIPE.GESTAO), // Gestão média baseada no pipe
     feeMedioGestaoLiquidadas: calculateAverageByColumnIndex(liquidadas, SHEETS_COLUMNS.HISTORICO.GESTAO), // Gestão média baseada no histórico
     // Valores de comparação (mesmo período do ano anterior)
@@ -696,11 +696,11 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
     lastYearFeeGestao: lastYearFeeGestaoHistorico,
     // Comparações com ano anterior (mesmo período relativo)
     operacoesLiquidadasChange: getPercentChange(currentLiquidadas, lastYearLiquidadas),
-    volumeLiquidadoChange: getPercentChange(currentVolumeHistorico, lastYearVolumeHistorico), // Compara volume liquidado 2025 vs volume liquidado 2024
-    feeLiquidadoChange: getPercentChange(feeEstruturacaoHistorico, lastYearFeeHistorico), // Compara fee liquidado 2025 vs fee liquidado 2024
-    feeGestaoEstruturacaoChange: getPercentChange(feeGestaoPipe, lastYearFeeGestaoHistorico), // Compara fee gestão estruturação 2025 vs fee gestão 2024
-    feeGestaoLiquidadoChange: getPercentChange(feeGestaoHistorico, lastYearFeeGestaoHistorico), // Compara fee gestão liquidado 2025 vs fee gestão liquidado 2024
-    feeGestaoTotalChange: getPercentChange(feeGestaoHistorico, lastYearFeeGestaoHistorico) // Compara fee gestão LIQUIDADO 2025 vs fee gestão liquidado 2024
+    volumeLiquidadoChange: getPercentChange(currentVolumeHistorico, lastYearVolumeHistorico), // Compara volume liquidado 2026 vs volume liquidado 2025
+    feeLiquidadoChange: getPercentChange(feeEstruturacaoHistorico, lastYearFeeHistorico), // Compara fee liquidado 2026 vs fee liquidado 2025
+    feeGestaoEstruturacaoChange: getPercentChange(feeGestaoPipe, lastYearFeeGestaoHistorico), // Compara fee gestão estruturação 2026 vs fee gestão 2025
+    feeGestaoLiquidadoChange: getPercentChange(feeGestaoHistorico, lastYearFeeGestaoHistorico), // Compara fee gestão liquidado 2026 vs fee gestão liquidado 2025
+    feeGestaoTotalChange: getPercentChange(feeGestaoHistorico, lastYearFeeGestaoHistorico) // Compara fee gestão LIQUIDADO 2026 vs fee gestão liquidado 2025
   };
 
 
@@ -779,23 +779,23 @@ function processSheetData(historicoData: SheetData[], pipeData: SheetData[], las
   
   // Processa dados para gráficos usando dados filtrados por ano
   const graphData = {
-    operacoesPorMes: chartData ? processMonthlyDataWithYears(chartData.filtered2024, chartData.filtered2025, estruturacao) : processMonthlyData(liquidadas, estruturacao),
+    operacoesPorMes: chartData ? processMonthlyDataWithYears(chartData.filtered2025, chartData.filtered2026, estruturacao) : processMonthlyData(liquidadas, estruturacao),
     operacoesPorMesPorCategoria: chartData ?
-      (category: string) => processMonthlyDataWithYearsByCategory(chartData.filtered2024, chartData.filtered2025, category) :
+      (category: string) => processMonthlyDataWithYearsByCategory(chartData.filtered2025, chartData.filtered2026, category) :
       (category: string) => processMonthlyDataByCategory(liquidadas, category),
-    feesPorMes: chartData ? processMonthlyFeeData(chartData.filtered2024, chartData.filtered2025) : processMonthlyFeeData(liquidadas.filter(row => {
-      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
-      return date && date.getFullYear() === 2024;
-    }), liquidadas.filter(row => {
+    feesPorMes: chartData ? processMonthlyFeeData(chartData.filtered2025, chartData.filtered2026) : processMonthlyFeeData(liquidadas.filter(row => {
       const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
       return date && date.getFullYear() === 2025;
+    }), liquidadas.filter(row => {
+      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
+      return date && date.getFullYear() === 2026;
     })),
-    volumePorMes: chartData ? processMonthlyVolumeData(chartData.filtered2024, chartData.filtered2025) : processMonthlyVolumeData(liquidadas.filter(row => {
-      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
-      return date && date.getFullYear() === 2024;
-    }), liquidadas.filter(row => {
+    volumePorMes: chartData ? processMonthlyVolumeData(chartData.filtered2025, chartData.filtered2026) : processMonthlyVolumeData(liquidadas.filter(row => {
       const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
       return date && date.getFullYear() === 2025;
+    }), liquidadas.filter(row => {
+      const date = parseDate(getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO));
+      return date && date.getFullYear() === 2026;
     })),
     categorias: processCategoryData([...liquidadas, ...estruturacao]),
     lastros: processLastroData(estruturacao),
@@ -932,26 +932,14 @@ function formatFee(value: number): string {
   return milhoes.toFixed(1);
 }
 
-function processMonthlyDataWithYears(filtered2024: SheetData[], filtered2025: SheetData[], estruturacoes: SheetData[]) {
+function processMonthlyDataWithYears(filtered2025: SheetData[], filtered2026: SheetData[], estruturacoes: SheetData[]) {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   
   console.log('=== DEBUG PROCESSMONTHLYDATA WITH YEARS ===');
-  console.log('Dados 2024 recebidos:', filtered2024.length);
   console.log('Dados 2025 recebidos:', filtered2025.length);
+  console.log('Dados 2026 recebidos:', filtered2026.length);
   
   // Calcula dados mensais para cada ano
-  const monthlyData2024 = months.map((mes, index) => {
-    return filtered2024.filter(row => {
-      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      if (!dataLiquidacao) return false;
-      
-      const date = parseDate(dataLiquidacao);
-      if (!date) return false;
-      
-      return date.getMonth() === index;
-    }).length;
-  });
-
   const monthlyData2025 = months.map((mes, index) => {
     return filtered2025.filter(row => {
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
@@ -964,35 +952,47 @@ function processMonthlyDataWithYears(filtered2024: SheetData[], filtered2025: Sh
     }).length;
   });
 
-  console.log('=== DADOS MENSAIS 2024 ===');
-  monthlyData2024.forEach((count, index) => {
-    if (count > 0) console.log(`${months[index]}/2024: ${count} operações`);
+  const monthlyData2026 = months.map((mes, index) => {
+    return filtered2026.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    }).length;
   });
-  
+
   console.log('=== DADOS MENSAIS 2025 ===');
   monthlyData2025.forEach((count, index) => {
     if (count > 0) console.log(`${months[index]}/2025: ${count} operações`);
   });
+  
+  console.log('=== DADOS MENSAIS 2026 ===');
+  monthlyData2026.forEach((count, index) => {
+    if (count > 0) console.log(`${months[index]}/2026: ${count} operações`);
+  });
 
   // Converte para soma acumulada (running total)
-  let acumulado2024 = 0;
   let acumulado2025 = 0;
+  let acumulado2026 = 0;
   
   const result = months.map((mes, index) => {
-    acumulado2024 += monthlyData2024[index];
     acumulado2025 += monthlyData2025[index];
+    acumulado2026 += monthlyData2026[index];
     
     return {
       mes,
-      acumulado2024,
       acumulado2025,
+      acumulado2026,
       estruturacoes: 0
     };
   });
   
   console.log('=== DADOS ACUMULADOS FINAIS (NEW FUNCTION) ===');
-  console.log('2024 final:', acumulado2024);
   console.log('2025 final:', acumulado2025);
+  console.log('2026 final:', acumulado2026);
   console.log('Resultado do gráfico:', result);
   
   return result;
@@ -1005,8 +1005,8 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
   console.log('Total dados históricos recebidos:', liquidadas.length);
   
   // Debug: contar operações por ano
-  let count2024 = 0;
   let count2025 = 0;
+  let count2026 = 0;
   let countOthers = 0;
   
   liquidadas.forEach(row => {
@@ -1018,14 +1018,14 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
     const date = parseDate(dataLiquidacao);
     if (!date) return;
     
-    if (date.getFullYear() === 2024) count2024++;
-    else if (date.getFullYear() === 2025) count2025++;
+    if (date.getFullYear() === 2025) count2025++;
+    else if (date.getFullYear() === 2026) count2026++;
     else countOthers++;
   });
   
   console.log('Operações válidas por ano:');
-  console.log('- 2024:', count2024);
   console.log('- 2025:', count2025);
+  console.log('- 2026:', count2026);
   console.log('- Outros anos:', countOthers);
   
   // Debug: mostrar algumas datas de exemplo
@@ -1043,22 +1043,7 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
     exampleCount++;
   });
   
-  // Calcula dados de 2024 e 2025 para comparação
-  const monthlyData2024 = months.map((mes, index) => {
-    return liquidadas.filter(row => {
-      // Verifica se é uma linha válida do histórico
-      if (!isValidHistoricoRow(row)) return false;
-      
-      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      if (!dataLiquidacao) return false;
-      
-      const date = parseDate(dataLiquidacao);
-      if (!date) return false;
-      
-      return date.getMonth() === index && date.getFullYear() === 2024;
-    }).length;
-  });
-
+  // Calcula dados de 2025 e 2026 para comparação
   const monthlyData2025 = months.map((mes, index) => {
     return liquidadas.filter(row => {
       // Verifica se é uma linha válida do histórico
@@ -1074,36 +1059,51 @@ function processMonthlyData(liquidadas: SheetData[], estruturacoes: SheetData[])
     }).length;
   });
 
-  console.log('=== DADOS MENSAIS 2024 ===');
-  monthlyData2024.forEach((count, index) => {
-    if (count > 0) console.log(`${months[index]}/2024: ${count} operações`);
+  const monthlyData2026 = months.map((mes, index) => {
+    return liquidadas.filter(row => {
+      // Verifica se é uma linha válida do histórico
+      if (!isValidHistoricoRow(row)) return false;
+      
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index && date.getFullYear() === 2026;
+    }).length;
   });
-  
+
   console.log('=== DADOS MENSAIS 2025 ===');
   monthlyData2025.forEach((count, index) => {
     if (count > 0) console.log(`${months[index]}/2025: ${count} operações`);
   });
+  
+  console.log('=== DADOS MENSAIS 2026 ===');
+  monthlyData2026.forEach((count, index) => {
+    if (count > 0) console.log(`${months[index]}/2026: ${count} operações`);
+  });
 
   // Converte para soma acumulada (running total)
-  let acumulado2024 = 0;
   let acumulado2025 = 0;
+  let acumulado2026 = 0;
   
   const result = months.map((mes, index) => {
-    acumulado2024 += monthlyData2024[index];
     acumulado2025 += monthlyData2025[index];
+    acumulado2026 += monthlyData2026[index];
     
     return {
       mes,
-      acumulado2024,
       acumulado2025,
+      acumulado2026,
       // Mantém estruturacoes para outros gráficos
       estruturacoes: 0
     };
   });
   
   console.log('=== DADOS ACUMULADOS FINAIS ===');
-  console.log('2024 final:', acumulado2024);
   console.log('2025 final:', acumulado2025);
+  console.log('2026 final:', acumulado2026);
   console.log('Resultado do gráfico:', result);
   
   return result;
@@ -1145,12 +1145,12 @@ function extractUniqueCategories(data: SheetData[]): string[] {
   return uniqueCategories;
 }
 
-function processMonthlyDataWithYearsByCategory(filtered2024: SheetData[], filtered2025: SheetData[], selectedCategory: string) {
+function processMonthlyDataWithYearsByCategory(filtered2025: SheetData[], filtered2026: SheetData[], selectedCategory: string) {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   
   console.log('=== DEBUG PROCESSMONTHLYDATA WITH YEARS BY CATEGORY ===');
-  console.log('Dados 2024 recebidos:', filtered2024.length);
   console.log('Dados 2025 recebidos:', filtered2025.length);
+  console.log('Dados 2026 recebidos:', filtered2026.length);
   console.log('Categoria selecionada:', selectedCategory);
   
   // Filtra por categoria se não for "Todas"
@@ -1162,25 +1162,13 @@ function processMonthlyDataWithYearsByCategory(filtered2024: SheetData[], filter
     });
   };
   
-  const categoryFiltered2024 = filterByCategory(filtered2024);
   const categoryFiltered2025 = filterByCategory(filtered2025);
+  const categoryFiltered2026 = filterByCategory(filtered2026);
   
-  console.log('Dados 2024 após filtro categoria:', categoryFiltered2024.length);
   console.log('Dados 2025 após filtro categoria:', categoryFiltered2025.length);
+  console.log('Dados 2026 após filtro categoria:', categoryFiltered2026.length);
   
   // Calcula dados mensais para cada ano
-  const monthlyData2024 = months.map((mes, index) => {
-    return categoryFiltered2024.filter(row => {
-      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      if (!dataLiquidacao) return false;
-      
-      const date = parseDate(dataLiquidacao);
-      if (!date) return false;
-      
-      return date.getMonth() === index;
-    }).length;
-  });
-
   const monthlyData2025 = months.map((mes, index) => {
     return categoryFiltered2025.filter(row => {
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
@@ -1193,25 +1181,37 @@ function processMonthlyDataWithYearsByCategory(filtered2024: SheetData[], filter
     }).length;
   });
 
+  const monthlyData2026 = months.map((mes, index) => {
+    return categoryFiltered2026.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      
+      return date.getMonth() === index;
+    }).length;
+  });
+
   // Converte para soma acumulada (running total)
-  let acumulado2024 = 0;
   let acumulado2025 = 0;
+  let acumulado2026 = 0;
   
   const result = months.map((mes, index) => {
-    acumulado2024 += monthlyData2024[index];
     acumulado2025 += monthlyData2025[index];
+    acumulado2026 += monthlyData2026[index];
     
     return {
       mes,
-      acumulado2024,
       acumulado2025,
+      acumulado2026,
       estruturacoes: 0
     };
   });
   
   console.log('=== DADOS ACUMULADOS FINAIS BY CATEGORY ===');
-  console.log('2024 final:', acumulado2024);
   console.log('2025 final:', acumulado2025);
+  console.log('2026 final:', acumulado2026);
   
   return result;
 }
@@ -1236,8 +1236,8 @@ function processMonthlyDataByCategory(liquidadas: SheetData[], selectedCategory:
   console.log('Dados após filtro categoria:', categoryFilteredData.length);
   
   // Separar por ano
-  const data2024: SheetData[] = [];
   const data2025: SheetData[] = [];
+  const data2026: SheetData[] = [];
   
   categoryFilteredData.forEach(row => {
     if (!isValidHistoricoRow(row)) return;
@@ -1248,19 +1248,11 @@ function processMonthlyDataByCategory(liquidadas: SheetData[], selectedCategory:
     const date = parseDate(dataLiquidacao);
     if (!date) return;
     
-    if (date.getFullYear() === 2024) data2024.push(row);
-    else if (date.getFullYear() === 2025) data2025.push(row);
+    if (date.getFullYear() === 2025) data2025.push(row);
+    else if (date.getFullYear() === 2026) data2026.push(row);
   });
   
   // Processa mensalmente
-  const monthlyData2024 = months.map((mes, index) => {
-    return data2024.filter(row => {
-      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      const date = parseDate(dataLiquidacao);
-      return date && date.getMonth() === index;
-    }).length;
-  });
-
   const monthlyData2025 = months.map((mes, index) => {
     return data2025.filter(row => {
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
@@ -1269,18 +1261,26 @@ function processMonthlyDataByCategory(liquidadas: SheetData[], selectedCategory:
     }).length;
   });
 
+  const monthlyData2026 = months.map((mes, index) => {
+    return data2026.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      const date = parseDate(dataLiquidacao);
+      return date && date.getMonth() === index;
+    }).length;
+  });
+
   // Converte para soma acumulada
-  let acumulado2024 = 0;
   let acumulado2025 = 0;
+  let acumulado2026 = 0;
   
   return months.map((mes, index) => {
-    acumulado2024 += monthlyData2024[index];
     acumulado2025 += monthlyData2025[index];
+    acumulado2026 += monthlyData2026[index];
     
     return {
       mes,
-      acumulado2024,
       acumulado2025,
+      acumulado2026,
       estruturacoes: 0
     };
   });
@@ -1375,182 +1375,102 @@ function processPrestadoresData(data: SheetData[]) {
   }));
 }
 
-function processMonthlyFeeData(filtered2024: SheetData[], filtered2025: SheetData[]) {
+function processMonthlyFeeData(filtered2025: SheetData[], filtered2026: SheetData[]) {
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   
   console.log('=== DEBUG PROCESSMONTHLY FEE DATA ===');
-  console.log('Dados 2024 recebidos:', filtered2024.length);
   console.log('Dados 2025 recebidos:', filtered2025.length);
+  console.log('Dados 2026 recebidos:', filtered2026.length);
   
-  // Calcula fees mensais para cada ano
-  const monthlyFees2024 = months.map((mes, index) => {
-    const monthOperations = filtered2024.filter(row => {
-      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
-      if (!dataLiquidacao) return false;
-      
-      const date = parseDate(dataLiquidacao);
-      if (!date) return false;
-      
-      return date.getMonth() === index;
-    });
-    
-    // Calcula a soma dos fees de estruturação do mês
-    const monthlyFee = monthOperations.reduce((total, row) => {
-      const feeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
-      if (!feeValue) return total;
-      
-      const numValue = typeof feeValue === 'number' ? feeValue : 
-                      parseFloat(String(feeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
-      
-      return total + numValue;
-    }, 0);
-    
-    return monthlyFee / 1000000; // Converter para milhões
-  });
-
   const monthlyFees2025 = months.map((mes, index) => {
     const monthOperations = filtered2025.filter(row => {
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
       if (!dataLiquidacao) return false;
-      
       const date = parseDate(dataLiquidacao);
       if (!date) return false;
-      
       return date.getMonth() === index;
     });
-    
-    // Calcula a soma dos fees de estruturação do mês
     const monthlyFee = monthOperations.reduce((total, row) => {
       const feeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
       if (!feeValue) return total;
-      
-      const numValue = typeof feeValue === 'number' ? feeValue : 
-                      parseFloat(String(feeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
-      
+      const numValue = typeof feeValue === 'number' ? feeValue : parseFloat(String(feeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
       return total + numValue;
     }, 0);
-    
-    return monthlyFee / 1000000; // Converter para milhões
+    return monthlyFee / 1000000;
   });
 
-  console.log('=== FEES MENSAIS 2024 ===');
-  monthlyFees2024.forEach((fee, index) => {
-    if (fee > 0) console.log(`${months[index]}/2024: R$ ${fee.toFixed(1)} mi`);
-  });
-  
-  console.log('=== FEES MENSAIS 2025 ===');
-  monthlyFees2025.forEach((fee, index) => {
-    if (fee > 0) console.log(`${months[index]}/2025: R$ ${fee.toFixed(1)} mi`);
-  });
-
-  // Converte para soma acumulada (running total)
-  let acumulado2024 = 0;
-  let acumulado2025 = 0;
-  
-  const result = months.map((mes, index) => {
-    acumulado2024 += monthlyFees2024[index];
-    acumulado2025 += monthlyFees2025[index];
-    
-    return {
-      mes,
-      fees2024: acumulado2024,
-      fees2025: acumulado2025
-    };
-  });
-  
-  console.log('=== DADOS FEES FINAIS ===');
-  console.log('Resultado do gráfico fees:', result);
-  
-  return result;
-}
-
-function processMonthlyVolumeData(filtered2024: SheetData[], filtered2025: SheetData[]) {
-  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-  
-  console.log('=== DEBUG PROCESSMONTHLY VOLUME DATA ===');
-  console.log('Dados 2024 recebidos:', filtered2024.length);
-  console.log('Dados 2025 recebidos:', filtered2025.length);
-  
-  // Calcula volume mensal para cada ano
-  const monthlyVolumes2024 = months.map((mes, index) => {
-    const monthOperations = filtered2024.filter(row => {
+  const monthlyFees2026 = months.map((mes, index) => {
+    const monthOperations = filtered2026.filter(row => {
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
       if (!dataLiquidacao) return false;
-      
       const date = parseDate(dataLiquidacao);
       if (!date) return false;
-      
       return date.getMonth() === index;
     });
-    
-    // Calcula a soma dos volumes de emissão do mês
-    const monthlyVolume = monthOperations.reduce((total, row) => {
-      const volumeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.VOLUME);
-      if (!volumeValue) return total;
-      
-      const numValue = typeof volumeValue === 'number' ? volumeValue : 
-                      parseFloat(String(volumeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
-      
+    const monthlyFee = monthOperations.reduce((total, row) => {
+      const feeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.ESTRUTURACAO);
+      if (!feeValue) return total;
+      const numValue = typeof feeValue === 'number' ? feeValue : parseFloat(String(feeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
       return total + numValue;
     }, 0);
-    
-    return monthlyVolume / 1000000000; // Converter para bilhões
+    return monthlyFee / 1000000;
   });
 
+  let acumulado2025 = 0;
+  let acumulado2026 = 0;
+  
+  return months.map((mes, index) => {
+    acumulado2025 += monthlyFees2025[index];
+    acumulado2026 += monthlyFees2026[index];
+    return { mes, fees2025: acumulado2025, fees2026: acumulado2026 };
+  });
+}
+
+function processMonthlyVolumeData(filtered2025: SheetData[], filtered2026: SheetData[]) {
+  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  
   const monthlyVolumes2025 = months.map((mes, index) => {
     const monthOperations = filtered2025.filter(row => {
       const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
       if (!dataLiquidacao) return false;
-      
       const date = parseDate(dataLiquidacao);
       if (!date) return false;
-      
       return date.getMonth() === index;
     });
-    
-    // Calcula a soma dos volumes de emissão do mês
     const monthlyVolume = monthOperations.reduce((total, row) => {
       const volumeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.VOLUME);
       if (!volumeValue) return total;
-      
-      const numValue = typeof volumeValue === 'number' ? volumeValue : 
-                      parseFloat(String(volumeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
-      
+      const numValue = typeof volumeValue === 'number' ? volumeValue : parseFloat(String(volumeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
       return total + numValue;
     }, 0);
-    
-    return monthlyVolume / 1000000000; // Converter para bilhões
+    return monthlyVolume / 1000000000;
   });
 
-  console.log('=== VOLUMES MENSAIS 2024 ===');
-  monthlyVolumes2024.forEach((volume, index) => {
-    if (volume > 0) console.log(`${months[index]}/2024: R$ ${volume.toFixed(1)} bi`);
-  });
-  
-  console.log('=== VOLUMES MENSAIS 2025 ===');
-  monthlyVolumes2025.forEach((volume, index) => {
-    if (volume > 0) console.log(`${months[index]}/2025: R$ ${volume.toFixed(1)} bi`);
+  const monthlyVolumes2026 = months.map((mes, index) => {
+    const monthOperations = filtered2026.filter(row => {
+      const dataLiquidacao = getCellValue(row, SHEETS_COLUMNS.HISTORICO.DATA_LIQUIDACAO);
+      if (!dataLiquidacao) return false;
+      const date = parseDate(dataLiquidacao);
+      if (!date) return false;
+      return date.getMonth() === index;
+    });
+    const monthlyVolume = monthOperations.reduce((total, row) => {
+      const volumeValue = getCellValue(row, SHEETS_COLUMNS.HISTORICO.VOLUME);
+      if (!volumeValue) return total;
+      const numValue = typeof volumeValue === 'number' ? volumeValue : parseFloat(String(volumeValue).replace(/[R$\s]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+      return total + numValue;
+    }, 0);
+    return monthlyVolume / 1000000000;
   });
 
-  // Converte para soma acumulada (running total)
-  let acumulado2024 = 0;
   let acumulado2025 = 0;
+  let acumulado2026 = 0;
   
-  const result = months.map((mes, index) => {
-    acumulado2024 += monthlyVolumes2024[index];
+  return months.map((mes, index) => {
     acumulado2025 += monthlyVolumes2025[index];
-    
-    return {
-      mes,
-      volume2024: acumulado2024,
-      volume2025: acumulado2025
-    };
+    acumulado2026 += monthlyVolumes2026[index];
+    return { mes, volume2025: acumulado2025, volume2026: acumulado2026 };
   });
-  
-  console.log('=== DADOS VOLUME FINAIS ===');
-  console.log('Resultado do gráfico volume:', result);
-  
-  return result;
 }
 
 function parseDate(dateStr: any): Date | null {
